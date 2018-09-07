@@ -297,8 +297,8 @@ public class MappingTableBuilder {
             throw new IllegalStateException("Table has no primary key");
         }
 
-        if (!mappingTable.isPrimary() && !mappingTable.isJoined() && !mappingTable.isPredicate() && !mappingTable.isForEachSelectId()) {
-            throw new IllegalStateException("Invalid table. Valid configurations are primary (no targetPath + no joinPaths), joined (targetPath + at least one joinPath), predicate (targetPath + predicate) and for_each_select_id (targetPath + selectIds).");
+        if (!mappingTable.isPrimary() && !mappingTable.isJoined() && !mappingTable.isMerged() && !mappingTable.isPredicate() && !mappingTable.isForEachSelectId()) {
+            throw new IllegalStateException("Invalid table. Valid configurations are primary (no targetPath + no joinPaths), joined (targetPath + at least one joinPath), merged (no targetPath + at least one joinPath), predicate (targetPath + predicate) and for_each_select_id (targetPath + selectIds).");
         }
 
         if (mappingTable.getJoiningTables().stream().anyMatch(MappingTableBuilder.MappingTableDraft.class::isInstance)) {

@@ -180,12 +180,13 @@ public class XtraServerMappingTest {
         assertThat(actual, isSimilarTo(expected).ignoreComments().ignoreWhitespace().withNodeMatcher(new DefaultNodeMatcher(mappingElementSelector)));
     }*/
 
+    // TODO: Parameterized tests, here as well as in hale plugin: https://www.kompf.de/java/junit_params.html
     //@Test
     public void testLocalImportExport() throws JAXBException, IOException, SAXException, XMLStreamException {
         //final StreamSource schemaSource = new StreamSource(new FileInputStream(""), "/home/zahnen/development/XSProjects/AAA-Suite/schema/NAS/6.0/schema");
         final URI localApplicationSchema = new File("/home/zahnen/development/XSProjects/AAA-Suite/schema/NAS/6.0/schema/AAA-Fachschema_XtraServer.xsd").toURI();
         final String inputFile = "/home/zahnen/development/XSProjects/AAA-Suite/config/alkis/sf/includes/1/includes/XtraSrvConfig_Mapping.inc.xml";
-        final String outputFile = "/home/zahnen/Downloads/alkis-mapping.xml";
+        final String outputFile = "/home/zahnen/Downloads/alkis-mapping2.xml";
         //XtraServerMapping xtraServerMappingImport = XtraServerMapping.createFromStream(new FileInputStream(inputFile), localApplicationSchema);
         final XtraServerMapping xtraServerMappingImport = XtraServerMappingFile.read()
                 .fromStream(new FileInputStream(inputFile));

@@ -232,7 +232,7 @@ class JaxbWriter {
         );*/
 
 
-        mappingTable.getJoiningTables().forEach(joiningTable -> createTableMapping(mappingsSequenceType, joiningTable));
+        mappingTable.getJoiningTables().stream().filter(joiningTable -> !joiningTable.isMerged()).forEach(joiningTable -> createTableMapping(mappingsSequenceType, joiningTable));
     }
 
     private String buildValueType(final MappingValue mappingValue) {

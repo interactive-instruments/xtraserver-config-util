@@ -18,7 +18,8 @@ apply plugin: 'com.jfrog.bintray'
 apply plugin: 'org.unbroken-dome.xjc'
 apply plugin: "license"
 
-version = '1.0.0'
+version = '1.0.1'
+//version += '-SNAPSHOT'
 //version += '.' + new Date().format("yyyyMMddHHmmss")
 group = 'de.interactive_instruments'
 

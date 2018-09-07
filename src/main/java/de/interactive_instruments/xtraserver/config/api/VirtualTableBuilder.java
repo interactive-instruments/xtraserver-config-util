@@ -25,6 +25,7 @@ public class VirtualTableBuilder {
     private String query;
     private final Set<MappingJoin> joinPaths;
     private final Set<String> columns;
+    private String whereClause;
 
     public VirtualTableBuilder() {
         joinPaths = new LinkedHashSet<>();
@@ -46,6 +47,10 @@ public class VirtualTableBuilder {
 
         if (columns.isEmpty()) {
             columns.add(mappingTable.getName() + "." + mappingTable.getPrimaryKey());
+
+            if (mappingTable.getPredicate() != null) {
+                whereClause = mappingTable.getName() + "." + mappingTable.getPredicate().replaceAll("( or | and )", "$1" + mappingTable.getName() + ".");
+            }
         }
 
         mappingTable.getValues().stream()
@@ -71,6 +76,9 @@ public class VirtualTableBuilder {
                               .map(condition -> "INNER JOIN " + condition.getTargetTable() + " ON " + condition.getTargetTable() + "." + condition.getTargetField() + " = " + condition.getSourceTable() + "." + condition.getSourceField() + " ")
                               .distinct()
                               .collect(Collectors.joining());
+            if (whereClause != null) {
+                query += "WHERE " + whereClause;
+            }
         }
 
         return new VirtualTable(name, query);

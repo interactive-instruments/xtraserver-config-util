@@ -168,6 +168,17 @@ public class MappingTable {
     }
 
     /**
+     * Is this a merged table?
+     *
+     * @return true if merged
+     */
+    public boolean isMerged() {
+        return ((targetPath == null || targetPath.isEmpty())
+                && ( qualifiedTargetPath == null || qualifiedTargetPath.isEmpty()))
+                && !joinPaths.isEmpty();
+    }
+
+    /**
      * Is this a table predicate mapping?
      *
      * @return true if predicate

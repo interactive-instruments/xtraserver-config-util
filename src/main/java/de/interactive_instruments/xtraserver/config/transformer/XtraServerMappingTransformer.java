@@ -35,8 +35,9 @@ public class XtraServerMappingTransformer {
     private final boolean fanOutInheritance;
     private final boolean ensureRelationNavigability;
     private final boolean fixMultiplicity;
+    private final boolean virtualTables;
 
-    private XtraServerMappingTransformer(final XtraServerMapping xtraServerMapping, final URI applicationSchemaUri, final boolean flattenInheritance, final boolean fanOutInheritance, final boolean ensureRelationNavigability, boolean fixMultiplicity) {
+    private XtraServerMappingTransformer(final XtraServerMapping xtraServerMapping, final URI applicationSchemaUri, final boolean flattenInheritance, final boolean fanOutInheritance, final boolean ensureRelationNavigability, boolean fixMultiplicity, boolean virtualTables) {
         this.xtraServerMapping = xtraServerMapping;
         this.applicationSchemaUri = applicationSchemaUri;
         this.applicationSchema = new ApplicationSchema(applicationSchemaUri);
@@ -44,6 +45,7 @@ public class XtraServerMappingTransformer {
         this.fanOutInheritance = fanOutInheritance;
         this.ensureRelationNavigability = ensureRelationNavigability;
         this.fixMultiplicity = fixMultiplicity;
+        this.virtualTables = virtualTables;
     }
 
     /**
@@ -62,6 +64,10 @@ public class XtraServerMappingTransformer {
 
         transformedXtraServerMapping = new MappingTransformerSchemaInfo(transformedXtraServerMapping, applicationSchema).transform();
 
+        if (virtualTables) {
+            transformedXtraServerMapping = new MappingTransformerMergeTables(transformedXtraServerMapping).transform();
+            description += "    - virtualTables\n";
+        }
         if (flattenInheritance) {
             transformedXtraServerMapping = new MappingTransformerFlattenInheritance(transformedXtraServerMapping).transform();
             transformedXtraServerMapping = new MappingTransformerSchemaInfo(transformedXtraServerMapping, applicationSchema).transform();
@@ -145,6 +151,11 @@ public class XtraServerMappingTransformer {
         Transform fixMultiplicity();
 
         /**
+         * @return the transformer builder
+         */
+        Transform virtualTables();
+
+        /**
          * Executes the transformer chain
          *
          * @return the transformed {@link XtraServerMapping}
@@ -159,6 +170,7 @@ public class XtraServerMappingTransformer {
         private boolean fanOutInheritance;
         private boolean ensureRelationNavigability;
         private boolean fixMultiplicity;
+        private boolean virtualTables;
 
         Builder(final XtraServerMapping xtraServerMapping) {
             this.xtraServerMapping = xtraServerMapping;
@@ -195,8 +207,14 @@ public class XtraServerMappingTransformer {
         }
 
         @Override
+        public Transform virtualTables() {
+            this.virtualTables = true;
+            return this;
+        }
+
+        @Override
         public XtraServerMapping transform() {
-            return new XtraServerMappingTransformer(xtraServerMapping, applicationSchemaUri, flattenInheritance, fanOutInheritance, ensureRelationNavigability, fixMultiplicity)
+            return new XtraServerMappingTransformer(xtraServerMapping, applicationSchemaUri, flattenInheritance, fanOutInheritance, ensureRelationNavigability, fixMultiplicity, virtualTables)
                     .transform();
         }
     }

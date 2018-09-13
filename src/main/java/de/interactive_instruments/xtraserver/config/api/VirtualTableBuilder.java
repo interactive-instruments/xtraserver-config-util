@@ -49,7 +49,8 @@ public class VirtualTableBuilder {
             columns.add(mappingTable.getName() + "." + mappingTable.getPrimaryKey());
 
             if (mappingTable.getPredicate() != null) {
-                whereClause = mappingTable.getName() + "." + mappingTable.getPredicate().replaceAll("( or | and )", "$1" + mappingTable.getName() + ".");
+                whereClause = mappingTable.getPredicate().replaceAll("\\$T\\$", mappingTable.getName());
+                //whereClause = mappingTable.getName() + "." + mappingTable.getPredicate().replaceAll("( or | and )", "$1" + mappingTable.getName() + ".");
             }
         }
 

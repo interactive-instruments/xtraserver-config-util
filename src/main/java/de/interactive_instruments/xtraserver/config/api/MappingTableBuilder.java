@@ -15,6 +15,7 @@
  */
 package de.interactive_instruments.xtraserver.config.api;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 
 import javax.xml.namespace.QName;
@@ -113,9 +114,9 @@ public class MappingTableBuilder {
     public MappingTableBuilder predicate(final String predicate) {
         this.predicate = predicate;
 
-        if (!predicate.isEmpty() && !predicate.startsWith("$T$")) {
+        /*if (!Strings.nullToEmpty(predicate).isEmpty() && !predicate.startsWith("$T$")) {
             this.predicate = "$T$." + predicate.replaceAll("( or | and )", "$1\\$T\\$.");
-        }
+        }*/
         return this;
     }
 

@@ -112,6 +112,10 @@ public class MappingTableBuilder {
      */
     public MappingTableBuilder predicate(final String predicate) {
         this.predicate = predicate;
+
+        if (!predicate.isEmpty() && !predicate.startsWith("$T$")) {
+            this.predicate = "$T$." + predicate.replaceAll("( or | and )", "$1\\$T\\$.");
+        }
         return this;
     }
 

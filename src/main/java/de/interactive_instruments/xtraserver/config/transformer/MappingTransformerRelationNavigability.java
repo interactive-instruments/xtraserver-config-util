@@ -140,7 +140,7 @@ class MappingTransformerRelationNavigability implements MappingTransformer {
             final MappingTable mappingTable = new MappingTableBuilder()
                     .name(sourceTable)
                     .targetPath(refValue.getReferencedTarget())
-                    .predicate("$T$." + sourceField + " IS NOT NULL")
+                    .predicate("(" + sourceField + ") IS NOT NULL")
                     .description("relation navigability - connection to " + refValue.getReferencedFeatureType())
                     .build();
 

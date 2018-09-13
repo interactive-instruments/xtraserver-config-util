@@ -100,6 +100,13 @@ public class MappingJoinBuilder {
         return this;
     }
 
+    public MappingJoinBuilder shallowCopyOf(MappingJoin mappingJoin) {
+        this.targetPath = mappingJoin.getTargetPath();
+        this.description = mappingJoin.getDescription();
+
+        return this;
+    }
+
     /**
      * Builds the {@link MappingJoin}, validates required fields
      *
@@ -192,6 +199,15 @@ public class MappingJoinBuilder {
          */
         public ConditionBuilder targetField(String targetField) {
             this.targetField = targetField;
+            return this;
+        }
+
+        public ConditionBuilder copyOf(MappingJoin.Condition condition) {
+            this.sourceTable = condition.getSourceTable();
+            this.sourceField = condition.getSourceField();
+            this.targetTable = condition.getTargetTable();
+            this.targetField = condition.getTargetField();
+
             return this;
         }
 

@@ -80,8 +80,7 @@ public class MappingTransformerMultiplicity extends AbstractMappingTransformer {
                 final Optional<MappingValue> first = values.stream()
                                                            .filter(value -> value.getTargetPath()
                                                                                  .equals(mappingValue.getTargetPath())
-                                                                   && !value.getValue()
-                                                                            .equals(mappingValue.getValue()))
+                                                                   && !value.equals(mappingValue))
                                                            .sorted((mappingValue1, mappingValue2) -> mappingValue2.getSelectId() - mappingValue1.getSelectId())
                                                            .findFirst();
 

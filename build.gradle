@@ -72,6 +72,10 @@ test {
     }
 }
 
+license {
+    exclude "**/Immutable*"
+}
+
 xjc {
     includeInMainCompilation = false
 }

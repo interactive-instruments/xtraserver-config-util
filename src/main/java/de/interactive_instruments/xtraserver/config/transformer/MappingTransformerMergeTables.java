@@ -22,7 +22,6 @@ import de.interactive_instruments.xtraserver.config.api.MappingTable;
 import de.interactive_instruments.xtraserver.config.api.MappingTableBuilder;
 import de.interactive_instruments.xtraserver.config.api.MappingValue;
 import de.interactive_instruments.xtraserver.config.api.VirtualTable;
-import de.interactive_instruments.xtraserver.config.api.VirtualTableBuilder;
 import de.interactive_instruments.xtraserver.config.api.XtraServerMapping;
 import de.interactive_instruments.xtraserver.config.api.XtraServerMappingBuilder;
 
@@ -39,7 +38,7 @@ import java.util.stream.Collectors;
 public class MappingTransformerMergeTables extends AbstractMappingTransformer {
 
     private final List<VirtualTable> virtualTables;
-    private final Map<String, VirtualTableBuilder> currentVirtualTables;
+    private final Map<String, VirtualTable.Builder> currentVirtualTables;
 
     MappingTransformerMergeTables(XtraServerMapping xtraServerMapping) {
         super(xtraServerMapping);
@@ -53,7 +52,7 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
                 .copyOf(context.xtraServerMapping)
                 .virtualTables(currentVirtualTables.values()
                                                    .stream()
-                                                   .map(VirtualTableBuilder::build)
+                                                   .map(VirtualTable.Builder::build)
                                                    .collect(Collectors.toList()))
                 .featureTypeMappings(transformedFeatureTypeMappings);
     }
@@ -71,7 +70,7 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
                 .shallowCopyOf(mappingTable)
                 .values(transformedMappingValues);
 
-        final VirtualTableBuilder[] currentVirtualTable = {null};
+        final VirtualTable.Builder[] currentVirtualTable = {null};
         final String[] currentVirtualName = {null};
 
         // TODO: if currentVirtualTable and mergedVirtualTable, merge into one
@@ -79,11 +78,13 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
                                 .filter(MappingTable::isMerged)
                                 .forEach(mergedTable -> {
 
-                                    Optional<VirtualTableBuilder> mergedVirtualTable = Optional.ofNullable(currentVirtualTables.remove(mergedTable.getName()));
+                                    Optional<VirtualTable.Builder> mergedVirtualTable = Optional.ofNullable(currentVirtualTables.remove(mergedTable.getName()));
 
                                     if (mergedVirtualTable.isPresent()) {
-                                        currentVirtualTable[0] = mergedVirtualTable.get();
+                                        currentVirtualTable[0] = new VirtualTable.Builder();
                                         currentVirtualTable[0].originalTable(mappingTable);
+                                        currentVirtualTable[0].from(mergedVirtualTable.get().build());
+
                                         currentVirtualName[0] = mergedTable.getName()
                                                                            .replaceAll("\\$", "")
                                                                            .replace("vrt_", "vrt_" + mappingTable.getName() + "_");
@@ -91,7 +92,7 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
 
                                     } else {
                                         if (currentVirtualTable[0] == null) {
-                                            currentVirtualTable[0] = new VirtualTableBuilder();
+                                            currentVirtualTable[0] = VirtualTable.builder();
                                             currentVirtualTable[0].originalTable(mappingTable);
                                             currentVirtualName[0] = "vrt_" + mappingTable.getName();
                                         }
@@ -113,6 +114,7 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
 
                                     mappingTableBuilder.name("$" + currentVirtualName[0] + "$");
                                     mappingTableBuilder.predicate(null);
+                                    //TODO: wrong?
                                     mappingTableBuilder.values(mergedTable.getAllValuesStream()
                                                                           .collect(Collectors.toList()));
 
@@ -160,7 +162,7 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
     private boolean virtualTableExists(String name) {
         return currentVirtualTables.values()
                                    .stream()
-                                   .map(VirtualTableBuilder::build)
+                                   .map(VirtualTable.Builder::build)
                                    .anyMatch(virtualTable -> virtualTable.getName()
                                                                          .equals(name));
     }

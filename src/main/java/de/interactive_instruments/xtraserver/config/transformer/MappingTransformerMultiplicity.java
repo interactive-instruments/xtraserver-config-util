@@ -1,12 +1,12 @@
 /**
  * Copyright 2018 interactive instruments GmbH
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -78,9 +78,7 @@ public class MappingTransformerMultiplicity extends AbstractMappingTransformer {
         public BiConsumer<List<MappingValue>, MappingValue> accumulator() {
             return (values, mappingValue) -> {
                 final Optional<MappingValue> first = values.stream()
-                                                           .filter(value -> value.getTargetPath()
-                                                                                 .equals(mappingValue.getTargetPath())
-                                                                   && !value.equals(mappingValue))
+                                                           .filter(value -> isMappingsForSameMultiplePathWithDifferentValues(value, mappingValue))
                                                            .sorted((mappingValue1, mappingValue2) -> mappingValue2.getSelectId() - mappingValue1.getSelectId())
                                                            .findFirst();
 
@@ -97,7 +95,7 @@ public class MappingTransformerMultiplicity extends AbstractMappingTransformer {
                         selectIds.put(firstValue.getQualifiedTargetPath(), Lists.newArrayList(1));
                     }
 
-                    int newId = firstValue.getSelectId()+1;
+                    int newId = firstValue.getSelectId() + 1;
 
                     final MappingValue mappingValue2 = new MappingValueBuilder()
                             .copyOf(mappingValue)
@@ -105,11 +103,20 @@ public class MappingTransformerMultiplicity extends AbstractMappingTransformer {
                             .build();
                     values.add(mappingValue2);
 
-                    selectIds.get(mappingValue.getQualifiedTargetPath()).add(newId);
+                    selectIds.get(mappingValue.getQualifiedTargetPath())
+                             .add(newId);
                 } else {
                     values.add(mappingValue);
                 }
             };
+        }
+
+        private boolean isMappingsForSameMultiplePathWithDifferentValues(MappingValue value1, MappingValue value2) {
+            return value1.getTargetPath()
+                         .equals(value2.getTargetPath())
+                    && !value1.equals(value2)
+                    && !applicationSchema.getLastMultiplePropertyPath(currentFeatureType, value2.getQualifiedTargetPath())
+                                         .isEmpty();
         }
 
         @Override
@@ -124,9 +131,12 @@ public class MappingTransformerMultiplicity extends AbstractMappingTransformer {
         public Function<List<MappingValue>, List<MappingValue>> finisher() {
             return mappingValues -> {
 
-                selectIds.forEach((key, value) -> {
-                    final List<QName> lastMultiplePropertyPath = applicationSchema.getLastMultiplePropertyPath(currentFeatureType, key);
+                //TODO: only one multiplicity on path, merge spelling to geographicalName
+                //TODO: copy all other values on same path
+                final Map<List<QName>, List<Integer>> mergedSelectIds = mergeSelectIdsIfSharedPath(selectIds);
 
+                // add for_each_select_id mapping
+                mergedSelectIds.forEach((lastMultiplePropertyPath, value) -> {
                     transformedMappingTables.add(new MappingTableBuilder()
                             .name(currentTable.getName())
                             //TODO
@@ -134,14 +144,53 @@ public class MappingTransformerMultiplicity extends AbstractMappingTransformer {
                             .qualifiedTargetPath(lastMultiplePropertyPath)
                             .selectIds(Joiner.on(",")
                                              .join(value))
-                            .description("multiplicity - for_each_select_id for " + applicationSchema.getNamespaces().getPrefixedPath(lastMultiplePropertyPath))
+                            .description("multiplicity - for_each_select_id for " + applicationSchema.getNamespaces()
+                                                                                                     .getPrefixedPath(lastMultiplePropertyPath))
                             .build()
-                    ); // add for_each_select_id, find multiple prop first
+                    );
                 });
 
 
                 return mappingValues;
             };
+        }
+
+        /**
+         * merge for_each_select_ids if they share a subpath, e.g.: hy-n:geographicalName and hy-n:geographicalName/gn:GeographicalName/gn:spelling -> hy-n:geographicalName
+         * @param selectIds
+         * @return
+         */
+        private Map<List<QName>, List<Integer>> mergeSelectIdsIfSharedPath(final Map<List<QName>, List<Integer>> selectIds) {
+            final Map<List<QName>, List<Integer>> mergedSelectIds = new HashMap<>();
+            final List<List<QName>> ignoreSelectIds = new ArrayList<>();
+
+            selectIds.forEach((key, value) -> {
+                final List<QName> lastMultiplePropertyPath = applicationSchema.getLastMultiplePropertyPath(currentFeatureType, key);
+
+                if (ignoreSelectIds.contains(lastMultiplePropertyPath)) return;
+
+                final boolean[] merged = {false};
+
+                List<Integer> mergedValue = mergedSelectIds.getOrDefault(lastMultiplePropertyPath, value).size() > value.size() ? mergedSelectIds.getOrDefault(lastMultiplePropertyPath, value) : value;
+
+                selectIds.forEach((key2, value2) -> {
+                    final List<QName> lastMultiplePropertyPath2 = applicationSchema.getLastMultiplePropertyPath(currentFeatureType, key2);
+
+                    if (!Objects.equals(key, key2) && lastMultiplePropertyPath2.size() >= lastMultiplePropertyPath.size() && lastMultiplePropertyPath2.subList(0, lastMultiplePropertyPath.size())
+                                                                                                                                                      .equals(lastMultiplePropertyPath)) {
+                        ignoreSelectIds.add(lastMultiplePropertyPath2);
+                        mergedSelectIds.put(lastMultiplePropertyPath, value2.size() > mergedValue.size() ? value2 : mergedValue);
+
+                        merged[0] = true;
+                    }
+                });
+
+                if (!merged[0]) {
+                    mergedSelectIds.put(lastMultiplePropertyPath, mergedValue);
+                }
+            });
+
+            return mergedSelectIds;
         }
 
         @Override

@@ -18,7 +18,7 @@ apply plugin: 'com.jfrog.bintray'
 apply plugin: 'org.unbroken-dome.xjc'
 apply plugin: "license"
 
-version = '1.0.4'
+version = '1.0.5'
 //version += '-SNAPSHOT'
 //version += '.' + new Date().format("yyyyMMddHHmmss")
 group = 'de.interactive_instruments'
@@ -37,12 +37,33 @@ dependencies {
     compile 'org.apache.ws.commons.schema:XmlSchema:1.4.7'
     compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.0'
 
+    compileOnly         "org.immutables:value:2.7.1:annotations"
+    annotationProcessor "org.immutables:value:2.7.1"
+
     testCompile "junit:junit:4.12"
     testCompile "org.xmlunit:xmlunit-core:2.5.1"
     testCompile "org.xmlunit:xmlunit-matchers:2.5.1"
     testCompile "com.shazam:shazamcrest:0.11"
+    testCompile 'com.greghaskins:spectrum:1.2.0'
+    testCompile "org.mockito:mockito-core:+"
+    testCompile("org.assertj:assertj-core:+")
 
     doclava 'com.google.doclava:doclava:1.0.6'
+}
+
+compileJava {
+    String relativePath = "build/generated/src/main/java"
+    sourceSets.main.java { srcDir relativePath }
+    File generatedSourceDir = project.file("build/generated/src/main/java")
+    project.mkdir(generatedSourceDir)
+    options.annotationProcessorGeneratedSourcesDirectory = generatedSourceDir
+    outputs.dir(generatedSourceDir)
+
+    doFirst {
+        // force a clean of generatedSourceDir to prevent java.lang.IllegalStateException: endPosTable already set. This shouldn't be need if using Gradle 4.8+ or Java 9+.
+        project.delete(generatedSourceDir)
+        project.mkdir(generatedSourceDir)
+    }
 }
 
 test {

@@ -114,8 +114,9 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
 
                                     mappingTableBuilder.name("$" + currentVirtualName[0] + "$");
                                     mappingTableBuilder.predicate(null);
-                                    //TODO: wrong?
-                                    mappingTableBuilder.values(mergedTable.getAllValuesStream()
+
+                                    // add all values from table and nested merged tables (don't we iterate over nested merged tables anyhow???)
+                                    mappingTableBuilder.values(mergedTable.getAllValuesStream(MappingTable::isMerged)
                                                                           .collect(Collectors.toList()));
 
                                     mappingTableBuilder.joiningTables(mergedTable.getJoiningTables()

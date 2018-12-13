@@ -1,12 +1,12 @@
 /**
  * Copyright 2018 interactive instruments GmbH
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,9 +34,11 @@ import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Optional;
 
 import static com.greghaskins.spectrum.dsl.specification.Specification.*;
-import static org.junit.Assert.assertEquals;
+
+import static org.assertj.core.api.Assertions.*;
 
 /**
  * @author zahnen
@@ -70,21 +72,46 @@ public class MappingTransformerMergeTablesSpec {
 
                 context("no fields from primary table", () -> {
 
-                    it("it should select from primary table", () -> {
+                    XtraServerMapping given = createXtraServerMapping(false, false, false);
 
-                        XtraServerMapping given = createXtraServerMapping(false, false);
+                    XtraServerMapping transformed = applyTransformation(given);
 
-                        XtraServerMapping transformed = applyTransformation(given);
+                    it("virtual table should select from primary table", () -> {
 
-                        assertEquals(transformed.getVirtualTables()
-                                                .size(), 1);
+                        assertThat(transformed.getVirtualTables()).hasSize(1);
 
                         String actual = transformed.getVirtualTables()
                                                    .get(0)
                                                    .getQuery();
                         String expected = "SELECT gn_boeschungkliff_pto.id,o61001.objid,o02341.position FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid INNER JOIN o02341 ON o02341.id = o02341__p0000103000.rid ";
 
-                        assertEquals(expected, actual);
+                        assertThat(actual).isEqualTo(expected);
+
+                    });
+
+                    it("merged table should contain value from joined table", () -> {
+
+                        MappingTable joinedTable = given.getFeatureTypeMappings()
+                                                        .get(0)
+                                                        .getPrimaryTables()
+                                                        .get(0)
+                                                        .getJoiningTables()
+                                                        .iterator()
+                                                        .next();
+
+                        MappingTable mergedTable = transformed.getFeatureTypeMappings()
+                                                              .get(0)
+                                                              .getPrimaryTables()
+                                                              .get(0);
+
+                        MappingValue expected = joinedTable.getValues()
+                                                           .iterator()
+                                                           .next();
+
+                        assertThat(mergedTable.getValues()).anyMatch(actual -> actual.getTargetPath()
+                                                                                     .equals(expected.getTargetPath()) && actual.getValue()
+                                                                                                                                .equals(expected.getValue()) && actual.toString()
+                                                                                                                                                                      .equals(expected.toString()));
 
                     });
 
@@ -92,21 +119,43 @@ public class MappingTransformerMergeTablesSpec {
 
                 context("uses fields from primary table", () -> {
 
-                    it("it should create correct virtual table query", () -> {
+                    XtraServerMapping given = createXtraServerMapping(true, false, false);
 
-                        XtraServerMapping given = createXtraServerMapping(true, false);
+                    XtraServerMapping transformed = applyTransformation(given);
 
-                        XtraServerMapping transformed = applyTransformation(given);
+                    it("virtual table should contain field from primary table", () -> {
 
-                        assertEquals(transformed.getVirtualTables()
-                                                .size(), 1);
+                        assertThat(transformed.getVirtualTables()).hasSize(1);
 
                         String actual = transformed.getVirtualTables()
                                                    .get(0)
                                                    .getQuery();
                         String expected = "SELECT gn_boeschungkliff_pto.id,gn_boeschungkliff_pto.country,o61001.objid,o02341.position FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid INNER JOIN o02341 ON o02341.id = o02341__p0000103000.rid ";
 
-                        assertEquals(expected, actual);
+                        assertThat(actual).isEqualTo(expected);
+
+                    });
+
+                    it("merged table should contain value from primary table", () -> {
+
+                        MappingTable primaryTable = given.getFeatureTypeMappings()
+                                                         .get(0)
+                                                         .getPrimaryTables()
+                                                         .get(0);
+
+                        MappingTable mergedTable = transformed.getFeatureTypeMappings()
+                                                              .get(0)
+                                                              .getPrimaryTables()
+                                                              .get(0);
+
+                        MappingValue expected = primaryTable.getValues()
+                                                           .iterator()
+                                                           .next();
+
+                        assertThat(mergedTable.getValues()).anyMatch(actual -> actual.getTargetPath()
+                                                                                     .equals(expected.getTargetPath()) && actual.getValue()
+                                                                                                                                .equals(expected.getValue()) && actual.toString()
+                                                                                                                                                                      .equals(expected.toString()));
 
                     });
 
@@ -114,17 +163,42 @@ public class MappingTransformerMergeTablesSpec {
 
                 context("has nested join with target path", () -> {
 
-                    it("it should write nothing", () -> {
+                    XtraServerMapping given = createXtraServerMapping(false, false, true);
 
+                    XtraServerMapping transformed = applyTransformation(given);
+
+                    it("it should not add joined table but should add join condition source field", () -> {
+
+                        assertThat(transformed.getVirtualTables()).hasSize(1);
+
+                        String actual = transformed.getVirtualTables()
+                                                   .get(0)
+                                                   .getQuery();
+                        String expected = "SELECT gn_boeschungkliff_pto.id,o61001.objid,o02341__p0000103000.rid FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid ";
+
+                        assertThat(actual).isEqualTo(expected);
 
                     });
 
-                });
+                    it("merged table should not contain value from joined table", () -> {
 
-                context("does not have any nested join with target path", () -> {
+                        MappingTable mergedTable = transformed.getFeatureTypeMappings()
+                                                              .get(0)
+                                                              .getPrimaryTables()
+                                                              .get(0);
 
-                    it("it should write nothing", () -> {
+                        MappingTable joinedTable = mergedTable.getJoiningTables()
+                                                              .iterator()
+                                                              .next();
 
+                        MappingValue expected = joinedTable.getValues()
+                                                            .iterator()
+                                                            .next();
+
+                        assertThat(mergedTable.getValues()).noneMatch(actual -> actual.getTargetPath()
+                                                                                     .equals(expected.getTargetPath()) && actual.getValue()
+                                                                                                                                .equals(expected.getValue()) && actual.toString()
+                                                                                                                                                                      .equals(expected.toString()));
 
                     });
 
@@ -138,19 +212,18 @@ public class MappingTransformerMergeTablesSpec {
 
                     it("it should select from primary table and add where clause", () -> {
 
-                        XtraServerMapping given = createXtraServerMapping(false, true);
+                        XtraServerMapping given = createXtraServerMapping(false, true, false);
 
                         XtraServerMapping transformed = applyTransformation(given);
 
-                        assertEquals(transformed.getVirtualTables()
-                                                .size(), 1);
+                        assertThat(transformed.getVirtualTables()).hasSize(1);
 
                         String actual = transformed.getVirtualTables()
                                                    .get(0)
                                                    .getQuery();
                         String expected = "SELECT gn_boeschungkliff_pto.id,o61001.objid,o02341.position FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid INNER JOIN o02341 ON o02341.id = o02341__p0000103000.rid WHERE NOT (gn_boeschungkliff_pto.fkt = '8300')";
 
-                        assertEquals(expected, actual);
+                        assertThat(actual).isEqualTo(expected);
 
                     });
 
@@ -158,21 +231,20 @@ public class MappingTransformerMergeTablesSpec {
 
                 context("uses fields from primary table", () -> {
 
-                    it("it should write nothing", () -> {
+                    it("it should create correct virtual table query with where clause", () -> {
 
-                        XtraServerMapping given = createXtraServerMapping(true, true);
+                        XtraServerMapping given = createXtraServerMapping(true, true, false);
 
                         XtraServerMapping transformed = applyTransformation(given);
 
-                        assertEquals(transformed.getVirtualTables()
-                                                .size(), 1);
+                        assertThat(transformed.getVirtualTables()).hasSize(1);
 
                         String actual = transformed.getVirtualTables()
                                                    .get(0)
                                                    .getQuery();
                         String expected = "SELECT gn_boeschungkliff_pto.id,gn_boeschungkliff_pto.country,o61001.objid,o02341.position FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid INNER JOIN o02341 ON o02341.id = o02341__p0000103000.rid WHERE NOT (gn_boeschungkliff_pto.fkt = '8300')";
 
-                        assertEquals(expected, actual);
+                        assertThat(actual).isEqualTo(expected);
 
                     });
 
@@ -212,9 +284,10 @@ public class MappingTransformerMergeTablesSpec {
                                            .transform();
     }
 
-    private XtraServerMapping createXtraServerMapping(boolean primaryTableHasField, boolean primaryTableHasPredicate) {
+    private XtraServerMapping createXtraServerMapping(boolean primaryTableHasField, boolean primaryTableHasPredicate, boolean lastJoinIsMultiple) {
         MappingTable o02341 = new MappingTableBuilder().name("o02341")
                                                        .primaryKey("id")
+                                                       .targetPath(lastJoinIsMultiple ? "ci:location" : null)
                                                        .value(new MappingValueBuilder().geometry()
                                                                                        .value("position")
                                                                                        .targetPath("ci:location")

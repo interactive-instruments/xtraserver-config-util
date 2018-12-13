@@ -101,6 +101,16 @@ public abstract class VirtualTable {
                                                              .stream())
                         .map(column -> mappingTable.getName() + "." + column)
                         .forEach(this::addColumns);
+
+            mappingTable.getJoiningTables().stream()
+                        .filter(MappingTable::isJoined)
+                        .flatMap(mappingTable1 -> mappingTable1.getJoinPaths().stream())
+                        .map(mappingJoin -> mappingJoin.getJoinConditions().stream().findFirst())
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .map(condition -> condition.getSourceTable()  + "." + condition.getSourceField())
+                        .forEach(this::addColumns);
+            
             return this;
         }
     }

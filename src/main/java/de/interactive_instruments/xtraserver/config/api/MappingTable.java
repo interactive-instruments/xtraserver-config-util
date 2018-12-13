@@ -1,12 +1,12 @@
 /**
  * Copyright 2018 interactive instruments GmbH
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableSet;
 import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -163,7 +164,7 @@ public class MappingTable {
      */
     public boolean isJoined() {
         return ((targetPath != null && !targetPath.isEmpty())
-                || ( qualifiedTargetPath != null &&!qualifiedTargetPath.isEmpty()))
+                || (qualifiedTargetPath != null && !qualifiedTargetPath.isEmpty()))
                 && !joinPaths.isEmpty();
     }
 
@@ -174,7 +175,7 @@ public class MappingTable {
      */
     public boolean isMerged() {
         return ((targetPath == null || targetPath.isEmpty())
-                && ( qualifiedTargetPath == null || qualifiedTargetPath.isEmpty()))
+                && (qualifiedTargetPath == null || qualifiedTargetPath.isEmpty()))
                 && !joinPaths.isEmpty();
     }
 
@@ -185,7 +186,7 @@ public class MappingTable {
      */
     public boolean isPredicate() {
         return ((targetPath != null && !targetPath.isEmpty())
-                || ( qualifiedTargetPath != null &&!qualifiedTargetPath.isEmpty()))
+                || (qualifiedTargetPath != null && !qualifiedTargetPath.isEmpty()))
                 && predicate != null && !predicate.isEmpty();
     }
 
@@ -196,7 +197,7 @@ public class MappingTable {
      */
     public boolean isForEachSelectId() {
         return ((targetPath != null && !targetPath.isEmpty())
-                || ( qualifiedTargetPath != null &&!qualifiedTargetPath.isEmpty()))
+                || (qualifiedTargetPath != null && !qualifiedTargetPath.isEmpty()))
                 && selectIds != null && !selectIds.isEmpty();
     }
 
@@ -207,8 +208,11 @@ public class MappingTable {
      * @return true if exists
      */
     public boolean hasValueForPath(final String targetPath) {
-        return values.stream().anyMatch(value -> value.getTargetPath().equals(targetPath))
-                || joiningTables.stream().anyMatch(joiningTable -> joiningTable.hasValueForPath(targetPath));
+        return values.stream()
+                     .anyMatch(value -> value.getTargetPath()
+                                             .equals(targetPath))
+                || joiningTables.stream()
+                                .anyMatch(joiningTable -> joiningTable.hasValueForPath(targetPath));
     }
 
     /**
@@ -222,13 +226,14 @@ public class MappingTable {
 
         // TODO: shallow copy with nested value instead of this ??? or just return tables and get values with additional function?
         values.stream()
-                .filter(value -> value.getTargetPath().equals(targetPath))
-                .findFirst()
-                .ifPresent(mappingValue -> map.put(this, mappingValue));
+              .filter(value -> value.getTargetPath()
+                                    .equals(targetPath))
+              .findFirst()
+              .ifPresent(mappingValue -> map.put(this, mappingValue));
 
         joiningTables.stream()
-                .filter(joiningTable -> joiningTable.hasValueForPath(targetPath))
-                .forEach(mappingTable -> map.putAll(mappingTable.getTableValuesForPath(targetPath)));
+                     .filter(joiningTable -> joiningTable.hasValueForPath(targetPath))
+                     .forEach(mappingTable -> map.putAll(mappingTable.getTableValuesForPath(targetPath)));
 
         return map.build();
     }
@@ -239,8 +244,19 @@ public class MappingTable {
      * @return the value stream
      */
     public Stream<MappingValue> getAllValuesStream() {
+        return getAllValuesStream(mappingTable -> true);
+    }
+
+    /**
+     * Returns all values from this table and all nested joined tables that match the predicate
+     *
+     * @return the value stream
+     */
+    public Stream<MappingValue> getAllValuesStream(Predicate<? super MappingTable> predicate) {
         final Stream<MappingValue> joinedValues = joiningTables.stream()
-                .flatMap(mappingTable -> mappingTable.getValues().stream());
+                                                               .filter(predicate)
+                                                               .flatMap(mappingTable -> mappingTable.getValues()
+                                                                                                    .stream());
 
         return Stream.concat(values.stream(), joinedValues);
     }
@@ -252,7 +268,8 @@ public class MappingTable {
      */
     public Stream<MappingTable> getAllJoiningTablesStream() {
         final Stream<MappingTable> nestedJoiningTables = joiningTables.stream()
-                .flatMap(mappingTable -> mappingTable.getJoiningTables().stream());
+                                                                      .flatMap(mappingTable -> mappingTable.getJoiningTables()
+                                                                                                           .stream());
 
         return Stream.concat(joiningTables.stream(), nestedJoiningTables);
     }

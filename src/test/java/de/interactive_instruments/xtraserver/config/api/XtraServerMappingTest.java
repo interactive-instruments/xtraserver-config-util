@@ -59,7 +59,7 @@ public class XtraServerMappingTest {
     }
 
     /*
-        //@Test
+        //@ConfigDumpTransformation
         public void testImport() throws JAXBException, IOException, SAXException {
 
             XtraServerMapping actual = XtraServerMapping.createFromStream(Resources.asByteSource(Resources.getResource("cities-mapping.xml")).openBufferedStream(), applicationSchema);
@@ -69,7 +69,7 @@ public class XtraServerMappingTest {
             assertThat(actual, sameBeanAs(expected).ignoring(startsWith("applicationSchema")).ignoring(startsWith("namespaces")).ignoring(startsWith("prefix")).ignoring(startsWith("path")).ignoring(startsWith("mappingMode")));
         }
 
-        //@Test
+        //@ConfigDumpTransformation
         public void testImportFlatten() throws JAXBException, IOException, SAXException {
 
             XtraServerMapping actual = XtraServerMapping.createFromStream(Resources.asByteSource(Resources.getResource("cities-mapping-flattened.xml")).openBufferedStream(), applicationSchema);
@@ -84,7 +84,7 @@ public class XtraServerMappingTest {
             assertThat(actual, sameBeanAs(expected).ignoring(startsWith("applicationSchema")).ignoring(startsWith("namespaces")).ignoring(startsWith("prefix")).ignoring(startsWith("path")).ignoring(startsWith("mappingMode")));
         }
 
-        //@Test
+        //@ConfigDumpTransformation
         public void testExport() throws JAXBException, IOException, SAXException, XMLStreamException {
 
             XtraServerMapping xtraServerMapping = buildCitiesMapping();
@@ -100,7 +100,7 @@ public class XtraServerMappingTest {
             assertThat(actual, isSimilarTo(expected).ignoreComments().ignoreWhitespace().withNodeMatcher(new DefaultNodeMatcher(mappingElementSelector)));
         }
 
-        //@Test
+        //@ConfigDumpTransformation
         public void testExportFanOut() throws JAXBException, IOException, SAXException, XMLStreamException {
 
             XtraServerMapping xtraServerMapping = buildCitiesMappingFlat();
@@ -116,7 +116,7 @@ public class XtraServerMappingTest {
             assertThat(actual, isSimilarTo(expected).ignoreComments().ignoreWhitespace().withNodeMatcher(new DefaultNodeMatcher(mappingElementSelector)));
         }
 
-        @Test
+        @ConfigDumpTransformation
         public void testExportZip() throws JAXBException, IOException, SAXException {
 
             XtraServerMapping xtraServerMapping = buildCitiesMappingFlat();
@@ -159,7 +159,7 @@ public class XtraServerMappingTest {
             // TODO: extract and compare additional files
         }
 
-    @Test
+    @ConfigDumpTransformation
     public void testImportExport() throws JAXBException, IOException, SAXException, XMLStreamException {
 
         XtraServerMapping xtraServerMappingImport = XtraServerMapping.createFromStream(Resources.asByteSource(Resources.getResource("cities-mapping.xml")).openBufferedStream(), applicationSchema);
@@ -181,7 +181,7 @@ public class XtraServerMappingTest {
     }*/
 
     // TODO: Parameterized tests, here as well as in hale plugin: https://www.kompf.de/java/junit_params.html
-    //@Test
+    //@ConfigDumpTransformation
     public void testLocalImportExport() throws JAXBException, IOException, SAXException, XMLStreamException {
         //final StreamSource schemaSource = new StreamSource(new FileInputStream(""), "/home/zahnen/development/XSProjects/AAA-Suite/schema/NAS/6.0/schema");
         final URI localApplicationSchema = new File("/home/zahnen/development/XSProjects/AAA-Suite/schema/NAS/6.0/schema/AAA-Fachschema_XtraServer.xsd").toURI();

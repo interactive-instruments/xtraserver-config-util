@@ -35,14 +35,16 @@ public class MappingValue {
     private final String description;
     private final TYPE type;
     private final Integer selectId;
+    private final boolean significantForEmptiness;
 
-    MappingValue(final String targetPath, final List<QName> qualifiedTargetPath, final String value, final String description, final TYPE type, Integer selectId) {
+    MappingValue(final String targetPath, final List<QName> qualifiedTargetPath, final String value, final String description, final TYPE type, final Integer selectId, final boolean significantForEmptiness) {
         this.targetPath = targetPath;
         this.qualifiedTargetPath = qualifiedTargetPath;
         this.value = value;
         this.description = description;
         this.type = type;
         this.selectId = selectId;
+        this.significantForEmptiness = significantForEmptiness;
     }
 
     /**
@@ -92,6 +94,15 @@ public class MappingValue {
 
     public Integer getSelectId() {
         return selectId;
+    }
+
+    /**
+     * Is this element significant for emptiness of parent element? (default: true)
+     *
+     * @return the description
+     */
+    public boolean getSignificantForEmptiness() {
+        return significantForEmptiness;
     }
 
     TYPE getType() {

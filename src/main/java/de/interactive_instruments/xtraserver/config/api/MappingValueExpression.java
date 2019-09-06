@@ -29,8 +29,8 @@ import java.util.regex.Pattern;
  */
 public class MappingValueExpression extends MappingValue {
 
-    MappingValueExpression(final String targetPath, final List<QName> qualifiedTargetPath, final String value, final String description, final TYPE type, final Integer selectId) {
-        super(targetPath, qualifiedTargetPath, value, description, type, selectId);
+    MappingValueExpression(final String targetPath, final List<QName> qualifiedTargetPath, final String value, final String description, final TYPE type, final Integer selectId, final boolean significantForEmptiness) {
+        super(targetPath, qualifiedTargetPath, value, description, type, selectId, significantForEmptiness);
     }
 
     /**

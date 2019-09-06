@@ -63,7 +63,7 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
         final MappingTable mappingTable = context.mappingTable;
 
         List<MappingTable> transformedMappingTables2 = transformedMappingTables.stream()
-                                                                               .filter(joinedTable -> !joinedTable.isMerged())
+                                                                               .filter(joinedTable -> !joinedTable.isMerged() && !(currentVirtualTables.containsKey(joinedTable.getName()) && mappingTable.getPredicate() != null && !mappingTable.getPredicate().isEmpty()))
                                                                                .collect(Collectors.toList());
 
         MappingTableBuilder mappingTableBuilder = new MappingTableBuilder()
@@ -75,7 +75,8 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
 
         // TODO: if currentVirtualTable and mergedVirtualTable, merge into one
         transformedMappingTables.stream()
-                                .filter(MappingTable::isMerged)
+                                //.filter(MappingTable::isMerged)
+                                .filter(mappingTable1 -> mappingTable1.isMerged() || (currentVirtualTables.containsKey(mappingTable1.getName()) && mappingTable.getPredicate() != null && !mappingTable.getPredicate().isEmpty()))
                                 .forEach(mergedTable -> {
 
                                     Optional<VirtualTable.Builder> mergedVirtualTable = Optional.ofNullable(currentVirtualTables.remove(mergedTable.getName()));

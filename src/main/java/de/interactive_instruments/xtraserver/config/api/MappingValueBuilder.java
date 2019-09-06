@@ -116,6 +116,7 @@ public class MappingValueBuilder {
         builder.value = mappingValue.getValue();
         builder.description = mappingValue.getDescription();
         builder.selectId = mappingValue.getSelectId();
+        builder.significantForEmptiness = mappingValue.getSignificantForEmptiness();
         builder.type = mappingValue.getType();
 
         if (mappingValue.isReference()) {
@@ -227,6 +228,14 @@ public class MappingValueBuilder {
         ValueDefault selectId(Integer selectId);
 
         /**
+         * Set significant_for_emptiness
+         *
+         * @param significantForEmptiness significant_for_emptiness
+         * @return the builder
+         */
+        ValueDefault significantForEmptiness(boolean significantForEmptiness);
+
+        /**
          * Builds the {@link MappingValue}, validates required fields
          *
          * @return a new immutable {@link MappingValue}
@@ -269,11 +278,13 @@ public class MappingValueBuilder {
         private String description;
         private MappingValue.TYPE type;
         private Integer selectId;
+        private boolean significantForEmptiness;
         private final List<String> keys;
         private final List<String> values;
         private String referencedFeatureType;
 
         Builder() {
+            this.significantForEmptiness = true;
             this.keys = new ArrayList<>();
             this.values = new ArrayList<>();
         }
@@ -308,6 +319,12 @@ public class MappingValueBuilder {
             return this;
         }
 
+        @Override
+        public ValueDefault significantForEmptiness(boolean significantForEmptiness) {
+            this.significantForEmptiness = significantForEmptiness;
+            return this;
+        }
+
 
         @Override
         public ValueClassification keyValue(final String key, final String value) {
@@ -329,21 +346,21 @@ public class MappingValueBuilder {
             switch (type) {
 
                 case EXPRESSION:
-                    mappingValue = new MappingValueExpression(targetPath, qualifiedTargetPath, value, description, type, selectId);
+                    mappingValue = new MappingValueExpression(targetPath, qualifiedTargetPath, value, description, type, selectId, significantForEmptiness);
                     break;
                 case REFERENCE:
                     final String val = value.startsWith("'#") ? "'" + value.substring(2) : value;
-                    mappingValue = new MappingValueReference(targetPath, qualifiedTargetPath, val, description, type, selectId, referencedFeatureType);
+                    mappingValue = new MappingValueReference(targetPath, qualifiedTargetPath, val, description, type, selectId, significantForEmptiness, referencedFeatureType);
                     break;
                 case CLASSIFICATION:
                 case NIL:
-                    mappingValue = new MappingValueClassification(targetPath, qualifiedTargetPath, value, description, type, selectId, keys, values);
+                    mappingValue = new MappingValueClassification(targetPath, qualifiedTargetPath, value, description, type, selectId, significantForEmptiness, keys, values);
                     break;
                 case COLUMN:
                 case CONSTANT:
                 case GEOMETRY:
                 default:
-                    mappingValue = new MappingValue(targetPath, qualifiedTargetPath, value, description, type, selectId);
+                    mappingValue = new MappingValue(targetPath, qualifiedTargetPath, value, description, type, selectId, significantForEmptiness);
             }
 
             validate(mappingValue);

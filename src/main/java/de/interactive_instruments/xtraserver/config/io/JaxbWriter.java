@@ -181,6 +181,9 @@ class JaxbWriter {
                 mappingTable.getValues().forEach(mappingValue -> {
                     TableWithComment value = new TableWithComment();//objectFactory.createMappingsSequenceTypeTable();
                     value.setTable_Name(mappingTable.getName());
+                    if (mappingTable.getPredicate() != null && !mappingTable.getPredicate().isEmpty()) {
+                        value.setTable_Name(mappingTable.getName() + "[" + mappingTable.getPredicate() + "]");
+                    }
                     value.setTarget(mappingValue.getTargetPath());
                     if (mappingValue.getValue() != null && !mappingValue.getValue().equals("")) {
                         value.setValue(mappingValue.getValue());
@@ -200,6 +203,9 @@ class JaxbWriter {
                         if (!mappingValue.isReference() && mappingValue.getQualifiedTargetPath().get(mappingValue.getQualifiedTargetPath().size()-1).getLocalPart().startsWith("@")) {
                             value.setSignificant_For_Emptiness(false);
                         }
+                    }
+                    if (!mappingValue.getSignificantForEmptiness()) {
+                        value.setSignificant_For_Emptiness(false);
                     }
 
                     if (!mappingValue.isReference() && mappingValue.getQualifiedTargetPath().get(mappingValue.getQualifiedTargetPath().size()-1).equals(XLINK_HREF)) {

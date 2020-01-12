@@ -179,6 +179,11 @@ public class MappingTableBuilder {
         return this;
     }
 
+    public MappingTableBuilder clearJoiningTables() {
+        this.joiningTables.clear();
+        return this;
+    }
+
     /**
      * Add a join path (for joining tables at least one join path is required) (the target has to be the table that is to be build).
      * Join paths can be created with {@link MappingJoinBuilder}

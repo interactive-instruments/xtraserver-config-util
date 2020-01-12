@@ -15,6 +15,7 @@
  */
 package de.interactive_instruments.xtraserver.config.transformer;
 
+import com.google.common.collect.Lists;
 import de.interactive_instruments.xtraserver.config.api.FeatureTypeMapping;
 import de.interactive_instruments.xtraserver.config.api.MappingJoin;
 import de.interactive_instruments.xtraserver.config.api.MappingJoinBuilder;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -81,6 +83,8 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
 
                                     Optional<VirtualTable.Builder> mergedVirtualTable = Optional.ofNullable(currentVirtualTables.remove(mergedTable.getName()));
 
+                                    String[] lastVirtualName = {null};
+
                                     if (mergedVirtualTable.isPresent()) {
                                         currentVirtualTable[0] = new VirtualTable.Builder();
                                         currentVirtualTable[0].originalTable(mappingTable);
@@ -99,6 +103,7 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
                                         }
 
                                         if (!currentVirtualName[0].contains(mergedTable.getName()) || currentVirtualName[0].contains(mergedTable.getName() + "__")) {
+                                            lastVirtualName[0] = "$" + currentVirtualName[0] + "$";
                                             currentVirtualName[0] += "_" + mergedTable.getName();
                                             if (virtualTableExists(currentVirtualName[0])) {
                                                 int i = 2;
@@ -120,6 +125,9 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
                                     mappingTableBuilder.values(mergedTable.getAllValuesStream(MappingTable::isMerged)
                                                                           .collect(Collectors.toList()));
 
+                                    List<MappingTable> oldJoiningTables = Lists.newArrayList(mappingTableBuilder.buildDraft().getJoiningTables());
+                                    mappingTableBuilder.clearJoiningTables();
+
                                     mappingTableBuilder.joiningTables(mergedTable.getJoiningTables()
                                                                                  .stream()
                                                                                  .map(jt -> new MappingTableBuilder().shallowCopyOf(jt)
@@ -132,6 +140,26 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
                                                                                                                                                                                        .stream()
                                                                                                                                                                                        .map(jc -> jc.getSourceTable()
                                                                                                                                                                                                     .equals(mergedTable.getName()) ? new MappingJoinBuilder.ConditionBuilder()
+                                                                                                                                                                                               .copyOf(jc)
+                                                                                                                                                                                               .sourceTable("$" + currentVirtualName[0] + "$")
+                                                                                                                                                                                               .build() : jc)
+                                                                                                                                                                                       .collect(Collectors.toList()))
+                                                                                                                                                                     .build())
+                                                                                                                                  .collect(Collectors.toList()))
+                                                                                                                     .build())
+                                                                                 .collect(Collectors.toList()));
+
+                                    mappingTableBuilder.joiningTables(oldJoiningTables
+                                                                                 .stream()
+                                                                                 .map(jt -> new MappingTableBuilder().shallowCopyOf(jt)
+                                                                                                                     .joiningTables(jt.getJoiningTables())
+                                                                                                                     .values(jt.getValues())
+                                                                                                                     .joinPaths(jt.getJoinPaths()
+                                                                                                                                  .stream()
+                                                                                                                                  .map(jp -> new MappingJoinBuilder().shallowCopyOf(jp)
+                                                                                                                                                                     .joinConditions(jp.getJoinConditions()
+                                                                                                                                                                                       .stream()
+                                                                                                                                                                                       .map(jc -> jc.getSourceTable().equals(lastVirtualName[0]) ? new MappingJoinBuilder.ConditionBuilder()
                                                                                                                                                                                                .copyOf(jc)
                                                                                                                                                                                                .sourceTable("$" + currentVirtualName[0] + "$")
                                                                                                                                                                                                .build() : jc)
@@ -157,8 +185,33 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
                                                                                                 .build())
                                                              .collect(Collectors.toList()));
 
+        if (Objects.nonNull(currentVirtualName[0])) {
+            return mappingTableBuilder
+                    .joiningTables(transformedMappingTables2
+                            .stream()
+                            .map(jt -> new MappingTableBuilder().shallowCopyOf(jt)
+                                                                .joiningTables(jt.getJoiningTables())
+                                                                .values(jt.getValues())
+                                                                .joinPaths(jt.getJoinPaths()
+                                                                             .stream()
+                                                                             .map(jp -> new MappingJoinBuilder().shallowCopyOf(jp)
+                                                                                                                .joinConditions(jp.getJoinConditions()
+                                                                                                                                  .stream()
+                                                                                                                                  .map(jc -> jc.getSourceTable()
+                                                                                                                                               .equals(mappingTable.getName()) ? new MappingJoinBuilder.ConditionBuilder()
+                                                                                                                                          .copyOf(jc)
+                                                                                                                                          .sourceTable("$" + currentVirtualName[0] + "$")
+                                                                                                                                          .build() : jc)
+                                                                                                                                  .collect(Collectors.toList()))
+                                                                                                                .build())
+                                                                             .collect(Collectors.toList()))
+                                                                .build())
+                            .collect(Collectors.toList()));
+        }
+
         return mappingTableBuilder
                 .joiningTables(transformedMappingTables2);
+
     }
 
     private boolean virtualTableExists(String name) {

@@ -140,7 +140,7 @@ class AdditionalFilesWriter {
 
             geometricProperty.ifPresent(mappingValue -> {
                 final String propertyName = mappingValue.getTargetPath();
-                final String propertyNameWithoutPrefix = Splitter.on(':').splitToList(propertyName).get(1);
+                final String propertyNameWithoutPrefix = propertyName.replace(':', '_').replace('/', '_');//Splitter.on(':').splitToList(propertyName).get(1);
 
                 try {
                     writer.append("\t<GeoIndex id=\"gidx_");

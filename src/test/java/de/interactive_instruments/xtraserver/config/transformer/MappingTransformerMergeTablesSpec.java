@@ -204,6 +204,23 @@ public class MappingTransformerMergeTablesSpec {
 
                 });
 
+                context("has one merged join and one other join with nested join with target path", () -> {
+
+                    XtraServerMapping given2 = MappingExamples.EXAMPLE_1;
+
+                    XtraServerMapping transformed2 = applyTransformation(given2);
+
+                    it("merged table should not contain value from joined table", () -> {
+
+                        XtraServerMapping given3 = given2;
+                        XtraServerMapping transformed3 = transformed2;
+
+                       //assertThat(given2).isEqualTo(transformed2);
+
+                    });
+
+                });
+
             });
 
             context("condition context on primary table", () -> {

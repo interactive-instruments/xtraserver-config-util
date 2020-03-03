@@ -19,6 +19,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
 import de.interactive_instruments.xtraserver.config.io.XtraServerMappingFile;
+import de.interactive_instruments.xtraserver.config.schema.Configuration;
 import de.interactive_instruments.xtraserver.config.transformer.XtraServerMappingTransformer;
 import org.junit.Before;
 import org.junit.Test;
@@ -188,9 +189,10 @@ public class XtraServerMappingTest {
         final String inputFile = "/home/zahnen/development/XSProjects/AAA-Suite/config/alkis/sf/includes/1/includes/XtraSrvConfig_Mapping.inc.xml";
         final String outputFile = "/home/zahnen/Downloads/alkis-mapping2.xml";
         //XtraServerMapping xtraServerMappingImport = XtraServerMapping.createFromStream(new FileInputStream(inputFile), localApplicationSchema);
-        final XtraServerMapping xtraServerMappingImport = XtraServerMappingFile.read()
+        final Configuration configuration = XtraServerMappingFile.read()
                 .fromStream(new FileInputStream(inputFile));
 
+        /*
         final XtraServerMapping xtraServerMappingNav = XtraServerMappingTransformer
                 .forMapping(xtraServerMappingImport)
                 .applySchemaInfo(localApplicationSchema)
@@ -198,12 +200,17 @@ public class XtraServerMappingTest {
                 .fanOutInheritance()
                 .ensureRelationNavigability()
                 .transform();
+        */
+
 
         /*XtraServerMapping xtraServerMappingFlattenFanout = XtraServerMapping.create(localApplicationSchema);
         for (String featureType : xtraServerMappingImport.getFeatureTypeNames(false)) {
             xtraServerMappingFlattenFanout.addFeatureTypeMapping(xtraServerMappingImport.getFeatureTypeMapping(featureType, true).get(), true);
         }*/
 
+
+
+        /*
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         XtraServerMappingFile.write()
                 .mapping(xtraServerMappingNav)
@@ -308,7 +315,7 @@ public class XtraServerMappingTest {
                 .withDifferenceEvaluator(DifferenceEvaluators.downgradeDifferencesToSimilar(ComparisonType.CHILD_NODELIST_LENGTH, ComparisonType.CHILD_NODELIST_SEQUENCE, ComparisonType.ELEMENT_NUM_ATTRIBUTES))
         );
 
-        /*Source actual2 = Input.fromByteArray(outputStream.toByteArray()).build();
+        *//*Source actual2 = Input.fromByteArray(outputStream.toByteArray()).build();
         //Source actual2 = Input.fromStream(new FileInputStream(outputFile)).build();
         String xpathMatcher = "//*[" + targetsNotSupportedInHaleForAlkis.entrySet().stream().map(target -> "(starts-with(@target, '" + target.getKey() + "') and ../../*[1][.='" + target.getValue() + "'])").collect(Collectors.joining(" or ")) + "]";
         System.out.println(xpathMatcher);
@@ -317,7 +324,6 @@ public class XtraServerMappingTest {
         String message = "Mappings should not be contained in export:\n" + StreamSupport.stream(i.spliterator(), false).map(this::nodeToString).collect(Collectors.joining("\n"));
 
         assertFalse(message, i.iterator().hasNext());*/
-
     }
 
     private String nodeToString(final Node node) {

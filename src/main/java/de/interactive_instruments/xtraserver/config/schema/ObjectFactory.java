@@ -46,11 +46,21 @@ public class ObjectFactory {
     private final static QName _PGISFeatureTypeImpl_QNAME = new QName("http://www.interactive-instruments.de/namespaces/XtraServer", "PGISFeatureTypeImpl");
     private final static QName _GDBSQLFeatureTypeImpl_QNAME = new QName("http://www.interactive-instruments.de/namespaces/XtraServer", "GDBSQLFeatureTypeImpl");
 
+    private final static QName Configuration_QNAME = new QName("http://www.interactive-instruments.de/namespaces/XtraServer", "Configuration");
+
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: de.interactive_instruments.xtraserver.config.schema
      * 
      */
     public ObjectFactory() {
+    }
+
+    /**
+     * Create an instance of {@link Configuration }
+     *
+     */
+    public Configuration createConfiguration() {
+        return new Configuration();
     }
 
     /**

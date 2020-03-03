@@ -22,10 +22,7 @@ import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.io.Resources;
 import de.interactive_instruments.xtraserver.config.api.*;
-import de.interactive_instruments.xtraserver.config.schema.AdditionalMappings;
-import de.interactive_instruments.xtraserver.config.schema.FeatureType;
-import de.interactive_instruments.xtraserver.config.schema.FeatureTypes;
-import de.interactive_instruments.xtraserver.config.schema.MappingsSequenceType;
+import de.interactive_instruments.xtraserver.config.schema.*;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
@@ -42,13 +39,23 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+
+
 /**
  * Helper methods for JAXB unmarshalling
  */
 class JaxbReader {
 
-    static final String MAPPING_SCHEMA = "/XtraServer_Mapping.xsd";
+    //static final String MAPPING_SCHEMA = "/XtraServer_Mapping.xsd";
+//    static final String CONFIG_SCHEMA = "/ConfigSchema/schema/XtraSrvConfig.xsd";
+    static final String CONFIG_SCHEMA = "/XtraServer_Configuration-test.xsd";
 
+    Configuration readFromStream(final InputStream inputStream) throws IOException, JAXBException, SAXException {
+        return unmarshal(inputStream);
+    }
+
+
+    /*
     XtraServerMapping readFromStream(final InputStream inputStream) throws IOException, JAXBException, SAXException {
         final FeatureTypes featureTypes = unmarshal(inputStream);
 
@@ -65,9 +72,9 @@ class JaxbReader {
         return new XtraServerMappingBuilder()
                 .featureTypeMappings(featureTypeMappingList)
                 .build();
-    }
+    }*/
 
-    private Stream<Optional<FeatureTypeMapping>> readFeatureTypeMappings(final FeatureTypes featureTypes) {
+    private Stream<Optional<FeatureTypeMapping>> readFeatureTypeMappings(final de.interactive_instruments.xtraserver.config.schema.FeatureTypes featureTypes) {
         return featureTypes.getFeatureTypeOrAdditionalMappings().stream()
                 .filter(FeatureType.class::isInstance)
                 .map(FeatureType.class::cast)
@@ -75,7 +82,7 @@ class JaxbReader {
                 .map(createFeatureTypeMapping());
     }
 
-    private Stream<Optional<FeatureTypeMapping>> readAdditionalMappings(final FeatureTypes featureTypes) {
+    private Stream<Optional<FeatureTypeMapping>> readAdditionalMappings(final de.interactive_instruments.xtraserver.config.schema.FeatureTypes featureTypes) {
         return featureTypes.getFeatureTypeOrAdditionalMappings().stream()
                 .filter(AdditionalMappings.class::isInstance)
                 .map(AdditionalMappings.class::cast)
@@ -456,9 +463,11 @@ class JaxbReader {
         return mappings;
     }
 
-    private FeatureTypes unmarshal(final InputStream inputStream) throws JAXBException, IOException, SAXException {
+//    private FeatureTypes unmarshal(final InputStream inputStream) throws JAXBException, IOException, SAXException {
+    private Configuration unmarshal(final InputStream inputStream) throws JAXBException, IOException, SAXException {
+
         final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        final Schema schema = schemaFactory.newSchema(Resources.getResource(JaxbReader.class, MAPPING_SCHEMA));
+        //final Schema schema = schemaFactory.newSchema(Resources.getResource(JaxbReader.class, CONFIG_SCHEMA));
         final JAXBContext jaxbContext = JAXBContext.newInstance(FeatureTypes.class.getPackage().getName());
 
         final PipedInputStream in = new PipedInputStream();
@@ -478,8 +487,10 @@ class JaxbReader {
         ).start();
 
         final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        unmarshaller.setSchema(schema);
+        //unmarshaller.setSchema(schema);
 
-        return FeatureTypes.class.cast(unmarshaller.unmarshal(in));
+        return Configuration.class.cast(unmarshaller.unmarshal(in));
+        //return FeatureTypes.class.cast(unmarshaller.unmarshal(in));
     }
+
 }

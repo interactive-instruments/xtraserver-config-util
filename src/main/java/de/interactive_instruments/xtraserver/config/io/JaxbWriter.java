@@ -277,7 +277,7 @@ class JaxbWriter {
 
     private void marshal(final OutputStream outputStream, final FeatureTypes featureTypes) throws JAXBException, SAXException, XMLStreamException {
         final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        final Schema schema = schemaFactory.newSchema(Resources.getResource(JaxbReader.class, JaxbReader.MAPPING_SCHEMA));
+        final Schema schema = schemaFactory.newSchema(Resources.getResource(JaxbReader.class, JaxbReader.CONFIG_SCHEMA));
         final JAXBContext jaxbContext = JAXBContext.newInstance(FeatureTypes.class.getPackage().getName());
 
         final XMLOutputFactory xof = XMLOutputFactory.newFactory();

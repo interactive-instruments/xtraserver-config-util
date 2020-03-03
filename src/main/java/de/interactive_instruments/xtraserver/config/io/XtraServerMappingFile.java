@@ -16,6 +16,7 @@
 package de.interactive_instruments.xtraserver.config.io;
 
 import de.interactive_instruments.xtraserver.config.api.XtraServerMapping;
+import de.interactive_instruments.xtraserver.config.schema.Configuration;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
@@ -55,15 +56,15 @@ public class XtraServerMappingFile {
      */
     public interface Reader {
         /**
-         * Reads the mapping file from the given input stream and generates a {@link XtraServerMapping}
+         * Reads the mapping file from the given input stream and generates a {@link Configuration}
          *
          * @param inputStream the input stream to read from
-         * @return the generated immutable {@link XtraServerMapping}
+         * @return the generated immutable {@link Configuration}
          * @throws JAXBException
          * @throws IOException
          * @throws SAXException
          */
-        XtraServerMapping fromStream(final InputStream inputStream) throws JAXBException, IOException, SAXException;
+        Configuration fromStream(final InputStream inputStream) throws JAXBException, IOException, SAXException;
     }
 
     /**
@@ -102,9 +103,12 @@ public class XtraServerMappingFile {
         private boolean createArchiveWithAdditionalFiles;
 
         @Override
-        public XtraServerMapping fromStream(final InputStream inputStream) throws JAXBException, IOException, SAXException {
+        public Configuration fromStream(final InputStream inputStream) throws JAXBException, IOException, SAXException {
             return new JaxbReader().readFromStream(inputStream);
         }
+        //public XtraServerMapping fromStream(final InputStream inputStream) throws JAXBException, IOException, SAXException {
+        //    return new JaxbReader().readFromStream(inputStream);
+        //}
 
         @Override
         public Writer mapping(final XtraServerMapping xtraServerMapping) {

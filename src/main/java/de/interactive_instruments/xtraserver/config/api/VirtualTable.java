@@ -18,6 +18,7 @@ package de.interactive_instruments.xtraserver.config.api;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import de.interactive_instruments.xtraserver.config.transformer.MappingValueAliases;
 import org.immutables.value.Value;
 
 import java.util.List;
@@ -67,6 +68,7 @@ public abstract class VirtualTable {
                         .filter(mappingValue -> !isBooleanClassification(mappingValue))
                         .flatMap(mappingValue -> mappingValue.getValueColumns()
                                                           .stream())
+                        .map(new MappingValueAliases()::getWithAlias)
                         .map(column -> mappingTable.getName() + "." + column)
                         .forEach(this::addColumns);
 

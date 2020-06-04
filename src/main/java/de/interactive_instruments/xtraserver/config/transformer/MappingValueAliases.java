@@ -48,4 +48,14 @@ public class MappingValueAliases {
 
         return name;
     }
+
+    public String getWithAsAlias(String name) {
+        String nameWithAlias = getWithAlias(name);
+
+        if (!Objects.equals(name, nameWithAlias)) {
+            return String.format("%s AS %s", name, nameWithAlias);
+        }
+
+        return name;
+    }
 }

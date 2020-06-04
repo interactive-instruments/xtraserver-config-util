@@ -68,7 +68,7 @@ public abstract class VirtualTable {
                         .filter(mappingValue -> !isBooleanClassification(mappingValue))
                         .flatMap(mappingValue -> mappingValue.getValueColumns()
                                                           .stream())
-                        .map(new MappingValueAliases()::getWithAlias)
+                        .map(new MappingValueAliases()::getWithAsAlias)
                         .map(column -> mappingTable.getName() + "." + column)
                         .forEach(this::addColumns);
 

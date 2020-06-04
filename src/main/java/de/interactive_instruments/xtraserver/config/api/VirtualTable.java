@@ -39,10 +39,19 @@ public abstract class VirtualTable {
 
     public static class Builder extends ImmutableVirtualTable.Builder {
         private boolean noTables = true;
-        private final MappingValueAliases mappingValueAliases = new MappingValueAliases();
+        private MappingValueAliases mappingValueAliases = new MappingValueAliases();
 
         public MappingValue applyAliasIfNecessary(String table, MappingValue value) {
             return mappingValueAliases.applyAliasIfNecessary(table, value);
+        }
+
+        public Builder aliases(MappingValueAliases mappingValueAliases) {
+            this.mappingValueAliases = mappingValueAliases;
+            return this;
+        }
+
+        public MappingValueAliases aliases() {
+            return mappingValueAliases;
         }
 
         public Builder originalTable(final MappingTable mappingTable) {

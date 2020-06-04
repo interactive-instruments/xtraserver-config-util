@@ -87,6 +87,7 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
 
                                     if (mergedVirtualTable.isPresent()) {
                                         currentVirtualTable[0] = new VirtualTable.Builder();
+                                        currentVirtualTable[0].aliases(mergedVirtualTable.get().aliases());
                                         currentVirtualTable[0].originalTable(mappingTable);
                                         currentVirtualTable[0].from(mergedVirtualTable.get().build());
 

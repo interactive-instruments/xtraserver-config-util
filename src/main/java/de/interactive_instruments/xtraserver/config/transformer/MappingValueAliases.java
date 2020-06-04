@@ -60,10 +60,9 @@ public class MappingValueAliases {
 
     public String getWithAsAlias(String table, String column) {
         String name = String.format("%s.%s", table, column);
-        String nameWithAlias = getWithAlias(table, column);
+        String columnAlias = getWithAlias(table, column);
 
-        if (!Objects.equals(name, nameWithAlias)) {
-            String columnAlias = nameWithAlias.substring(nameWithAlias.indexOf(".")+1);
+        if (!Objects.equals(column, columnAlias)) {
             return String.format("%s AS %s", name, columnAlias);
         }
 

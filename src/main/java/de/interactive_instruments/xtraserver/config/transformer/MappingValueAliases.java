@@ -3,20 +3,23 @@ package de.interactive_instruments.xtraserver.config.transformer;
 import de.interactive_instruments.xtraserver.config.api.MappingValue;
 import de.interactive_instruments.xtraserver.config.api.MappingValueBuilder;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 public class MappingValueAliases {
 
-    private final Map<String,Integer> nameCounter;
+    private final Map<String, List<String>> nameCounter;
 
     public MappingValueAliases() {
         this.nameCounter = new LinkedHashMap<>();
     }
 
 
-    public MappingValue applyAliasIfNecessary(MappingValue value) {
+    public MappingValue applyAliasIfNecessary(String table, MappingValue value) {
 
         if (value.isConstant()) {
             return value;
@@ -24,36 +27,44 @@ public class MappingValueAliases {
 
         MappingValue valueWithAlias = value;
 
-        for (String name: value.getValueColumns()) {
-            String nameWithAlias = getWithAlias(name);
+        for (String column: new LinkedHashSet<>(value.getValueColumns())) {
+            String columnWithAlias = getWithAlias(table, column);
 
-            if (!Objects.equals(name, nameWithAlias)) {
-                value = new MappingValueBuilder().copyOf(value).value(value.getValue().replaceAll(name, nameWithAlias)).build();
+            if (!Objects.equals(column, columnWithAlias)) {
+                value = new MappingValueBuilder().copyOf(value).value(value.getValue().replaceAll(column, columnWithAlias)).build();
             }
         }
 
         return valueWithAlias;
     }
 
-    public String getWithAlias(String name) {
+    public String getWithAlias(String table, String column) {
 
-        if (nameCounter.containsKey(name)) {
-            int count = nameCounter.get(name) + 1;
-            nameCounter.put(name, count);
+        if (nameCounter.containsKey(column)) {
+            if (!nameCounter.get(column).contains(table)) {
+                nameCounter.get(column).add(table);
+            }
 
-            return String.format("%s_%s", name, count);
+            int count = nameCounter.get(column).indexOf(table);
+
+            if (count > 0) {
+                return String.format("%s_%s", column, count);
+            }
         } else  {
-            nameCounter.put(name, 0);
+            nameCounter.put(column, new ArrayList<>());
+            nameCounter.get(column).add(table);
         }
 
-        return name;
+        return column;
     }
 
-    public String getWithAsAlias(String name) {
-        String nameWithAlias = getWithAlias(name);
+    public String getWithAsAlias(String table, String column) {
+        String name = String.format("%s.%s", table, column);
+        String nameWithAlias = getWithAlias(table, column);
 
         if (!Objects.equals(name, nameWithAlias)) {
-            return String.format("%s AS %s", name, nameWithAlias);
+            String columnAlias = nameWithAlias.substring(nameWithAlias.indexOf(".")+1);
+            return String.format("%s AS %s", name, columnAlias);
         }
 
         return name;

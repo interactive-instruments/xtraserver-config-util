@@ -39,6 +39,11 @@ public abstract class VirtualTable {
 
     public static class Builder extends ImmutableVirtualTable.Builder {
         private boolean noTables = true;
+        private final MappingValueAliases mappingValueAliases = new MappingValueAliases();
+
+        public MappingValue applyAliasIfNecessary(String table, MappingValue value) {
+            return mappingValueAliases.applyAliasIfNecessary(table, value);
+        }
 
         public Builder originalTable(final MappingTable mappingTable) {
             this.addAllJoinPaths(mappingTable.getJoinPaths());
@@ -68,8 +73,8 @@ public abstract class VirtualTable {
                         .filter(mappingValue -> !isBooleanClassification(mappingValue))
                         .flatMap(mappingValue -> mappingValue.getValueColumns()
                                                           .stream())
-                        .map(new MappingValueAliases()::getWithAsAlias)
-                        .map(column -> mappingTable.getName() + "." + column)
+                        .map(column -> mappingValueAliases.getWithAsAlias(mappingTable.getName(), column))
+                        //.map(column -> mappingTable.getName() + "." + column)
                         .forEach(this::addColumns);
 
             /*mappingTable.getJoinPaths().stream()

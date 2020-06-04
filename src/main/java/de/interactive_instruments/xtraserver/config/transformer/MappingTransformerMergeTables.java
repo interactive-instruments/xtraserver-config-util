@@ -123,7 +123,7 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
 
                                     // add all values from table and nested merged tables (don't we iterate over nested merged tables anyhow???)
                                     mappingTableBuilder.values(mergedTable.getAllValuesStream(MappingTable::isMerged)
-                                                                          .map(new MappingValueAliases()::applyAliasIfNecessary)
+                                                                          .map(value -> currentVirtualTable[0].applyAliasIfNecessary(mergedTable.getName(), value))
                                                                           .collect(Collectors.toList()));
 
                                     List<MappingTable> oldJoiningTables = Lists.newArrayList(mappingTableBuilder.buildDraft().getJoiningTables());

@@ -31,11 +31,11 @@ public class MappingValueAliases {
             String columnWithAlias = getWithAlias(table, column);
 
             if (!Objects.equals(column, columnWithAlias)) {
-                value = new MappingValueBuilder().copyOf(value).value(value.getValue().replaceAll(column, columnWithAlias)).build();
+                valueWithAlias = new MappingValueBuilder().copyOf(value).value(value.getValue().replaceAll(column, columnWithAlias)).build();
             }
         }
 
-        return value;
+        return valueWithAlias;
     }
 
     public String getWithAlias(String table, String column) {

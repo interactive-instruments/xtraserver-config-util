@@ -35,7 +35,7 @@ public class MappingValueAliases {
             }
         }
 
-        return valueWithAlias;
+        return value;
     }
 
     public String getWithAlias(String table, String column) {

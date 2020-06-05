@@ -31,7 +31,7 @@ public class MappingValueAliases {
             String columnWithAlias = getWithAlias(table, column);
 
             if (!Objects.equals(column, columnWithAlias)) {
-                valueWithAlias = new MappingValueBuilder().copyOf(value).value(value.getValue().replaceAll(column, columnWithAlias)).build();
+                valueWithAlias = new MappingValueBuilder().copyOf(valueWithAlias).value(valueWithAlias.getValue().replaceAll(column, columnWithAlias)).build();
             }
         }
 

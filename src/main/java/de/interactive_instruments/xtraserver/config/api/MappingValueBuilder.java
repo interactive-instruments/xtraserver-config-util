@@ -15,6 +15,8 @@
  */
 package de.interactive_instruments.xtraserver.config.api;
 
+import java.util.HashMap;
+import java.util.Map;
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.List;
@@ -115,9 +117,11 @@ public class MappingValueBuilder {
         builder.qualifiedTargetPath = mappingValue.getQualifiedTargetPath();
         builder.value = mappingValue.getValue();
         builder.description = mappingValue.getDescription();
+        builder.predicate = mappingValue.getPredicate();
         builder.selectId = mappingValue.getSelectId();
         builder.significantForEmptiness = mappingValue.getSignificantForEmptiness();
         builder.type = mappingValue.getType();
+        builder.transformationHints.putAll(mappingValue.getTransformationHints());
 
         if (mappingValue.isReference()) {
             builder.referencedFeatureType = ((MappingValueReference) mappingValue).getReferencedFeatureType();
@@ -228,12 +232,28 @@ public class MappingValueBuilder {
         ValueDefault selectId(Integer selectId);
 
         /**
+         * Set the predicate
+         *
+         * @param predicate predicate
+         * @return the builder
+         */
+        ValueDefault predicate(String predicate);
+
+        /**
          * Set significant_for_emptiness
          *
          * @param significantForEmptiness significant_for_emptiness
          * @return the builder
          */
         ValueDefault significantForEmptiness(boolean significantForEmptiness);
+
+        /**
+         * Add transformation hint
+         * @param key the hint key
+         * @param value the hint value
+         * @return the builder
+         */
+        ValueDefault transformationHint(final String key, final String value);
 
         /**
          * Builds the {@link MappingValue}, validates required fields
@@ -278,15 +298,18 @@ public class MappingValueBuilder {
         private String description;
         private MappingValue.TYPE type;
         private Integer selectId;
+        private String predicate;
         private boolean significantForEmptiness;
         private final List<String> keys;
         private final List<String> values;
         private String referencedFeatureType;
+        private final Map<String,String> transformationHints;
 
         Builder() {
             this.significantForEmptiness = true;
             this.keys = new ArrayList<>();
             this.values = new ArrayList<>();
+            transformationHints = new HashMap<>();
         }
 
         @Override
@@ -320,6 +343,12 @@ public class MappingValueBuilder {
         }
 
         @Override
+        public ValueDefault predicate(String predicate) {
+            this.predicate = predicate;
+            return this;
+        }
+
+        @Override
         public ValueDefault significantForEmptiness(boolean significantForEmptiness) {
             this.significantForEmptiness = significantForEmptiness;
             return this;
@@ -339,6 +368,13 @@ public class MappingValueBuilder {
             return this;
         }
 
+
+        @Override
+        public ValueDefault transformationHint(final String key, final String value) {
+            this.transformationHints.put(key, value);
+            return this;
+        }
+
         @Override
         public MappingValue build() {
             final MappingValue mappingValue;
@@ -346,21 +382,26 @@ public class MappingValueBuilder {
             switch (type) {
 
                 case EXPRESSION:
-                    mappingValue = new MappingValueExpression(targetPath, qualifiedTargetPath, value, description, type, selectId, significantForEmptiness);
+                    mappingValue = new MappingValueExpression(targetPath, qualifiedTargetPath, value, description, type, predicate, selectId, significantForEmptiness,
+                        transformationHints);
                     break;
                 case REFERENCE:
                     final String val = value.startsWith("'#") ? "'" + value.substring(2) : value;
-                    mappingValue = new MappingValueReference(targetPath, qualifiedTargetPath, val, description, type, selectId, significantForEmptiness, referencedFeatureType);
+                    mappingValue = new MappingValueReference(targetPath, qualifiedTargetPath, val, description, type, predicate, selectId, significantForEmptiness, referencedFeatureType,
+                        transformationHints);
                     break;
                 case CLASSIFICATION:
                 case NIL:
-                    mappingValue = new MappingValueClassification(targetPath, qualifiedTargetPath, value, description, type, selectId, significantForEmptiness, keys, values);
+                    mappingValue = new MappingValueClassification(targetPath, qualifiedTargetPath, value, description, type, predicate, selectId, significantForEmptiness, keys, values,
+                        transformationHints);
                     break;
                 case COLUMN:
                 case CONSTANT:
                 case GEOMETRY:
                 default:
-                    mappingValue = new MappingValue(targetPath, qualifiedTargetPath, value, description, type, selectId, significantForEmptiness);
+                    mappingValue = new MappingValue(targetPath, qualifiedTargetPath, value, description, type,
+                        predicate, selectId, significantForEmptiness,
+                        transformationHints);
             }
 
             validate(mappingValue);

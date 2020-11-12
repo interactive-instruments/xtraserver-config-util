@@ -152,7 +152,7 @@ public class XtraServerMapping {
             return false;
         }
         final XtraServerMapping that = (XtraServerMapping) o;
-        return Objects.equals(featureTypeMappings, that.featureTypeMappings);
+        return Objects.equals(featureTypeMappings, that.featureTypeMappings) && Objects.equals(virtualTables, that.virtualTables);
     }
 
     @Override

@@ -18,7 +18,9 @@ package de.interactive_instruments.xtraserver.config.api;
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Builder for {@link MappingJoin}
@@ -29,12 +31,14 @@ public class MappingJoinBuilder {
     private String targetPath;
     private final List<MappingJoin.Condition> joinConditions;
     private String description;
+    private final Map<String,String> transformationHints;
 
     /**
      * Create new builder
      */
     public MappingJoinBuilder() {
         this.joinConditions = new ArrayList<>();
+        this.transformationHints = new HashMap<>();
     }
 
     // TODO: remove
@@ -87,6 +91,26 @@ public class MappingJoinBuilder {
     }
 
     /**
+     *
+     * @param key hint key
+     * @param value hint value
+     * @return the builder
+     */
+    public MappingJoinBuilder transformationHint(final String key, final String value) {
+        this.transformationHints.put(key, value);
+        return this;
+    }
+
+    /**
+     *
+     * @return the builder
+     */
+    public MappingJoinBuilder transformationHints(final Map<String,String> hints) {
+        this.transformationHints.putAll(hints);
+        return this;
+    }
+
+    /**
      * Copy targetPath and joinConditions from given {@link MappingJoin}
      *
      * @param mappingJoin the copy source
@@ -103,6 +127,7 @@ public class MappingJoinBuilder {
     public MappingJoinBuilder shallowCopyOf(MappingJoin mappingJoin) {
         this.targetPath = mappingJoin.getTargetPath();
         this.description = mappingJoin.getDescription();
+        this.transformationHints.putAll(mappingJoin.getTransformationHints());
 
         return this;
     }
@@ -113,7 +138,7 @@ public class MappingJoinBuilder {
      * @return a new immutable {@link MappingJoin}
      */
     public MappingJoin build() {
-        final MappingJoin mappingJoin = new MappingJoin(targetPath, ImmutableList.copyOf(joinConditions), description);
+        final MappingJoin mappingJoin = new MappingJoin(targetPath, ImmutableList.copyOf(joinConditions), description, transformationHints);
 
         if (mappingJoin.getTargetPath() == null || mappingJoin.getTargetPath().isEmpty()) {
             throw new IllegalStateException("Join has no target path");

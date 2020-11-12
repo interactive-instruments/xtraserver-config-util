@@ -18,6 +18,7 @@ package de.interactive_instruments.xtraserver.config.api;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
+import java.util.Map;
 import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.Objects;
@@ -42,8 +43,13 @@ public class MappingTable {
     private final ImmutableSet<MappingTable> joiningTables;
     private final ImmutableSet<MappingValue> values;
     private final ImmutableSet<MappingJoin> joinPaths;
+    private final Map<String,String> transformationHints;
 
-    MappingTable(final String name, final String primaryKey, final String targetPath, final List<QName> qualifiedTargetPath, final String description, final String predicate, String selectIds, final List<MappingTable> joiningTables, final List<MappingValue> values, final List<MappingJoin> joinPaths) {
+    MappingTable(final String name, final String primaryKey, final String targetPath,
+        final List<QName> qualifiedTargetPath, final String description, final String predicate,
+        String selectIds, final List<MappingTable> joiningTables, final List<MappingValue> values,
+        final List<MappingJoin> joinPaths,
+        Map<String, String> transformationHints) {
         this.name = name;
         this.primaryKey = primaryKey;
         this.targetPath = targetPath;
@@ -54,6 +60,7 @@ public class MappingTable {
         this.joiningTables = ImmutableSet.copyOf(joiningTables);
         this.values = ImmutableSet.copyOf(values);
         this.joinPaths = ImmutableSet.copyOf(joinPaths);
+        this.transformationHints = transformationHints;
     }
 
     /**
@@ -144,6 +151,15 @@ public class MappingTable {
      */
     public ImmutableSet<MappingJoin> getJoinPaths() {
         return joinPaths;
+    }
+
+    /**
+     * Returns the transformation hints
+     *
+     * @return the list of transformation hints
+     */
+    public Map<String, String> getTransformationHints() {
+        return transformationHints;
     }
 
     /**

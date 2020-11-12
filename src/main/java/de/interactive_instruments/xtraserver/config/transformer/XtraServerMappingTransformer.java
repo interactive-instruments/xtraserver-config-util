@@ -36,8 +36,16 @@ public class XtraServerMappingTransformer {
     private final boolean ensureRelationNavigability;
     private final boolean fixMultiplicity;
     private final boolean virtualTables;
+    private final boolean applyChoicePredicates;
+    private final boolean cloneColumns;
+    private final boolean joinTypes;
+    private final boolean multiJoins;
 
-    private XtraServerMappingTransformer(final XtraServerMapping xtraServerMapping, final URI applicationSchemaUri, final boolean flattenInheritance, final boolean fanOutInheritance, final boolean ensureRelationNavigability, boolean fixMultiplicity, boolean virtualTables) {
+    private XtraServerMappingTransformer(final XtraServerMapping xtraServerMapping,
+        final URI applicationSchemaUri, final boolean flattenInheritance,
+        final boolean fanOutInheritance, final boolean ensureRelationNavigability,
+        boolean fixMultiplicity, boolean virtualTables, boolean applyChoicePredicates,
+        boolean cloneColumns, boolean joinTypes, boolean multiJoins) {
         this.xtraServerMapping = xtraServerMapping;
         this.applicationSchemaUri = applicationSchemaUri;
         this.applicationSchema = new ApplicationSchema(applicationSchemaUri);
@@ -46,6 +54,10 @@ public class XtraServerMappingTransformer {
         this.ensureRelationNavigability = ensureRelationNavigability;
         this.fixMultiplicity = fixMultiplicity;
         this.virtualTables = virtualTables;
+        this.applyChoicePredicates = applyChoicePredicates;
+        this.cloneColumns = cloneColumns;
+        this.joinTypes = joinTypes;
+        this.multiJoins = multiJoins;
     }
 
     /**
@@ -64,6 +76,21 @@ public class XtraServerMappingTransformer {
 
         transformedXtraServerMapping = new MappingTransformerSchemaInfo(transformedXtraServerMapping, applicationSchema).transform();
 
+        if (multiJoins) {
+            transformedXtraServerMapping = new MappingTransformerMultiJoins(transformedXtraServerMapping).transform();
+            transformedXtraServerMapping = new MappingTransformerSchemaInfo(transformedXtraServerMapping, applicationSchema).transform();
+            description += "    - multiJoins\n";
+        }
+        if (cloneColumns) {
+            transformedXtraServerMapping = new MappingTransformerCloneColumns(transformedXtraServerMapping).transform();
+            transformedXtraServerMapping = new MappingTransformerSchemaInfo(transformedXtraServerMapping, applicationSchema).transform();
+            description += "    - cloneColumns\n";
+        }
+        if (joinTypes) {
+            transformedXtraServerMapping = new MappingTransformerJoinTypeHint(transformedXtraServerMapping, applicationSchema).transform();
+            transformedXtraServerMapping = new MappingTransformerSchemaInfo(transformedXtraServerMapping, applicationSchema).transform();
+            description += "    - joinTypes\n";
+        }
         if (virtualTables) {
             transformedXtraServerMapping = new MappingTransformerMergeTables(transformedXtraServerMapping).transform();
             description += "    - virtualTables\n";
@@ -86,6 +113,10 @@ public class XtraServerMappingTransformer {
         if (ensureRelationNavigability) {
             transformedXtraServerMapping = new MappingTransformerRelationNavigability(transformedXtraServerMapping).transform();
             description += "    - ensureRelationNavigability\n";
+        }
+        if (applyChoicePredicates) {
+            transformedXtraServerMapping = new MappingTransformerChoice(transformedXtraServerMapping, applicationSchema).transform();
+            description += "    - applyChoicePredicates\n";
         }
 
         transformedXtraServerMapping = new XtraServerMappingBuilder()
@@ -151,9 +182,45 @@ public class XtraServerMappingTransformer {
         Transform fixMultiplicity();
 
         /**
+         * This transformer adds support for merged tables. XtraServer supports joins only to represent multiplicity.
+         * This transformer enables cases where a simple property should be mapped from a table different than the
+         * feature instance table. If such cases are detected then according VirtualTables will be created.
+         *
          * @return the transformer builder
          */
         Transform virtualTables();
+
+        /**
+         * This transformer adds support for choices by adding predicates to a group of mappings so that only one of
+         * the mappings is ever applied.
+         * This transformer is applied if multiple mappings for the same target path are detected, and either the
+         * target path does not contain any multiple properties or the transformation hint CHOICE is set
+         * for these mappings.
+         *
+         * @return the transformer builder
+         */
+        Transform applyChoicePredicates();
+
+        /**
+         *
+         *
+         * @return the transformer builder
+         */
+        Transform cloneColumns();
+
+        /**
+         *
+         *
+         * @return the transformer builder
+         */
+        Transform joinTypes();
+
+        /**
+         *
+         *
+         * @return the transformer builder
+         */
+        Transform multiJoins();
 
         /**
          * Executes the transformer chain
@@ -171,6 +238,10 @@ public class XtraServerMappingTransformer {
         private boolean ensureRelationNavigability;
         private boolean fixMultiplicity;
         private boolean virtualTables;
+        private boolean applyChoicePredicates;
+        private boolean cloneColumns;
+        private boolean joinTypes;
+        private boolean multiJoins;
 
         Builder(final XtraServerMapping xtraServerMapping) {
             this.xtraServerMapping = xtraServerMapping;
@@ -213,8 +284,33 @@ public class XtraServerMappingTransformer {
         }
 
         @Override
+        public Transform applyChoicePredicates() {
+            this.applyChoicePredicates = true;
+            return this;
+        }
+
+        @Override
+        public Transform cloneColumns() {
+            this.cloneColumns = true;
+            return this;
+        }
+
+        @Override
+        public Transform joinTypes() {
+            this.joinTypes = true;
+            return this;
+        }
+
+        @Override
+        public Transform multiJoins() {
+            this.multiJoins = true;
+            return this;
+        }
+
+        @Override
         public XtraServerMapping transform() {
-            return new XtraServerMappingTransformer(xtraServerMapping, applicationSchemaUri, flattenInheritance, fanOutInheritance, ensureRelationNavigability, fixMultiplicity, virtualTables)
+            return new XtraServerMappingTransformer(xtraServerMapping, applicationSchemaUri, flattenInheritance, fanOutInheritance, ensureRelationNavigability, fixMultiplicity, virtualTables,
+                applyChoicePredicates, cloneColumns, joinTypes, multiJoins)
                     .transform();
         }
     }

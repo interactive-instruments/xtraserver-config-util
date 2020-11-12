@@ -17,6 +17,7 @@ package de.interactive_instruments.xtraserver.config.api;
 
 import com.google.common.collect.ImmutableList;
 
+import java.util.Map;
 import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.Objects;
@@ -34,17 +35,25 @@ public class MappingValue {
     private final String value;
     private final String description;
     private final TYPE type;
+    private final String predicate;
     private final Integer selectId;
     private final boolean significantForEmptiness;
+    private final Map<String,String> transformationHints;
 
-    MappingValue(final String targetPath, final List<QName> qualifiedTargetPath, final String value, final String description, final TYPE type, final Integer selectId, final boolean significantForEmptiness) {
+    MappingValue(final String targetPath, final List<QName> qualifiedTargetPath, final String value,
+        final String description, final TYPE type, String predicate,
+        final Integer selectId,
+        final boolean significantForEmptiness,
+        Map<String, String> transformationHints) {
         this.targetPath = targetPath;
         this.qualifiedTargetPath = qualifiedTargetPath;
         this.value = value;
         this.description = description;
         this.type = type;
+        this.predicate = predicate;
         this.selectId = selectId;
         this.significantForEmptiness = significantForEmptiness;
+        this.transformationHints = transformationHints;
     }
 
     /**
@@ -96,6 +105,10 @@ public class MappingValue {
         return selectId;
     }
 
+    public String getPredicate() {
+        return predicate;
+    }
+
     /**
      * Is this element significant for emptiness of parent element? (default: true)
      *
@@ -103,6 +116,14 @@ public class MappingValue {
      */
     public boolean getSignificantForEmptiness() {
         return significantForEmptiness;
+    }
+
+    /**
+     * Returns hints for mapping transformers
+     * @return
+     */
+    public Map<String,String> getTransformationHints() {
+        return transformationHints;
     }
 
     TYPE getType() {

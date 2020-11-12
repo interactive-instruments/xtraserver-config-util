@@ -1,5 +1,6 @@
 package de.interactive_instruments.xtraserver.config.transformer;
 
+import com.google.common.base.Strings;
 import de.interactive_instruments.xtraserver.config.api.MappingValue;
 import de.interactive_instruments.xtraserver.config.api.MappingValueBuilder;
 
@@ -28,7 +29,7 @@ public class MappingValueAliases {
         MappingValue valueWithAlias = value;
 
         for (String column: new LinkedHashSet<>(value.getValueColumns())) {
-            String columnWithAlias = getWithAlias(table, column);
+            String columnWithAlias = getWithAlias(table, column, value.getTransformationHints().get("CLONE"));
 
             if (!Objects.equals(column, columnWithAlias)) {
                 valueWithAlias = new MappingValueBuilder().copyOf(valueWithAlias).value(valueWithAlias.getValue().replaceAll(column, columnWithAlias)).build();
@@ -38,7 +39,8 @@ public class MappingValueAliases {
         return valueWithAlias;
     }
 
-    public String getWithAlias(String table, String column) {
+    public String getWithAlias(String table, String column, String suffix) {
+        String columnAlias = column;
 
         if (nameCounter.containsKey(column)) {
             if (!nameCounter.get(column).contains(table)) {
@@ -48,19 +50,23 @@ public class MappingValueAliases {
             int count = nameCounter.get(column).indexOf(table);
 
             if (count > 0) {
-                return String.format("%s_%s", column, count);
+                columnAlias = String.format("%s_%s", column, count);
             }
         } else  {
             nameCounter.put(column, new ArrayList<>());
             nameCounter.get(column).add(table);
         }
 
-        return column;
+        if (!Strings.isNullOrEmpty(suffix)) {
+            columnAlias = String.format("%s_%s", columnAlias, suffix);
+        }
+
+        return columnAlias;
     }
 
-    public String getWithAsAlias(String table, String column) {
+    public String getWithAsAlias(String table, String column, String suffix) {
         String name = String.format("%s.%s", table, column);
-        String columnAlias = getWithAlias(table, column);
+        String columnAlias = getWithAlias(table, column, suffix);
 
         if (!Objects.equals(column, columnAlias)) {
             return String.format("%s AS %s", name, columnAlias);

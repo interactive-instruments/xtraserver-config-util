@@ -15,9 +15,12 @@
  */
 package de.interactive_instruments.xtraserver.config.api;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 
+import com.google.common.collect.ImmutableMap;
+import de.interactive_instruments.xtraserver.config.api.MappingValueBuilder.ValueDefault;
+import java.util.HashMap;
+import java.util.Map;
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,6 +43,7 @@ public class MappingTableBuilder {
     private final List<MappingValue> values;
     private final List<MappingTable> joiningTables;
     private final List<MappingJoin> joinPaths;
+    private final Map<String,String> transformationHints;
 
     /**
      * Create a new builder
@@ -48,6 +52,7 @@ public class MappingTableBuilder {
         this.joiningTables = new ArrayList<>();
         this.values = new ArrayList<>();
         this.joinPaths = new ArrayList<>();
+        this.transformationHints = new HashMap<>();
     }
 
     /**
@@ -155,6 +160,11 @@ public class MappingTableBuilder {
         return this;
     }
 
+    public MappingTableBuilder clearValues() {
+        this.values.clear();
+        return this;
+    }
+
     /**
      * Add a joining table (the joining table needs to have at least one join path where the source is the table that is to be build).
      * Joining tables can be created with {@link MappingTableBuilder}
@@ -208,6 +218,22 @@ public class MappingTableBuilder {
         return this;
     }
 
+    public MappingTableBuilder clearJoinPaths() {
+        this.joinPaths.clear();
+        return this;
+    }
+
+    /**
+     *
+     * @param key hint key
+     * @param value hint value
+     * @return the builder
+     */
+    public MappingTableBuilder transformationHint(final String key, final String value) {
+        this.transformationHints.put(key, value);
+        return this;
+    }
+
     /**
      * Builds the {@link MappingTable}, validates required fields
      *
@@ -217,7 +243,8 @@ public class MappingTableBuilder {
 
         autoComplete();
 
-        final MappingTable mappingTable = new MappingTable(name, primaryKey, targetPath, ImmutableList.copyOf(qualifiedTargetPath), description, predicate, selectIds, ImmutableList.copyOf(joiningTables), ImmutableList.copyOf(values), ImmutableList.copyOf(joinPaths));
+        final MappingTable mappingTable = new MappingTable(name, primaryKey, targetPath, ImmutableList.copyOf(qualifiedTargetPath), description, predicate, selectIds, ImmutableList.copyOf(joiningTables), ImmutableList.copyOf(values), ImmutableList.copyOf(joinPaths),
+            ImmutableMap.copyOf(transformationHints));
 
         validate(mappingTable);
 
@@ -238,6 +265,7 @@ public class MappingTableBuilder {
         this.description = mappingTable.getDescription();
         this.predicate = mappingTable.getPredicate();
         this.selectIds = mappingTable.getSelectIds();
+        this.transformationHints.putAll(mappingTable.getTransformationHints());
 
         return this;
     }
@@ -266,7 +294,7 @@ public class MappingTableBuilder {
     public MappingTableDraft buildDraft() {
         autoComplete();
 
-        return new MappingTableDraft(name, primaryKey, targetPath, ImmutableList.copyOf(qualifiedTargetPath), description, predicate, selectIds, ImmutableList.copyOf(joiningTables), ImmutableList.copyOf(values), ImmutableList.copyOf(joinPaths));
+        return new MappingTableDraft(name, primaryKey, targetPath, ImmutableList.copyOf(qualifiedTargetPath), description, predicate, selectIds, ImmutableList.copyOf(joiningTables), ImmutableList.copyOf(values), ImmutableList.copyOf(joinPaths), ImmutableMap.copyOf(transformationHints));
     }
 
     /**
@@ -276,8 +304,9 @@ public class MappingTableBuilder {
      * @see MappingTable
      */
     public static class MappingTableDraft extends MappingTable {
-        MappingTableDraft(final String name, final String primaryKey, final String targetPath, final List<QName> qualifiedTargetPath, final String description, final String predicate, final String selectIds, final List<MappingTable> joiningTables, final List<MappingValue> values, final List<MappingJoin> joinPaths) {
-            super(name, primaryKey, targetPath, qualifiedTargetPath, description, predicate, selectIds, joiningTables, values, joinPaths);
+        MappingTableDraft(final String name, final String primaryKey, final String targetPath, final List<QName> qualifiedTargetPath, final String description, final String predicate, final String selectIds, final List<MappingTable> joiningTables, final List<MappingValue> values, final List<MappingJoin> joinPaths, Map<String,String> transformationHints) {
+            super(name, primaryKey, targetPath, qualifiedTargetPath, description, predicate, selectIds, joiningTables, values, joinPaths,
+                transformationHints);
         }
     }
 

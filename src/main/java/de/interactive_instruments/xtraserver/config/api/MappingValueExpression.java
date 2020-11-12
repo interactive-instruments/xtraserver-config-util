@@ -17,6 +17,7 @@ package de.interactive_instruments.xtraserver.config.api;
 
 import com.google.common.collect.ImmutableList;
 
+import java.util.Map;
 import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -29,8 +30,12 @@ import java.util.regex.Pattern;
  */
 public class MappingValueExpression extends MappingValue {
 
-    MappingValueExpression(final String targetPath, final List<QName> qualifiedTargetPath, final String value, final String description, final TYPE type, final Integer selectId, final boolean significantForEmptiness) {
-        super(targetPath, qualifiedTargetPath, value, description, type, selectId, significantForEmptiness);
+    MappingValueExpression(final String targetPath, final List<QName> qualifiedTargetPath,
+        final String value, final String description, final TYPE type, final String predicate, final Integer selectId,
+        final boolean significantForEmptiness,
+        Map<String, String> transformationHints) {
+        super(targetPath, qualifiedTargetPath, value, description, type, predicate, selectId, significantForEmptiness,
+            transformationHints);
     }
 
     /**

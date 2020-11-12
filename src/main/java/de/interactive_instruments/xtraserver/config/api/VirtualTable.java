@@ -15,6 +15,8 @@
  */
 package de.interactive_instruments.xtraserver.config.api;
 
+import static de.interactive_instruments.xtraserver.config.transformer.MappingTransformerJoinTypeHint.HINT_JOIN_TYPE;
+
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -26,6 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.immutables.value.Value.Default;
 
 /**
  * @author zahnen
@@ -81,9 +84,8 @@ public abstract class VirtualTable {
                         .stream()
                         .filter(mappingValue -> !isBooleanClassification(mappingValue))
                         .flatMap(mappingValue -> mappingValue.getValueColumns()
-                                                          .stream())
-                        .map(column -> mappingValueAliases.getWithAsAlias(mappingTable.getName(), column))
-                        //.map(column -> mappingTable.getName() + "." + column)
+                                                          .stream()
+                                                          .map(column -> mappingValueAliases.getWithAsAlias(mappingTable.getName(), column, mappingValue.getTransformationHints().get("CLONE"))))
                         .forEach(this::addColumns);
 
             /*mappingTable.getJoinPaths().stream()
@@ -128,14 +130,20 @@ public abstract class VirtualTable {
 
     protected abstract Optional<String> getWhereClause();
 
+    @Default
+    protected String getPrimaryTable() {
+        return getJoinPaths().iterator()
+            .next()
+            .getSourceTable();
+    }
+
     @Value.Derived
     public String getQuery() {
         String query = null;
 
-        if (!getJoinPaths().isEmpty()) {
-            final String primaryTable = getJoinPaths().iterator()
-                                                      .next()
-                                                      .getSourceTable();
+        //if (!getJoinPaths().isEmpty()) {
+            final String primaryTable = getPrimaryTable();
+
             if (getJoinPaths().stream()
                               .anyMatch(mappingJoin -> !mappingJoin.getSourceTable()
                                                                    .equals(primaryTable))) {
@@ -148,16 +156,25 @@ public abstract class VirtualTable {
             query = "SELECT ";
             query += Joiner.on(",")
                            .join(columns) + " FROM " + primaryTable + " ";
+            //TODO: transformationHints for MappingJoin, JOIN_TYPE=LEFT
             query += getJoinPaths().stream()
                                    .flatMap(mappingJoin -> mappingJoin.getJoinConditions()
-                                                                      .stream())
-                                   .map(condition -> "INNER JOIN " + condition.getTargetTable() + " ON " + condition.getTargetTable() + "." + condition.getTargetField() + " = " + condition.getSourceTable() + "." + condition.getSourceField() + " ")
+                                                                      .stream()
+                                       .map(condition -> String
+                                           .format("%s JOIN %s ON %s.%s = %s.%s ",
+                                               mappingJoin.getTransformationHints().getOrDefault(HINT_JOIN_TYPE, "INNER"),
+                                               condition.getTargetTable(),
+                                               condition.getTargetTable(),
+                                               condition.getTargetField(),
+                                               condition.getSourceTable(),
+                                               condition.getSourceField()))
+                                   )
                                    .distinct()
                                    .collect(Collectors.joining());
             if (getWhereClause().isPresent()) {
                 query += "WHERE " + getWhereClause().get();
             }
-        }
+        //}
 
         return query;
     }

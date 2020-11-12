@@ -15,6 +15,7 @@
  */
 package de.interactive_instruments.xtraserver.config.api;
 
+import java.util.Map;
 import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.Objects;
@@ -28,8 +29,12 @@ public class MappingValueReference extends MappingValueExpression {
 
     private final String referencedFeatureType;
 
-    MappingValueReference(final String targetPath, final List<QName> qualifiedTargetPath, final String value, final String description, final TYPE type, final Integer selectId, final boolean significantForEmptiness, final String referencedFeatureType) {
-        super(targetPath, qualifiedTargetPath, value, description, type, selectId, significantForEmptiness);
+    MappingValueReference(final String targetPath, final List<QName> qualifiedTargetPath,
+        final String value, final String description, final TYPE type, final String predicate, final Integer selectId,
+        final boolean significantForEmptiness, final String referencedFeatureType,
+        Map<String, String> transformationHints) {
+        super(targetPath, qualifiedTargetPath, value, description, type, predicate, selectId, significantForEmptiness,
+            transformationHints);
         this.referencedFeatureType = referencedFeatureType;
     }
 

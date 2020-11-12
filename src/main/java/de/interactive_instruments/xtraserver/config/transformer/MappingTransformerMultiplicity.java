@@ -112,7 +112,8 @@ public class MappingTransformerMultiplicity extends AbstractMappingTransformer {
         }
 
         private boolean isMappingsForSameMultiplePathWithDifferentValues(MappingValue value1, MappingValue value2) {
-            return value1.getTargetPath()
+            return !value2.getTransformationHints().containsKey("CHOICE")
+                    && value1.getTargetPath()
                          .equals(value2.getTargetPath())
                     && !value1.equals(value2)
                     && !applicationSchema.getLastMultiplePropertyPath(currentFeatureType, value2.getQualifiedTargetPath())

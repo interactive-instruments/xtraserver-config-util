@@ -16,6 +16,7 @@
 package de.interactive_instruments.xtraserver.config.api;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -27,11 +28,14 @@ public class MappingJoin {
     private final String targetPath;
     private final List<Condition> joinConditions;
     private final String description;
+    private final Map<String,String> transformationHints;
 
-    MappingJoin(final String targetPath, final List<Condition> joinConditions, String description) {
+    MappingJoin(final String targetPath, final List<Condition> joinConditions, String description,
+        Map<String, String> transformationHints) {
         this.targetPath = targetPath;
         this.joinConditions = joinConditions;
         this.description = description;
+        this.transformationHints = transformationHints;
     }
 
     /**
@@ -85,6 +89,15 @@ public class MappingJoin {
      */
     public String getDescription() {
         return description;
+    }
+
+    /**
+     * Returns the transformation hints
+     *
+     * @return the list of transformation hints
+     */
+    public Map<String, String> getTransformationHints() {
+        return transformationHints;
     }
 
     @Override

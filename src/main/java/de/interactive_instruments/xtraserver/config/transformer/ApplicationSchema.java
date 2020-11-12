@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * @author zahnen
  */
-class ApplicationSchema {
+class ApplicationSchema implements SchemaInfo.OptionalProperty, SchemaInfo.MultipleProperty{
 
     private final XmlSchema xmlSchema;
     private final Namespaces namespaces;
@@ -167,16 +167,55 @@ class ApplicationSchema {
         return false;
     }
 
-    public boolean isMultiple(final QName qualifiedTypeName, final List<QName> propertyPath) {
+    private boolean isMultiple3(final QName qualifiedTypeName, final List<QName> propertyPath) {
         final XmlSchemaComplexType type = getType(qualifiedTypeName);
         final XmlSchemaElement element = getProperty(type, propertyPath);
 
         return element != null && element.getMaxOccurs() > 1;
     }
 
+    public boolean isMultiple(final QName qualifiedTypeName, final List<QName> propertyPath) {
+        for (int i = propertyPath.size(); i >= 0; i--) {
+            XmlSchemaElement property = findProperty(qualifiedTypeName, propertyPath.subList(0, i));
+            if (Objects.nonNull(property)) {
+                return property.getMaxOccurs() > 1;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isOptional(final QName qualifiedTypeName, final List<QName> propertyPath) {
+        for (int i = propertyPath.size(); i >= 0; i--) {
+            XmlSchemaElement property = findProperty(qualifiedTypeName, propertyPath.subList(0, i));
+            if (Objects.nonNull(property)) {
+                return property.getMinOccurs() == 0 &&  property.getMaxOccurs() == 1;
+            }
+        }
+
+        return false;
+    }
+
+    private XmlSchemaElement findProperty(final QName qualifiedTypeName, final List<QName> propertyPath) {
+        final XmlSchemaComplexType type = getType(qualifiedTypeName);
+        XmlSchemaElement element = getProperty(type, propertyPath);
+
+        if (element == null) {
+            for (QName superType : getAllSuperTypeQualifiedNames(
+                qualifiedTypeName)) {
+                element = getProperty(getType(superType), propertyPath);
+                if (element != null) {
+                    return element;
+                }
+            }
+        }
+
+        return element;
+    }
+
     public List<QName> getLastMultiplePropertyPath(final QName qualifiedTypeName, final List<QName> propertyPath) {
         for (int i = propertyPath.size(); i >= 0; i--) {
-            if (isMultiple(qualifiedTypeName, propertyPath.subList(0, i))) {
+            if (isMultiple3(qualifiedTypeName, propertyPath.subList(0, i))) {
                 return ImmutableList.copyOf(propertyPath.subList(0, i));
             }
         }

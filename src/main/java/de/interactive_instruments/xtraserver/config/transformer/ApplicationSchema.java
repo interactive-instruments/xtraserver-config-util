@@ -16,6 +16,9 @@
 package de.interactive_instruments.xtraserver.config.transformer;
 
 import com.google.common.collect.ImmutableList;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import org.apache.ws.commons.schema.*;
 import org.apache.ws.commons.schema.utils.NamespacePrefixList;
 
@@ -60,8 +63,24 @@ class ApplicationSchema implements SchemaInfo.OptionalProperty, SchemaInfo.Multi
         }
         final InputStream inputStream;
         try {
-            inputStream = uri.toURL()
-                             .openStream();
+            HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
+
+            boolean redirect = false;
+            int status = connection.getResponseCode();
+
+            if (status != HttpURLConnection.HTTP_OK) {
+                if (status == HttpURLConnection.HTTP_MOVED_TEMP
+                    || status == HttpURLConnection.HTTP_MOVED_PERM
+                    || status == HttpURLConnection.HTTP_SEE_OTHER)
+                    redirect = true;
+            }
+
+            if (redirect) {
+                String newUrl = connection.getHeaderField("Location");
+                connection = (HttpURLConnection) new URL(newUrl).openConnection();
+            }
+
+            inputStream = connection.getInputStream();
         } catch (IOException e) {
             throw new IllegalArgumentException("Invalid URI: " + uri.toString());
         }

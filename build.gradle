@@ -5,13 +5,12 @@ plugins {
     id 'groovy'
     id "biz.aQute.bnd.builder" version "5.1.2"
     id "org.unbroken-dome.xjc" version "1.4.3"
-    id "com.jfrog.bintray" version "1.8.5"
     //TODO: spotless
 }
 
 group = 'de.interactive_instruments'
 
-version = '1.0.9'
+version = '1.0.10'
 
 repositories {
     mavenCentral()
@@ -29,9 +28,9 @@ dependencies {
     //compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.0'
 
     //TODO: is this included in hale?
-    implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.12'
-    implementation group: 'com.sun.xml.bind', name: 'jaxb-core', version: '2.2.11'
-    implementation group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.2.11'
+    //implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.12'
+    //implementation group: 'com.sun.xml.bind', name: 'jaxb-core', version: '2.2.11'
+    //implementation group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.2.11'
 
     compileOnly         "org.immutables:value:2.8.4:annotations"
     annotationProcessor "org.immutables:value:2.8.4"
@@ -122,27 +121,13 @@ publishing {
             }
         }
     }
-}
-
-if(project.hasProperty('bintrayUser')) {
-  bintray {
-      user = project.bintrayUser
-      key = project.bintrayApiKey
-      publications = ['maven']
-      publish = true
-      pkg {
-          repo = 'maven'
-          name = project.name
-          userOrg = 'iide'
-          licenses = ['Apache-2.0']
-          websiteUrl = "https://github.com/interactive-instruments/${project.name}"
-          issueTrackerUrl = "https://github.com/interactive-instruments/${project.name}/issues"
-          vcsUrl = "https://github.com/interactive-instruments/${project.name}.git"
-          githubRepo = "interactive-instruments/${project.name}"
-          githubReleaseNotesFile = 'README.md'
-          version {
-              name = project.version
-          }
-      }
-  }
+    repositories {
+        maven {
+            url "https://dl.interactive-instruments.de/repository/maven-releases/"
+            credentials {
+                username project.findProperty('deployUser') ?: ''
+                password project.findProperty('deployPassword') ?: ''
+            }
+        }
+    }
 }

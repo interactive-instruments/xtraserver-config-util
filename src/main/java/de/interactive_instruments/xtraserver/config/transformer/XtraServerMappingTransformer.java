@@ -40,12 +40,13 @@ public class XtraServerMappingTransformer {
     private final boolean cloneColumns;
     private final boolean joinTypes;
     private final boolean multiJoins;
+    private final boolean cleanNilChildren;
 
     private XtraServerMappingTransformer(final XtraServerMapping xtraServerMapping,
         final URI applicationSchemaUri, final boolean flattenInheritance,
         final boolean fanOutInheritance, final boolean ensureRelationNavigability,
         boolean fixMultiplicity, boolean virtualTables, boolean applyChoicePredicates,
-        boolean cloneColumns, boolean joinTypes, boolean multiJoins) {
+        boolean cloneColumns, boolean joinTypes, boolean multiJoins, boolean cleanNilChildren) {
         this.xtraServerMapping = xtraServerMapping;
         this.applicationSchemaUri = applicationSchemaUri;
         this.applicationSchema = new ApplicationSchema(applicationSchemaUri);
@@ -58,6 +59,7 @@ public class XtraServerMappingTransformer {
         this.cloneColumns = cloneColumns;
         this.joinTypes = joinTypes;
         this.multiJoins = multiJoins;
+        this.cleanNilChildren = cleanNilChildren;
     }
 
     /**
@@ -76,6 +78,10 @@ public class XtraServerMappingTransformer {
 
         transformedXtraServerMapping = new MappingTransformerSchemaInfo(transformedXtraServerMapping, applicationSchema).transform();
 
+        if (cleanNilChildren) {
+            transformedXtraServerMapping = new MappingTransformerCleanNilChildren(transformedXtraServerMapping).transform();
+            description += "    - cleanNilChildren\n";
+        }
         if (multiJoins) {
             transformedXtraServerMapping = new MappingTransformerMultiJoins(transformedXtraServerMapping).transform();
             transformedXtraServerMapping = new MappingTransformerSchemaInfo(transformedXtraServerMapping, applicationSchema).transform();
@@ -223,6 +229,13 @@ public class XtraServerMappingTransformer {
         Transform multiJoins();
 
         /**
+         *
+         *
+         * @return the transformer builder
+         */
+        Transform cleanNilChildren();
+
+        /**
          * Executes the transformer chain
          *
          * @return the transformed {@link XtraServerMapping}
@@ -242,6 +255,7 @@ public class XtraServerMappingTransformer {
         private boolean cloneColumns;
         private boolean joinTypes;
         private boolean multiJoins;
+        private boolean cleanNilChildren;
 
         Builder(final XtraServerMapping xtraServerMapping) {
             this.xtraServerMapping = xtraServerMapping;
@@ -308,9 +322,15 @@ public class XtraServerMappingTransformer {
         }
 
         @Override
+        public Transform cleanNilChildren() {
+            this.cleanNilChildren = true;
+            return this;
+        }
+
+        @Override
         public XtraServerMapping transform() {
             return new XtraServerMappingTransformer(xtraServerMapping, applicationSchemaUri, flattenInheritance, fanOutInheritance, ensureRelationNavigability, fixMultiplicity, virtualTables,
-                applyChoicePredicates, cloneColumns, joinTypes, multiJoins)
+                applyChoicePredicates, cloneColumns, joinTypes, multiJoins, cleanNilChildren)
                     .transform();
         }
     }

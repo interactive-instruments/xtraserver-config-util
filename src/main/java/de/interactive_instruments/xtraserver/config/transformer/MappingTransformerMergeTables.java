@@ -17,6 +17,7 @@ package de.interactive_instruments.xtraserver.config.transformer;
 
 import com.google.common.collect.Lists;
 import de.interactive_instruments.xtraserver.config.api.FeatureTypeMapping;
+import de.interactive_instruments.xtraserver.config.api.ImmutableVirtualTable;
 import de.interactive_instruments.xtraserver.config.api.MappingJoin;
 import de.interactive_instruments.xtraserver.config.api.MappingJoinBuilder;
 import de.interactive_instruments.xtraserver.config.api.MappingTable;
@@ -46,12 +47,15 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
         super(xtraServerMapping);
         this.virtualTables = new ArrayList<>();
         this.currentVirtualTables = new LinkedHashMap<>();
+
+        xtraServerMapping.getVirtualTables().forEach(virtualTable -> currentVirtualTables.put("$" + virtualTable.getName() + "$", new VirtualTable.Builder().from(virtualTable)));
     }
 
     @Override
     protected XtraServerMappingBuilder transformXtraServerMapping(Context context, List<FeatureTypeMapping> transformedFeatureTypeMappings) {
         return new XtraServerMappingBuilder()
                 .copyOf(context.xtraServerMapping)
+                .clearVirtualTables()
                 .virtualTables(currentVirtualTables.values()
                                                    .stream()
                                                    .map(VirtualTable.Builder::build)
@@ -75,104 +79,181 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
         final VirtualTable.Builder[] currentVirtualTable = {null};
         final String[] currentVirtualName = {null};
 
-        // TODO: if currentVirtualTable and mergedVirtualTable, merge into one
-        transformedMappingTables.stream()
-                                //.filter(MappingTable::isMerged)
-                                .filter(mappingTable1 -> mappingTable1.isMerged() || (currentVirtualTables.containsKey(mappingTable1.getName()) && mappingTable.getPredicate() != null && !mappingTable.getPredicate().isEmpty()))
-                                .forEach(mergedTable -> {
+    // TODO: if currentVirtualTable and mergedVirtualTable, merge into one
+    transformedMappingTables.stream()
+        // .filter(MappingTable::isMerged)
+        .filter(
+            mappingTable1 ->
+                mappingTable1.isMerged()
+                    || (currentVirtualTables.containsKey(mappingTable1.getName())
+                        && mappingTable.getPredicate() != null
+                        && !mappingTable.getPredicate().isEmpty()))
+        .forEach(
+            mergedTable -> {
+              Optional<VirtualTable.Builder> mergedVirtualTable =
+                  Optional.ofNullable(currentVirtualTables.remove(mergedTable.getName()));
 
-                                    Optional<VirtualTable.Builder> mergedVirtualTable = Optional.ofNullable(currentVirtualTables.remove(mergedTable.getName()));
+              String[] lastVirtualName = {null};
 
-                                    String[] lastVirtualName = {null};
+              if (mergedVirtualTable.isPresent()) {
+                currentVirtualTable[0] = new VirtualTable.Builder();
+                currentVirtualTable[0].aliases(mergedVirtualTable.get().aliases());
+                currentVirtualTable[0].originalTable(mappingTable);
+                currentVirtualTable[0].from(mergedVirtualTable.get().build());
 
-                                    if (mergedVirtualTable.isPresent()) {
-                                        currentVirtualTable[0] = new VirtualTable.Builder();
-                                        currentVirtualTable[0].aliases(mergedVirtualTable.get().aliases());
-                                        currentVirtualTable[0].originalTable(mappingTable);
-                                        currentVirtualTable[0].from(mergedVirtualTable.get().build());
+                currentVirtualName[0] =
+                    mergedTable
+                        .getName()
+                        .replaceAll("\\$", "")
+                        .replace("vrt_", "vrt_" + mappingTable.getName() + "_");
+                currentVirtualTable[0].name(currentVirtualName[0]);
 
-                                        currentVirtualName[0] = mergedTable.getName()
-                                                                           .replaceAll("\\$", "")
-                                                                           .replace("vrt_", "vrt_" + mappingTable.getName() + "_");
-                                        currentVirtualTable[0].name(currentVirtualName[0]);
+              } else {
+                if (currentVirtualTable[0] == null) {
+                  if (currentVirtualTables.containsKey(mappingTable.getName())) {
+                    currentVirtualTable[0] = currentVirtualTables.get(mappingTable.getName());
+                    currentVirtualName[0] = mappingTable.getName().replaceAll("\\$", "");
+                  } else {
+                    currentVirtualTable[0] = VirtualTable.builder();
+                    currentVirtualTable[0].originalTable(mappingTable);
+                    currentVirtualName[0] = "vrt_" + mappingTable.getName();
+                  }
+                }
 
-                                    } else {
-                                        if (currentVirtualTable[0] == null) {
-                                            currentVirtualTable[0] = VirtualTable.builder();
-                                            currentVirtualTable[0].originalTable(mappingTable);
-                                            currentVirtualName[0] = "vrt_" + mappingTable.getName();
-                                        }
+                if (!currentVirtualName[0].contains(mergedTable.getName())
+                    || currentVirtualName[0].contains(mergedTable.getName() + "__")) {
+                  lastVirtualName[0] = "$" + currentVirtualName[0] + "$";
+                  currentVirtualName[0] += "_" + mergedTable.getName();
+                  if (virtualTableExists(currentVirtualName[0])) {
+                    int i = 2;
+                    while (virtualTableExists(currentVirtualName[0] + "_" + i)) {
+                      i++;
+                    }
+                    currentVirtualName[0] = currentVirtualName[0] + "_" + i;
+                  }
+                }
 
-                                        if (!currentVirtualName[0].contains(mergedTable.getName()) || currentVirtualName[0].contains(mergedTable.getName() + "__")) {
-                                            lastVirtualName[0] = "$" + currentVirtualName[0] + "$";
-                                            currentVirtualName[0] += "_" + mergedTable.getName();
-                                            if (virtualTableExists(currentVirtualName[0])) {
-                                                int i = 2;
-                                                while (virtualTableExists(currentVirtualName[0] + "_" + i)) {
-                                                    i++;
-                                                }
-                                                currentVirtualName[0] = currentVirtualName[0] + "_" + i;
-                                            }
-                                        }
+                currentVirtualTable[0].name(currentVirtualName[0]);
+                //currentVirtualTable[0].originalTable(mergedTable);
 
-                                        currentVirtualTable[0].name(currentVirtualName[0]);
-                                        currentVirtualTable[0].originalTable(mergedTable);
-                                    }
+                if (currentVirtualTables.containsKey(mappingTable.getName())) {
+                  currentVirtualTable[0].originalTable(new MappingTableBuilder().copyOf(mergedTable)
+                      .clearJoinPaths()
+                      .joinPaths(mergedTable.getJoinPaths()
+                      .stream()
+                      .map(jp -> new MappingJoinBuilder().shallowCopyOf(jp)
+                          .joinConditions(jp.getJoinConditions()
+                              .stream()
+                              .map(jc -> jc.getSourceTable()
+                                  .equals(mappingTable.getName()) ? new MappingJoinBuilder.ConditionBuilder()
+                                  .copyOf(jc)
+                                  .sourceTable(mappingTable.getName().replaceAll("\\$", "").replaceAll("vrt_", ""))
+                                  .build() : jc)
+                              .collect(Collectors.toList()))
+                          .build())
+                      .collect(Collectors.toList())).build());
+                } else {
+                  currentVirtualTable[0].originalTable(mergedTable);
+                }
+              }
 
-                                    mappingTableBuilder.name("$" + currentVirtualName[0] + "$");
-                                    mappingTableBuilder.predicate(null);
+              mappingTableBuilder.name("$" + currentVirtualName[0] + "$");
+              mappingTableBuilder.predicate(null);
 
-                                    // add all values from table and nested merged tables (don't we iterate over nested merged tables anyhow???)
-                                    mappingTableBuilder.values(mergedTable.getAllValuesStream(MappingTable::isMerged)
-                                                                          .map(value -> currentVirtualTable[0].applyAliasIfNecessary(mergedTable.getName(), value))
-                                                                          .collect(Collectors.toList()));
+              // add all values from table and nested merged tables (don't we iterate over nested
+              // merged tables anyhow???)
+              mappingTableBuilder.values(
+                  mergedTable
+                      .getAllValuesStream(MappingTable::isMerged)
+                      .map(
+                          value ->
+                              currentVirtualTable[0].applyAliasIfNecessary(
+                                  mergedTable.getName(), value))
+                      .collect(Collectors.toList()));
 
-                                    List<MappingTable> oldJoiningTables = Lists.newArrayList(mappingTableBuilder.buildDraft().getJoiningTables());
-                                    mappingTableBuilder.clearJoiningTables();
+              List<MappingTable> oldJoiningTables =
+                  Lists.newArrayList(mappingTableBuilder.buildDraft().getJoiningTables());
+              mappingTableBuilder.clearJoiningTables();
 
-                                    mappingTableBuilder.joiningTables(mergedTable.getJoiningTables()
-                                                                                 .stream()
-                                                                                 .map(jt -> new MappingTableBuilder().shallowCopyOf(jt)
-                                                                                                                     .joiningTables(jt.getJoiningTables())
-                                                                                                                     .values(jt.getValues())
-                                                                                                                     .joinPaths(jt.getJoinPaths()
-                                                                                                                                  .stream()
-                                                                                                                                  .map(jp -> new MappingJoinBuilder().shallowCopyOf(jp)
-                                                                                                                                                                     .joinConditions(jp.getJoinConditions()
-                                                                                                                                                                                       .stream()
-                                                                                                                                                                                       .map(jc -> jc.getSourceTable()
-                                                                                                                                                                                                    .equals(mergedTable.getName()) ? new MappingJoinBuilder.ConditionBuilder()
-                                                                                                                                                                                               .copyOf(jc)
-                                                                                                                                                                                               .sourceTable("$" + currentVirtualName[0] + "$")
-                                                                                                                                                                                               .build() : jc)
-                                                                                                                                                                                       .collect(Collectors.toList()))
-                                                                                                                                                                     .build())
-                                                                                                                                  .collect(Collectors.toList()))
-                                                                                                                     .build())
-                                                                                 .collect(Collectors.toList()));
+              mappingTableBuilder.joiningTables(
+                  mergedTable.getJoiningTables().stream()
+                      .map(
+                          jt ->
+                              new MappingTableBuilder()
+                                  .shallowCopyOf(jt)
+                                  .joiningTables(jt.getJoiningTables())
+                                  .values(jt.getValues())
+                                  .joinPaths(
+                                      jt.getJoinPaths().stream()
+                                          .map(
+                                              jp ->
+                                                  new MappingJoinBuilder()
+                                                      .shallowCopyOf(jp)
+                                                      .joinConditions(
+                                                          jp.getJoinConditions().stream()
+                                                              .map(
+                                                                  jc ->
+                                                                      jc.getSourceTable()
+                                                                              .equals(
+                                                                                  mergedTable
+                                                                                      .getName())
+                                                                          ? new MappingJoinBuilder
+                                                                                  .ConditionBuilder()
+                                                                              .copyOf(jc)
+                                                                              .sourceTable(
+                                                                                  "$"
+                                                                                      + currentVirtualName[
+                                                                                          0]
+                                                                                      + "$")
+                                                                              .build()
+                                                                          : jc)
+                                                              .collect(Collectors.toList()))
+                                                      .build())
+                                          .collect(Collectors.toList()))
+                                  .build())
+                      .collect(Collectors.toList()));
 
-                                    mappingTableBuilder.joiningTables(oldJoiningTables
-                                                                                 .stream()
-                                                                                 .map(jt -> new MappingTableBuilder().shallowCopyOf(jt)
-                                                                                                                     .joiningTables(jt.getJoiningTables())
-                                                                                                                     .values(jt.getValues())
-                                                                                                                     .joinPaths(jt.getJoinPaths()
-                                                                                                                                  .stream()
-                                                                                                                                  .map(jp -> new MappingJoinBuilder().shallowCopyOf(jp)
-                                                                                                                                                                     .joinConditions(jp.getJoinConditions()
-                                                                                                                                                                                       .stream()
-                                                                                                                                                                                       .map(jc -> jc.getSourceTable().equals(lastVirtualName[0]) ? new MappingJoinBuilder.ConditionBuilder()
-                                                                                                                                                                                               .copyOf(jc)
-                                                                                                                                                                                               .sourceTable("$" + currentVirtualName[0] + "$")
-                                                                                                                                                                                               .build() : jc)
-                                                                                                                                                                                       .collect(Collectors.toList()))
-                                                                                                                                                                     .build())
-                                                                                                                                  .collect(Collectors.toList()))
-                                                                                                                     .build())
-                                                                                 .collect(Collectors.toList()));
+              mappingTableBuilder.joiningTables(
+                  oldJoiningTables.stream()
+                      .map(
+                          jt ->
+                              new MappingTableBuilder()
+                                  .shallowCopyOf(jt)
+                                  .joiningTables(jt.getJoiningTables())
+                                  .values(jt.getValues())
+                                  .joinPaths(
+                                      jt.getJoinPaths().stream()
+                                          .map(
+                                              jp ->
+                                                  new MappingJoinBuilder()
+                                                      .shallowCopyOf(jp)
+                                                      .joinConditions(
+                                                          jp.getJoinConditions().stream()
+                                                              .map(
+                                                                  jc ->
+                                                                      jc.getSourceTable()
+                                                                              .equals(
+                                                                                  lastVirtualName[
+                                                                                      0])
+                                                                          ? new MappingJoinBuilder
+                                                                                  .ConditionBuilder()
+                                                                              .copyOf(jc)
+                                                                              .sourceTable(
+                                                                                  "$"
+                                                                                      + currentVirtualName[
+                                                                                          0]
+                                                                                      + "$")
+                                                                              .build()
+                                                                          : jc)
+                                                              .collect(Collectors.toList()))
+                                                      .build())
+                                          .collect(Collectors.toList()))
+                                  .build())
+                      .collect(Collectors.toList()));
 
-                                    this.currentVirtualTables.put("$" + currentVirtualName[0] + "$", currentVirtualTable[0]);
-                                });
+              this.currentVirtualTables.put(
+                  "$" + currentVirtualName[0] + "$", currentVirtualTable[0]);
+            });
         mappingTableBuilder.joinPaths(transformedMappingJoins.stream()
                                                              .map(jp -> new MappingJoinBuilder().shallowCopyOf(jp)
                                                                                                 .joinConditions(jp.getJoinConditions()

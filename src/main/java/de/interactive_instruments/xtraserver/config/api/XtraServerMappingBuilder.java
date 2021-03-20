@@ -90,6 +90,11 @@ public class XtraServerMappingBuilder {
         return this;
     }
 
+    public XtraServerMappingBuilder clearVirtualTables() {
+        this.virtualTables.clear();
+        return this;
+    }
+
     /**
      * Set the description
      *

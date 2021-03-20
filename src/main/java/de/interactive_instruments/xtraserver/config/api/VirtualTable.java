@@ -85,7 +85,7 @@ public abstract class VirtualTable {
                         .filter(mappingValue -> !isBooleanClassification(mappingValue))
                         .flatMap(mappingValue -> mappingValue.getValueColumns()
                                                           .stream()
-                                                          .map(column -> mappingValueAliases.getWithAsAlias(mappingTable.getName(), column, mappingValue.getTransformationHints().get("CLONE"))))
+                                                          .map(column -> mappingValueAliases.getWithAsAlias(mappingTable.getName(), column, mappingValue.getTransformationHints().get(Hints.CLONE))))
                         .forEach(this::addColumns);
 
             /*mappingTable.getJoinPaths().stream()

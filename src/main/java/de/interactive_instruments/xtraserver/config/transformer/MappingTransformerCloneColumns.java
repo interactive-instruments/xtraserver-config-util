@@ -14,6 +14,7 @@
 package de.interactive_instruments.xtraserver.config.transformer;
 
 import de.interactive_instruments.xtraserver.config.api.FeatureTypeMapping;
+import de.interactive_instruments.xtraserver.config.api.Hints;
 import de.interactive_instruments.xtraserver.config.api.MappingJoin;
 import de.interactive_instruments.xtraserver.config.api.MappingTable;
 import de.interactive_instruments.xtraserver.config.api.MappingTableBuilder;
@@ -70,7 +71,7 @@ public class MappingTransformerCloneColumns extends AbstractMappingTransformer {
 
     boolean hasClone =
         transformedMappingValuesWithClones.stream()
-            .anyMatch(mappingValue -> mappingValue.getTransformationHints().containsKey("CLONE"));
+            .anyMatch(mappingValue -> mappingValue.getTransformationHints().containsKey(Hints.CLONE));
 
     if (hasClone) {
       return virtualTables.from(mappingTableBuilder.build()).getCurrentTable();
@@ -93,12 +94,12 @@ public class MappingTransformerCloneColumns extends AbstractMappingTransformer {
 
       if (optionalCloneableValue.isPresent()) {
         MappingValue cloneableValue = optionalCloneableValue.get();
-        if (!cloneableValue.getTransformationHints().containsKey("CLONE")) { // no select id
+        if (!cloneableValue.getTransformationHints().containsKey(Hints.CLONE)) { // no select id
           int i = values.indexOf(cloneableValue);
           cloneableValue =
               new MappingValueBuilder()
                   .copyOf(cloneableValue)
-                  .transformationHint("CLONE", "1") // set select id
+                  .transformationHint(Hints.CLONE, "1") // set select id
                   .build();
           values.set(i, cloneableValue); // set select id
         }
@@ -107,9 +108,9 @@ public class MappingTransformerCloneColumns extends AbstractMappingTransformer {
             new MappingValueBuilder()
                 .copyOf(currentValue)
                 .transformationHint(
-                    "CLONE",
+                    Hints.CLONE,
                     String.valueOf(
-                        Integer.parseInt(cloneableValue.getTransformationHints().get("CLONE"))
+                        Integer.parseInt(cloneableValue.getTransformationHints().get(Hints.CLONE))
                             + 1)) // set select id
                 .build();
         values.add(clonedValue);

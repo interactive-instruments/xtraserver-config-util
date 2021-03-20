@@ -1,17 +1,16 @@
 package de.interactive_instruments.xtraserver.config.transformer;
 
 import de.interactive_instruments.xtraserver.config.api.FeatureTypeMapping;
+import de.interactive_instruments.xtraserver.config.api.Hints;
 import de.interactive_instruments.xtraserver.config.api.MappingJoin;
 import de.interactive_instruments.xtraserver.config.api.MappingTable;
 import de.interactive_instruments.xtraserver.config.api.MappingTableBuilder;
 import de.interactive_instruments.xtraserver.config.api.MappingValue;
 import de.interactive_instruments.xtraserver.config.api.MappingValueBuilder;
 import de.interactive_instruments.xtraserver.config.api.XtraServerMapping;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collector;
 import javax.xml.namespace.QName;
 
 public class MappingTransformerChoice extends AbstractMappingTransformer {
@@ -35,7 +34,12 @@ public class MappingTransformerChoice extends AbstractMappingTransformer {
 
     List<MappingValue> transformedMappingValues2 =
         transformedMappingValues.stream()
-            .sorted(Comparator.comparing(MappingValue::getTargetPath))
+            .sorted((mappingValue, mappingValue2) -> {
+              if (Objects.equals(mappingValue.getTargetPath(), mappingValue2.getTargetPath())) {
+                return Integer.compare(getPriority(mappingValue), getPriority(mappingValue2)) * -1;
+              }
+              return mappingValue.getTargetPath().compareTo(mappingValue2.getTargetPath());
+            })
             .collect(
                 new ChoiceCollector(featureTypeMapping.getQualifiedName()));
 
@@ -44,6 +48,10 @@ public class MappingTransformerChoice extends AbstractMappingTransformer {
         .values(transformedMappingValues2)
         .joiningTables(transformedMappingTables)
         .joinPaths(transformedMappingJoins);
+  }
+
+  private int getPriority(MappingValue mappingValue) {
+    return Integer.parseInt(mappingValue.getTransformationHints().getOrDefault(Hints.PRIORITY, "0"));
   }
 
   private class ChoiceCollector extends AbstractMappingValueCollector {
@@ -77,8 +85,7 @@ public class MappingTransformerChoice extends AbstractMappingTransformer {
         final MappingValue mappingValue2 =
             new MappingValueBuilder()
                 .copyOf(currentValue)
-                .predicate(createPredicate(previousChoiceValue.getPredicate(),
-                    currentValue)) // set select id
+                .predicate(createPredicate(previousChoiceValue, currentValue)) // set select id
                 .build();
         values.add(mappingValue2);
       } else {
@@ -87,18 +94,37 @@ public class MappingTransformerChoice extends AbstractMappingTransformer {
     }
 
     private String createPredicate(MappingValue choiceValue) {
+      if (choiceValue.isConstant()) {
+        if (choiceValue.getTransformationHints().containsKey(Hints.BOUND)) {
+          return String.format("$T$.%s IS NOT NULL", choiceValue.getTransformationHints().get(Hints.BOUND));
+        }
+        return null;
+      }
       return String.format("$T$.%s IS NOT NULL", choiceValue.getValue());
     }
 
-    private String createPredicate(String previousPredicate, MappingValue choiceValue) {
+    private String createPredicate(MappingValue previousChoiceValue, MappingValue choiceValue) {
+      String previousPredicate = previousChoiceValue.getPredicate();
+
+      // if previous is constant without predicate, it will be used anyway
+      if (Objects.isNull(previousPredicate)) {
+        return null;
+      }
+
       String negatedPreviousPredicate = previousPredicate.replaceAll("NOT NULL", "NULL");
 
-      if (choiceValue.isConstant()) {
+      String predicate = createPredicate(choiceValue);
+
+      if (Objects.isNull(predicate)) {
+        //don't use negated predicate from constant for constant
+        if (previousChoiceValue.isConstant()) {
+          return null;
+        }
         return negatedPreviousPredicate;
       }
 
       return String.format(
-          "%s AND $T$.%s IS NOT NULL", negatedPreviousPredicate, choiceValue.getValue());
+          "%s AND %s", negatedPreviousPredicate, predicate);
     }
 
     private boolean haveSameNonMultipleTargetPathWithDifferentValues(
@@ -111,7 +137,7 @@ public class MappingTransformerChoice extends AbstractMappingTransformer {
           && (value2.isColumn()
               || value2.isConstant()
               || (value2.isClassification() && !value2.isNil()))
-          && (value2.getTransformationHints().containsKey("CHOICE")
+          && (value2.getTransformationHints().containsKey(Hints.CHOICE)
               || applicationSchema
                   .getLastMultiplePropertyPath(currentFeatureType, value2.getQualifiedTargetPath())
                   .isEmpty());

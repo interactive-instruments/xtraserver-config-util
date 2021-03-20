@@ -1,6 +1,7 @@
 package de.interactive_instruments.xtraserver.config.transformer;
 
 import com.google.common.base.Strings;
+import de.interactive_instruments.xtraserver.config.api.Hints;
 import de.interactive_instruments.xtraserver.config.api.MappingValue;
 import de.interactive_instruments.xtraserver.config.api.MappingValueBuilder;
 
@@ -29,7 +30,8 @@ public class MappingValueAliases {
         MappingValue valueWithAlias = value;
 
         for (String column: new LinkedHashSet<>(value.getValueColumns())) {
-            String columnWithAlias = getWithAlias(table, column, value.getTransformationHints().get("CLONE"));
+            String columnWithAlias = getWithAlias(table, column, value.getTransformationHints().get(
+                Hints.CLONE));
 
             if (!Objects.equals(column, columnWithAlias)) {
                 valueWithAlias = new MappingValueBuilder().copyOf(valueWithAlias).value(valueWithAlias.getValue().replaceAll(column, columnWithAlias)).build();

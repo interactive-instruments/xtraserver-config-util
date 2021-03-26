@@ -275,6 +275,14 @@ public class MappingValueBuilder {
          * @return the builder
          */
         ValueClassification keyValue(String key, String value);
+
+        /**
+         * Add a default value
+         *
+         * @param value the default value
+         * @return the builder
+         */
+        ValueClassification defaultValue(String value);
     }
 
     /**
@@ -358,6 +366,13 @@ public class MappingValueBuilder {
         @Override
         public ValueClassification keyValue(final String key, final String value) {
             this.keys.add(key);
+            this.values.add(value);
+            return this;
+        }
+
+
+        @Override
+        public ValueClassification defaultValue(final String value) {
             this.values.add(value);
             return this;
         }

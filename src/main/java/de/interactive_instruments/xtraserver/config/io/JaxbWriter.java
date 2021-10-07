@@ -227,17 +227,8 @@ class JaxbWriter {
                     Joiner.on(' ').join(((MappingValueClassification) mappingValue).getValues()));
               }
 
-              // TODO
               if (!Objects.isNull(mappingValue.getSelectId())) {
                 value.setSelect_Id(mappingValue.getSelectId().toString());
-                /*if (!mappingValue.isReference()
-                    && mappingValue
-                        .getQualifiedTargetPath()
-                        .get(mappingValue.getQualifiedTargetPath().size() - 1)
-                        .getLocalPart()
-                        .startsWith("@")) {
-                  value.setSignificant_For_Emptiness(false);
-                }*/
               }
               if (!mappingValue.getSignificantForEmptiness()) {
                 value.setSignificant_For_Emptiness(false);

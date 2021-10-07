@@ -40,13 +40,13 @@ public class XtraServerMappingTransformer {
     private final boolean cloneColumns;
     private final boolean joinTypes;
     private final boolean multiJoins;
-    private final boolean cleanNilChildren;
+    private final boolean nilMappings;
 
     private XtraServerMappingTransformer(final XtraServerMapping xtraServerMapping,
         final URI applicationSchemaUri, final boolean flattenInheritance,
         final boolean fanOutInheritance, final boolean ensureRelationNavigability,
         boolean fixMultiplicity, boolean virtualTables, boolean applyChoicePredicates,
-        boolean cloneColumns, boolean joinTypes, boolean multiJoins, boolean cleanNilChildren) {
+        boolean cloneColumns, boolean joinTypes, boolean multiJoins, boolean nilMappings) {
         this.xtraServerMapping = xtraServerMapping;
         this.applicationSchemaUri = applicationSchemaUri;
         this.applicationSchema = new ApplicationSchema(applicationSchemaUri);
@@ -59,7 +59,7 @@ public class XtraServerMappingTransformer {
         this.cloneColumns = cloneColumns;
         this.joinTypes = joinTypes;
         this.multiJoins = multiJoins;
-        this.cleanNilChildren = cleanNilChildren;
+        this.nilMappings = nilMappings;
     }
 
     /**
@@ -78,9 +78,9 @@ public class XtraServerMappingTransformer {
 
         transformedXtraServerMapping = new MappingTransformerSchemaInfo(transformedXtraServerMapping, applicationSchema).transform();
 
-        if (cleanNilChildren) {
-            transformedXtraServerMapping = new MappingTransformerCleanNilChildren(transformedXtraServerMapping).transform();
-            description += "    - cleanNilChildren\n";
+        if (nilMappings) {
+            transformedXtraServerMapping = new MappingTransformerNil(transformedXtraServerMapping, applicationSchema).transform();
+            description += "    - nilMappings\n";
         }
         if (multiJoins) {
             transformedXtraServerMapping = new MappingTransformerMultiJoins(transformedXtraServerMapping).transform();

@@ -230,14 +230,14 @@ class JaxbWriter {
               // TODO
               if (!Objects.isNull(mappingValue.getSelectId())) {
                 value.setSelect_Id(mappingValue.getSelectId().toString());
-                if (!mappingValue.isReference()
+                /*if (!mappingValue.isReference()
                     && mappingValue
                         .getQualifiedTargetPath()
                         .get(mappingValue.getQualifiedTargetPath().size() - 1)
                         .getLocalPart()
                         .startsWith("@")) {
                   value.setSignificant_For_Emptiness(false);
-                }
+                }*/
               }
               if (!mappingValue.getSignificantForEmptiness()) {
                 value.setSignificant_For_Emptiness(false);

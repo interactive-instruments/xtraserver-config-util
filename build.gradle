@@ -116,6 +116,7 @@ tasks.javadoc.dependsOn configurations.doclava
 task sourceJar(type: Jar) {
     from sourceSets.main.allSource
     from sourceSets.xjc.allSource
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
 }
 
 //license {

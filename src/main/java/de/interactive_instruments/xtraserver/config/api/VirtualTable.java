@@ -130,7 +130,7 @@ public abstract class VirtualTable {
 
     protected abstract Optional<String> getWhereClause();
 
-    @Default
+    @Value.Derived
     protected String getPrimaryTable() {
         return getJoinPaths().iterator()
             .next()

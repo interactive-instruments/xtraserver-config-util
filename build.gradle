@@ -27,7 +27,7 @@ dependencies {
     implementation group: 'com.sun.xml.bind', name: 'jaxb-core', version: '4.0.1'
     implementation group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '4.0.1'
 
-    compileOnly         "org.immutables:value:2.8.4:annotations"
+    compileOnly "org.immutables:value:2.8.4:annotations"
     annotationProcessor "org.immutables:value:2.8.4"
 
     testFixturesApi 'com.google.guava:guava:27.0-jre'
@@ -61,7 +61,7 @@ jar.manifest.attributes(
         '-removeheaders': 'Bnd-LastModified,Created-By,Tool,Private-Package',
         'Import-Package': '!javax.annotation.*,!org.immutables.value,!de.interactive_instruments.*,*',
         'Bundle-Name': name,
-        'Bundle-SymbolicName': "${group}.${name.replaceAll('-','.')}",
+        'Bundle-SymbolicName': "${group}.${name.replaceAll('-', '.')}",
         'Bundle-Vendor': 'interactive-instruments GmbH',
         'Bundle-License': "http://www.apache.org/licenses/LICENSE-2.0"
 )
@@ -83,12 +83,16 @@ xjc {
 
 sourceSets {
     xjc {
-        java {
-        }
+        java {}
     }
     main {
         compileClasspath += sourceSets.xjc.output
         runtimeClasspath += sourceSets.xjc.output
+        xjcSchema.include 'XtraServer_Mapping.xsd'
+        xjcBinding.include 'bindings.xjb'
+    }
+    test {
+        xjcSchema.exclude '**/*'
     }
 }
 

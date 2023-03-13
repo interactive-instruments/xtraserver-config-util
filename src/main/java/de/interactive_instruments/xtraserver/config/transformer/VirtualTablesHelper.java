@@ -42,7 +42,8 @@ public class VirtualTablesHelper {
 
     currentVirtualTable.originalTable(mappingTable);
     currentVirtualTable.name(currentVirtualName);
-    currentVirtualTable.primaryTable(currentName);
+    //NOTE: is derived from joinPaths now
+    //currentVirtualTable.primaryTable(currentName);
     virtualTables.put(currentVirtualName, currentVirtualTable);
 
     currentTable.name(String.format("$%s$", currentVirtualName));

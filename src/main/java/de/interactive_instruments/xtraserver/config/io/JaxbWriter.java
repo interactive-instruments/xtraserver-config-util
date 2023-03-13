@@ -14,16 +14,16 @@
 package de.interactive_instruments.xtraserver.config.io;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import com.google.common.io.Resources;
 import de.interactive_instruments.xtraserver.config.api.*;
 import de.interactive_instruments.xtraserver.config.schema.*;
-import org.xml.sax.SAXException;
-
-import javax.xml.XMLConstants;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
+import org.glassfish.jaxb.runtime.v2.JAXBContextFactory;
+import org.xml.sax.SAXException;
+
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -322,8 +323,10 @@ class JaxbWriter {
         SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
     final Schema schema =
         schemaFactory.newSchema(Resources.getResource(JaxbReader.class, JaxbReader.MAPPING_SCHEMA));
-    final JAXBContext jaxbContext =
-        JAXBContext.newInstance(FeatureTypes.class.getPackage().getName());
+    final JAXBContext jaxbContext = new JAXBContextFactory().createContext(
+            FeatureTypes.class.getPackage().getName(),
+            Thread.currentThread().getContextClassLoader(),
+            Map.of());
 
     final XMLOutputFactory xof = XMLOutputFactory.newFactory();
     final XMLStreamWriter xsw =

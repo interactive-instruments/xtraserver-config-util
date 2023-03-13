@@ -8,9 +8,9 @@ import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * &lt;p&gt;Java class for SQLFeatureTypeImplType complex type.
+ * &lt;p&gt;Java-Klasse für SQLFeatureTypeImplType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * &lt;pre&gt;
  * &amp;lt;complexType name="SQLFeatureTypeImplType"&amp;gt;
@@ -48,7 +48,7 @@ public class SQLFeatureTypeImplType
     protected String ftCode;
 
     /**
-     * Gets the value of the logging property.
+     * Ruft den Wert der logging-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -64,7 +64,7 @@ public class SQLFeatureTypeImplType
     }
 
     /**
-     * Sets the value of the logging property.
+     * Legt den Wert der logging-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -76,7 +76,7 @@ public class SQLFeatureTypeImplType
     }
 
     /**
-     * Gets the value of the useTempTable property.
+     * Ruft den Wert der useTempTable-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -92,7 +92,7 @@ public class SQLFeatureTypeImplType
     }
 
     /**
-     * Sets the value of the useTempTable property.
+     * Legt den Wert der useTempTable-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -104,7 +104,7 @@ public class SQLFeatureTypeImplType
     }
 
     /**
-     * Gets the value of the tempTableName property.
+     * Ruft den Wert der tempTableName-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -116,7 +116,7 @@ public class SQLFeatureTypeImplType
     }
 
     /**
-     * Sets the value of the tempTableName property.
+     * Legt den Wert der tempTableName-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -128,7 +128,7 @@ public class SQLFeatureTypeImplType
     }
 
     /**
-     * Gets the value of the ftCode property.
+     * Ruft den Wert der ftCode-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -140,7 +140,7 @@ public class SQLFeatureTypeImplType
     }
 
     /**
-     * Sets the value of the ftCode property.
+     * Legt den Wert der ftCode-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is

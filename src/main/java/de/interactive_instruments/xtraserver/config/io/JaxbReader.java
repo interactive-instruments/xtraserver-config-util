@@ -26,12 +26,13 @@ import de.interactive_instruments.xtraserver.config.schema.AdditionalMappings;
 import de.interactive_instruments.xtraserver.config.schema.FeatureType;
 import de.interactive_instruments.xtraserver.config.schema.FeatureTypes;
 import de.interactive_instruments.xtraserver.config.schema.MappingsSequenceType;
-import org.xml.sax.SAXException;
-
-import javax.xml.XMLConstants;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
+import org.glassfish.jaxb.runtime.v2.JAXBContextFactory;
+import org.xml.sax.SAXException;
+
+import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.*;
@@ -459,7 +460,10 @@ class JaxbReader {
     private FeatureTypes unmarshal(final InputStream inputStream) throws JAXBException, IOException, SAXException {
         final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         final Schema schema = schemaFactory.newSchema(Resources.getResource(JaxbReader.class, MAPPING_SCHEMA));
-        final JAXBContext jaxbContext = JAXBContext.newInstance(FeatureTypes.class.getPackage().getName());
+        final JAXBContext jaxbContext = new JAXBContextFactory().createContext(
+                FeatureTypes.class.getPackage().getName(),
+                Thread.currentThread().getContextClassLoader(),
+                Map.of());
 
         final PipedInputStream in = new PipedInputStream();
         final PipedOutputStream out = new PipedOutputStream(in);

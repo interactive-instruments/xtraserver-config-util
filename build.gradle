@@ -24,8 +24,7 @@ dependencies {
     implementation 'com.google.guava:guava:27.0-jre'
     implementation 'org.apache.ws.commons.schema:XmlSchema:1.4.7'
     implementation group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.0'
-    implementation group: 'com.sun.xml.bind', name: 'jaxb-core', version: '4.0.1'
-    implementation group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '4.0.1'
+    implementation group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '4.0.1'
 
     compileOnly "org.immutables:value:2.8.4:annotations"
     annotationProcessor "org.immutables:value:2.8.4"
@@ -45,8 +44,8 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 compileJava {

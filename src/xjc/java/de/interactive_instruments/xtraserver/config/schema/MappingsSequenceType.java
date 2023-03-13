@@ -14,9 +14,9 @@ import jakarta.xml.bind.annotation.XmlValue;
 
 
 /**
- * &lt;p&gt;Java class for MappingsSequenceType complex type.
+ * &lt;p&gt;Java-Klasse für MappingsSequenceType complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * &lt;pre&gt;
  * &amp;lt;complexType name="MappingsSequenceType"&amp;gt;
@@ -194,9 +194,9 @@ public class MappingsSequenceType {
 
 
     /**
-     * &lt;p&gt;Java class for anonymous complex type.
+     * &lt;p&gt;Java-Klasse für anonymous complex type.
      * 
-     * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+     * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
      * 
      * &lt;pre&gt;
      * &amp;lt;complexType&amp;gt;
@@ -228,7 +228,7 @@ public class MappingsSequenceType {
         protected String object_Ref;
 
         /**
-         * Gets the value of the value property.
+         * Ruft den Wert der value-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -240,7 +240,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the value property.
+         * Legt den Wert der value-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -252,7 +252,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the gmlVersion property.
+         * Ruft den Wert der gmlVersion-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -264,7 +264,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the gmlVersion property.
+         * Legt den Wert der gmlVersion-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -276,7 +276,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the target property.
+         * Ruft den Wert der target-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -292,7 +292,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the target property.
+         * Legt den Wert der target-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -304,7 +304,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the object_Ref property.
+         * Ruft den Wert der object_Ref-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -316,7 +316,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the object_Ref property.
+         * Legt den Wert der object_Ref-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -331,9 +331,9 @@ public class MappingsSequenceType {
 
 
     /**
-     * &lt;p&gt;Java class for anonymous complex type.
+     * &lt;p&gt;Java-Klasse für anonymous complex type.
      * 
-     * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+     * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
      * 
      * &lt;pre&gt;
      * &amp;lt;complexType&amp;gt;
@@ -371,7 +371,7 @@ public class MappingsSequenceType {
         protected String mode;
 
         /**
-         * Gets the value of the value property.
+         * Ruft den Wert der value-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -383,7 +383,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the value property.
+         * Legt den Wert der value-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -395,7 +395,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the gmlVersion property.
+         * Ruft den Wert der gmlVersion-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -407,7 +407,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the gmlVersion property.
+         * Legt den Wert der gmlVersion-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -419,7 +419,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the target property.
+         * Ruft den Wert der target-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -435,7 +435,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the target property.
+         * Legt den Wert der target-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -447,7 +447,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the representation property.
+         * Ruft den Wert der representation-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -459,7 +459,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the representation property.
+         * Legt den Wert der representation-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -471,7 +471,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the implementation property.
+         * Ruft den Wert der implementation-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -483,7 +483,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the implementation property.
+         * Legt den Wert der implementation-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -495,7 +495,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the mode property.
+         * Ruft den Wert der mode-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -507,7 +507,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the mode property.
+         * Legt den Wert der mode-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -522,9 +522,9 @@ public class MappingsSequenceType {
 
 
     /**
-     * &lt;p&gt;Java class for anonymous complex type.
+     * &lt;p&gt;Java-Klasse für anonymous complex type.
      * 
-     * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+     * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
      * 
      * &lt;pre&gt;
      * &amp;lt;complexType&amp;gt;
@@ -571,7 +571,7 @@ public class MappingsSequenceType {
         protected String disambiguate;
 
         /**
-         * Gets the value of the value property.
+         * Ruft den Wert der value-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -583,7 +583,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the value property.
+         * Legt den Wert der value-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -595,7 +595,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the gmlVersion property.
+         * Ruft den Wert der gmlVersion-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -607,7 +607,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the gmlVersion property.
+         * Legt den Wert der gmlVersion-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -619,7 +619,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the target property.
+         * Ruft den Wert der target-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -635,7 +635,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the target property.
+         * Legt den Wert der target-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -647,7 +647,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the filter_Mapping property.
+         * Ruft den Wert der filter_Mapping-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -663,7 +663,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the filter_Mapping property.
+         * Legt den Wert der filter_Mapping-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -675,7 +675,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the join_Path property.
+         * Ruft den Wert der join_Path-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -687,7 +687,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the join_Path property.
+         * Legt den Wert der join_Path-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -699,7 +699,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the axis property.
+         * Ruft den Wert der axis-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -711,7 +711,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the axis property.
+         * Legt den Wert der axis-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -723,7 +723,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the idref property.
+         * Ruft den Wert der idref-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -735,7 +735,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the idref property.
+         * Legt den Wert der idref-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -747,7 +747,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the match property.
+         * Ruft den Wert der match-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -759,7 +759,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the match property.
+         * Legt den Wert der match-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -771,7 +771,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the disambiguate property.
+         * Ruft den Wert der disambiguate-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -783,7 +783,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the disambiguate property.
+         * Legt den Wert der disambiguate-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -798,9 +798,9 @@ public class MappingsSequenceType {
 
 
     /**
-     * &lt;p&gt;Java class for anonymous complex type.
+     * &lt;p&gt;Java-Klasse für anonymous complex type.
      * 
-     * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+     * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
      * 
      * &lt;pre&gt;
      * &amp;lt;complexType&amp;gt;
@@ -828,7 +828,7 @@ public class MappingsSequenceType {
         protected String implementation;
 
         /**
-         * Gets the value of the gmlVersion property.
+         * Ruft den Wert der gmlVersion-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -840,7 +840,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the gmlVersion property.
+         * Legt den Wert der gmlVersion-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -852,7 +852,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the target property.
+         * Ruft den Wert der target-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -868,7 +868,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the target property.
+         * Legt den Wert der target-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -880,7 +880,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the implementation property.
+         * Ruft den Wert der implementation-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -892,7 +892,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the implementation property.
+         * Legt den Wert der implementation-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -907,9 +907,9 @@ public class MappingsSequenceType {
 
 
     /**
-     * &lt;p&gt;Java class for anonymous complex type.
+     * &lt;p&gt;Java-Klasse für anonymous complex type.
      * 
-     * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+     * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
      * 
      * &lt;pre&gt;
      * &amp;lt;complexType&amp;gt;
@@ -1057,7 +1057,7 @@ public class MappingsSequenceType {
         protected String valueType;
 
         /**
-         * Gets the value of the apply_Mapping_To_Path property.
+         * Ruft den Wert der apply_Mapping_To_Path-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1069,7 +1069,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the apply_Mapping_To_Path property.
+         * Legt den Wert der apply_Mapping_To_Path-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1081,7 +1081,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the applyMappingToPath property.
+         * Ruft den Wert der applyMappingToPath-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1093,7 +1093,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the applyMappingToPath property.
+         * Legt den Wert der applyMappingToPath-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1105,7 +1105,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the assign property.
+         * Ruft den Wert der assign-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1117,7 +1117,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the assign property.
+         * Legt den Wert der assign-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1129,7 +1129,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the assign1 property.
+         * Ruft den Wert der assign1-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1141,7 +1141,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the assign1 property.
+         * Legt den Wert der assign1-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1153,7 +1153,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the db_Codes property.
+         * Ruft den Wert der db_Codes-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1165,7 +1165,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the db_Codes property.
+         * Legt den Wert der db_Codes-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1177,7 +1177,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the derivation_Pattern property.
+         * Ruft den Wert der derivation_Pattern-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1189,7 +1189,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the derivation_Pattern property.
+         * Legt den Wert der derivation_Pattern-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1201,7 +1201,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the disambiguate property.
+         * Ruft den Wert der disambiguate-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1213,7 +1213,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the disambiguate property.
+         * Legt den Wert der disambiguate-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1225,7 +1225,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the filter_Mapping property.
+         * Ruft den Wert der filter_Mapping-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1241,7 +1241,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the filter_Mapping property.
+         * Legt den Wert der filter_Mapping-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1253,7 +1253,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the for_Each_Select_Id property.
+         * Ruft den Wert der for_Each_Select_Id-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1265,7 +1265,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the for_Each_Select_Id property.
+         * Legt den Wert der for_Each_Select_Id-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1277,7 +1277,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the ft_Col property.
+         * Ruft den Wert der ft_Col-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1289,7 +1289,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the ft_Col property.
+         * Legt den Wert der ft_Col-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1301,7 +1301,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the generator property.
+         * Ruft den Wert der generator-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1313,7 +1313,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the generator property.
+         * Legt den Wert der generator-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1325,7 +1325,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the gmlVersion property.
+         * Ruft den Wert der gmlVersion-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1337,7 +1337,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the gmlVersion property.
+         * Legt den Wert der gmlVersion-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1349,7 +1349,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the id property.
+         * Ruft den Wert der id-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1361,7 +1361,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the id property.
+         * Legt den Wert der id-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1373,7 +1373,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the is_Reference property.
+         * Ruft den Wert der is_Reference-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1385,7 +1385,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the is_Reference property.
+         * Legt den Wert der is_Reference-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1397,7 +1397,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the isMappedGeometry property.
+         * Ruft den Wert der isMappedGeometry-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1409,7 +1409,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the isMappedGeometry property.
+         * Legt den Wert der isMappedGeometry-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1421,7 +1421,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the isReference property.
+         * Ruft den Wert der isReference-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1433,7 +1433,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the isReference property.
+         * Legt den Wert der isReference-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1445,7 +1445,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the map_Targetpath property.
+         * Ruft den Wert der map_Targetpath-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1457,7 +1457,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the map_Targetpath property.
+         * Legt den Wert der map_Targetpath-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1469,7 +1469,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the mapped_Geometry property.
+         * Ruft den Wert der mapped_Geometry-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1481,7 +1481,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the mapped_Geometry property.
+         * Legt den Wert der mapped_Geometry-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1493,7 +1493,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the mapping_Mode property.
+         * Ruft den Wert der mapping_Mode-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1509,7 +1509,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the mapping_Mode property.
+         * Legt den Wert der mapping_Mode-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1521,7 +1521,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the match property.
+         * Ruft den Wert der match-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1533,7 +1533,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the match property.
+         * Legt den Wert der match-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1545,7 +1545,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the nil_Reason property.
+         * Ruft den Wert der nil_Reason-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1557,7 +1557,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the nil_Reason property.
+         * Legt den Wert der nil_Reason-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1569,7 +1569,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the nil_Value property.
+         * Ruft den Wert der nil_Value-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1581,7 +1581,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the nil_Value property.
+         * Legt den Wert der nil_Value-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1593,7 +1593,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the no_Output property.
+         * Ruft den Wert der no_Output-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1605,7 +1605,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the no_Output property.
+         * Legt den Wert der no_Output-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1617,7 +1617,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the noOutput property.
+         * Ruft den Wert der noOutput-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1629,7 +1629,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the noOutput property.
+         * Legt den Wert der noOutput-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1641,7 +1641,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the oid_Col property.
+         * Ruft den Wert der oid_Col-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1653,7 +1653,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the oid_Col property.
+         * Legt den Wert der oid_Col-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1665,7 +1665,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the schema_Codes property.
+         * Ruft den Wert der schema_Codes-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1677,7 +1677,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the schema_Codes property.
+         * Legt den Wert der schema_Codes-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1689,7 +1689,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the select_Id property.
+         * Ruft den Wert der select_Id-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1701,7 +1701,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the select_Id property.
+         * Legt den Wert der select_Id-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1713,7 +1713,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the significant_For_Emptiness property.
+         * Ruft den Wert der significant_For_Emptiness-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1725,7 +1725,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the significant_For_Emptiness property.
+         * Legt den Wert der significant_For_Emptiness-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1737,7 +1737,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the significantForEmptiness property.
+         * Ruft den Wert der significantForEmptiness-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1749,7 +1749,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the significantForEmptiness property.
+         * Legt den Wert der significantForEmptiness-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1761,7 +1761,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the srid property.
+         * Ruft den Wert der srid-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1773,7 +1773,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the srid property.
+         * Legt den Wert der srid-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1785,7 +1785,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the srs property.
+         * Ruft den Wert der srs-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1797,7 +1797,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the srs property.
+         * Legt den Wert der srs-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1809,7 +1809,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the suppress_Xml_Entities_Encoding property.
+         * Ruft den Wert der suppress_Xml_Entities_Encoding-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1821,7 +1821,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the suppress_Xml_Entities_Encoding property.
+         * Legt den Wert der suppress_Xml_Entities_Encoding-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1833,7 +1833,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the suppressXMLEntitiesEncoding property.
+         * Ruft den Wert der suppressXMLEntitiesEncoding-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1845,7 +1845,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the suppressXMLEntitiesEncoding property.
+         * Legt den Wert der suppressXMLEntitiesEncoding-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1857,7 +1857,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the table_Name property.
+         * Ruft den Wert der table_Name-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1869,7 +1869,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the table_Name property.
+         * Legt den Wert der table_Name-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1881,7 +1881,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the target property.
+         * Ruft den Wert der target-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1897,7 +1897,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the target property.
+         * Legt den Wert der target-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1909,7 +1909,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the use_Geotypes property.
+         * Ruft den Wert der use_Geotypes-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1921,7 +1921,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the use_Geotypes property.
+         * Legt den Wert der use_Geotypes-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1933,7 +1933,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the useGeotypes property.
+         * Ruft den Wert der useGeotypes-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1945,7 +1945,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the useGeotypes property.
+         * Legt den Wert der useGeotypes-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1957,7 +1957,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the value property.
+         * Ruft den Wert der value-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1969,7 +1969,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the value property.
+         * Legt den Wert der value-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -1981,7 +1981,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the value_Type property.
+         * Ruft den Wert der value_Type-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -1993,7 +1993,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the value_Type property.
+         * Legt den Wert der value_Type-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -2005,7 +2005,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Gets the value of the valueType property.
+         * Ruft den Wert der valueType-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -2017,7 +2017,7 @@ public class MappingsSequenceType {
         }
 
         /**
-         * Sets the value of the valueType property.
+         * Legt den Wert der valueType-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is

@@ -92,7 +92,7 @@ public class MappingTransformerMultiJoins extends AbstractMappingTransformer {
                           .copyOf(mappingTableBuilder.build())
                           .qualifiedTargetPath(ImmutableList.of(entry.getKey()))
                           // TODO
-                          //.targetPath(entry.getKey().toString().replace("{", "").replace("}", ":"))
+                          .targetPath(entry.getKey().toString().replace("{", "").replace("}", ":"))
                           .clearValues()
                           .values(entry.getValue()))
               .collect(Collectors.toList());

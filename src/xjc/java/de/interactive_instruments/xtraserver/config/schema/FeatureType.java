@@ -13,9 +13,9 @@ import jakarta.xml.bind.annotation.XmlValue;
 
 
 /**
- * &lt;p&gt;Java class for anonymous complex type.
+ * &lt;p&gt;Java-Klasse für anonymous complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * &lt;pre&gt;
  * &amp;lt;complexType&amp;gt;
@@ -117,7 +117,7 @@ public class FeatureType {
     protected EnablingType mode;
 
     /**
-     * Gets the value of the name property.
+     * Ruft den Wert der name-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -129,7 +129,7 @@ public class FeatureType {
     }
 
     /**
-     * Sets the value of the name property.
+     * Legt den Wert der name-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -141,7 +141,7 @@ public class FeatureType {
     }
 
     /**
-     * Gets the value of the title property.
+     * Ruft den Wert der title-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -153,7 +153,7 @@ public class FeatureType {
     }
 
     /**
-     * Sets the value of the title property.
+     * Legt den Wert der title-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -165,7 +165,7 @@ public class FeatureType {
     }
 
     /**
-     * Gets the value of the abstract property.
+     * Ruft den Wert der abstract-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -177,7 +177,7 @@ public class FeatureType {
     }
 
     /**
-     * Sets the value of the abstract property.
+     * Legt den Wert der abstract-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -247,7 +247,7 @@ public class FeatureType {
     }
 
     /**
-     * Gets the value of the suppressIdentity property.
+     * Ruft den Wert der suppressIdentity-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -259,7 +259,7 @@ public class FeatureType {
     }
 
     /**
-     * Sets the value of the suppressIdentity property.
+     * Legt den Wert der suppressIdentity-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -271,7 +271,7 @@ public class FeatureType {
     }
 
     /**
-     * Gets the value of the pathAliases property.
+     * Ruft den Wert der pathAliases-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -283,7 +283,7 @@ public class FeatureType {
     }
 
     /**
-     * Sets the value of the pathAliases property.
+     * Legt den Wert der pathAliases-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -295,7 +295,7 @@ public class FeatureType {
     }
 
     /**
-     * Gets the value of the oraSFeatureTypeImpl property.
+     * Ruft den Wert der oraSFeatureTypeImpl-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -307,7 +307,7 @@ public class FeatureType {
     }
 
     /**
-     * Sets the value of the oraSFeatureTypeImpl property.
+     * Legt den Wert der oraSFeatureTypeImpl-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -319,7 +319,7 @@ public class FeatureType {
     }
 
     /**
-     * Gets the value of the pgisFeatureTypeImpl property.
+     * Ruft den Wert der pgisFeatureTypeImpl-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -331,7 +331,7 @@ public class FeatureType {
     }
 
     /**
-     * Sets the value of the pgisFeatureTypeImpl property.
+     * Legt den Wert der pgisFeatureTypeImpl-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -343,7 +343,7 @@ public class FeatureType {
     }
 
     /**
-     * Gets the value of the gdbsqlFeatureTypeImpl property.
+     * Ruft den Wert der gdbsqlFeatureTypeImpl-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -355,7 +355,7 @@ public class FeatureType {
     }
 
     /**
-     * Sets the value of the gdbsqlFeatureTypeImpl property.
+     * Legt den Wert der gdbsqlFeatureTypeImpl-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -367,7 +367,7 @@ public class FeatureType {
     }
 
     /**
-     * Gets the value of the includeDerivations property.
+     * Ruft den Wert der includeDerivations-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -383,7 +383,7 @@ public class FeatureType {
     }
 
     /**
-     * Sets the value of the includeDerivations property.
+     * Legt den Wert der includeDerivations-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -395,7 +395,7 @@ public class FeatureType {
     }
 
     /**
-     * Gets the value of the mode property.
+     * Ruft den Wert der mode-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -411,7 +411,7 @@ public class FeatureType {
     }
 
     /**
-     * Sets the value of the mode property.
+     * Legt den Wert der mode-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -424,9 +424,9 @@ public class FeatureType {
 
 
     /**
-     * &lt;p&gt;Java class for anonymous complex type.
+     * &lt;p&gt;Java-Klasse für anonymous complex type.
      * 
-     * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+     * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
      * 
      * &lt;pre&gt;
      * &amp;lt;complexType&amp;gt;
@@ -452,7 +452,7 @@ public class FeatureType {
         protected String wfsVersion;
 
         /**
-         * Gets the value of the value property.
+         * Ruft den Wert der value-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -464,7 +464,7 @@ public class FeatureType {
         }
 
         /**
-         * Sets the value of the value property.
+         * Legt den Wert der value-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -476,7 +476,7 @@ public class FeatureType {
         }
 
         /**
-         * Gets the value of the wfsVersion property.
+         * Ruft den Wert der wfsVersion-Eigenschaft ab.
          * 
          * @return
          *     possible object is
@@ -488,7 +488,7 @@ public class FeatureType {
         }
 
         /**
-         * Sets the value of the wfsVersion property.
+         * Legt den Wert der wfsVersion-Eigenschaft fest.
          * 
          * @param value
          *     allowed object is
@@ -503,9 +503,9 @@ public class FeatureType {
 
 
     /**
-     * &lt;p&gt;Java class for anonymous complex type.
+     * &lt;p&gt;Java-Klasse für anonymous complex type.
      * 
-     * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+     * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
      * 
      * &lt;pre&gt;
      * &amp;lt;complexType&amp;gt;
@@ -574,9 +574,9 @@ public class FeatureType {
 
 
         /**
-         * &lt;p&gt;Java class for anonymous complex type.
+         * &lt;p&gt;Java-Klasse für anonymous complex type.
          * 
-         * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+         * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
          * 
          * &lt;pre&gt;
          * &amp;lt;complexType&amp;gt;
@@ -612,7 +612,7 @@ public class FeatureType {
             protected String gmlVersion;
 
             /**
-             * Gets the value of the pattern property.
+             * Ruft den Wert der pattern-Eigenschaft ab.
              * 
              * @return
              *     possible object is
@@ -624,7 +624,7 @@ public class FeatureType {
             }
 
             /**
-             * Sets the value of the pattern property.
+             * Legt den Wert der pattern-Eigenschaft fest.
              * 
              * @param value
              *     allowed object is
@@ -636,7 +636,7 @@ public class FeatureType {
             }
 
             /**
-             * Gets the value of the replacement property.
+             * Ruft den Wert der replacement-Eigenschaft ab.
              * 
              * @return
              *     possible object is
@@ -648,7 +648,7 @@ public class FeatureType {
             }
 
             /**
-             * Sets the value of the replacement property.
+             * Legt den Wert der replacement-Eigenschaft fest.
              * 
              * @param value
              *     allowed object is
@@ -660,7 +660,7 @@ public class FeatureType {
             }
 
             /**
-             * Gets the value of the externalUse property.
+             * Ruft den Wert der externalUse-Eigenschaft ab.
              * 
              * @return
              *     possible object is
@@ -676,7 +676,7 @@ public class FeatureType {
             }
 
             /**
-             * Sets the value of the externalUse property.
+             * Legt den Wert der externalUse-Eigenschaft fest.
              * 
              * @param value
              *     allowed object is
@@ -688,7 +688,7 @@ public class FeatureType {
             }
 
             /**
-             * Gets the value of the gmlVersion property.
+             * Ruft den Wert der gmlVersion-Eigenschaft ab.
              * 
              * @return
              *     possible object is
@@ -700,7 +700,7 @@ public class FeatureType {
             }
 
             /**
-             * Sets the value of the gmlVersion property.
+             * Legt den Wert der gmlVersion-Eigenschaft fest.
              * 
              * @param value
              *     allowed object is

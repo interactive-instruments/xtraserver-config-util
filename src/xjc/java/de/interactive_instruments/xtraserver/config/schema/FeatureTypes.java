@@ -15,9 +15,9 @@ import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * &lt;p&gt;Java class for anonymous complex type.
+ * &lt;p&gt;Java-Klasse für anonymous complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * &lt;pre&gt;
  * &amp;lt;complexType&amp;gt;
@@ -86,7 +86,7 @@ public class FeatureTypes {
     }
 
     /**
-     * Gets the value of the defaultDbSchema property.
+     * Ruft den Wert der defaultDbSchema-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -98,7 +98,7 @@ public class FeatureTypes {
     }
 
     /**
-     * Sets the value of the defaultDbSchema property.
+     * Legt den Wert der defaultDbSchema-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -110,7 +110,7 @@ public class FeatureTypes {
     }
 
     /**
-     * Gets the value of the appSchemaGenerator property.
+     * Ruft den Wert der appSchemaGenerator-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -122,7 +122,7 @@ public class FeatureTypes {
     }
 
     /**
-     * Sets the value of the appSchemaGenerator property.
+     * Legt den Wert der appSchemaGenerator-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is

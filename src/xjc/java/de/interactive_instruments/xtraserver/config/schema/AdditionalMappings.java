@@ -9,9 +9,9 @@ import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * &lt;p&gt;Java class for anonymous complex type.
+ * &lt;p&gt;Java-Klasse für anonymous complex type.
  * 
- * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.
+ * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * &lt;pre&gt;
  * &amp;lt;complexType&amp;gt;
@@ -42,7 +42,7 @@ public class AdditionalMappings {
     protected MappingsSequenceType mappings;
 
     /**
-     * Gets the value of the rootElementName property.
+     * Ruft den Wert der rootElementName-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -54,7 +54,7 @@ public class AdditionalMappings {
     }
 
     /**
-     * Sets the value of the rootElementName property.
+     * Legt den Wert der rootElementName-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -66,7 +66,7 @@ public class AdditionalMappings {
     }
 
     /**
-     * Gets the value of the mappings property.
+     * Ruft den Wert der mappings-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -78,7 +78,7 @@ public class AdditionalMappings {
     }
 
     /**
-     * Sets the value of the mappings property.
+     * Legt den Wert der mappings-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is

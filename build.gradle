@@ -21,7 +21,7 @@ configurations {
 }
 
 dependencies {
-    api 'com.google.guava:guava:27.0-jre'
+    implementation 'com.google.guava:guava:27.0-jre'
     implementation 'org.apache.ws.commons.schema:XmlSchema:1.4.7'
     implementation group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.0'
     implementation group: 'com.sun.xml.bind', name: 'jaxb-core', version: '4.0.1'
@@ -30,7 +30,8 @@ dependencies {
     compileOnly         "org.immutables:value:2.8.4:annotations"
     annotationProcessor "org.immutables:value:2.8.4"
 
-    testImplementation 'com.google.guava:guava:27.0-jre'
+    testFixturesApi 'com.google.guava:guava:27.0-jre'
+
     testImplementation "junit:junit:4.12"
     testImplementation "org.xmlunit:xmlunit-core:2.5.1"
     testImplementation "org.xmlunit:xmlunit-matchers:2.5.1"
@@ -77,10 +78,26 @@ test {
 
 xjc {
     xjcVersion = '3.0'
+    srcDirName = 'resources'
+}
+
+sourceSets {
+    xjc {
+        java {
+        }
+    }
+    main {
+        compileClasspath += sourceSets.xjc.output
+        runtimeClasspath += sourceSets.xjc.output
+    }
+}
+
+configurations {
+    xjcImplementation.extendsFrom(implementation)
 }
 
 xjcGenerate {
-    outputDirectory = file('src/main/java')
+    outputDirectory = file('src/xjc/java')
     targetPackage = 'de.interactive_instruments.xtraserver.config.schema'
 }
 
@@ -95,6 +112,7 @@ tasks.javadoc.dependsOn configurations.doclava
 
 task sourceJar(type: Jar) {
     from sourceSets.main.allSource
+    from sourceSets.xjc.allSource
 }
 
 //license {

@@ -32,4 +32,3 @@ pipeline:
     mount:
       - .gradle/caches
       - .gradle/wrapper
-

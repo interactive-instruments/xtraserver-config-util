@@ -1,48 +1,34 @@
-/**
- * Copyright 2020 interactive instruments GmbH
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 package de.interactive_instruments.xtraserver.config.schema;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für SQLFeatureTypeImplType complex type.
+ * &lt;p&gt;Java-Klasse für SQLFeatureTypeImplType complex type.
  * 
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
- * <pre>
- * &lt;complexType name="SQLFeatureTypeImplType"&gt;
- *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.interactive-instruments.de/namespaces/XtraServer}MappingsSequenceType"&gt;
- *       &lt;attribute name="logging" default="false"&gt;
- *         &lt;simpleType&gt;
- *           &lt;union memberTypes=" {http://www.w3.org/2001/XMLSchema}boolean {http://www.interactive-instruments.de/namespaces/XtraServer}loggingExtensionType"&gt;
- *           &lt;/union&gt;
- *         &lt;/simpleType&gt;
- *       &lt;/attribute&gt;
- *       &lt;attribute name="useTempTable" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
- *       &lt;attribute name="tempTableName" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="FTCode" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *     &lt;/extension&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
+ * &lt;pre&gt;
+ * &amp;lt;complexType name="SQLFeatureTypeImplType"&amp;gt;
+ *   &amp;lt;complexContent&amp;gt;
+ *     &amp;lt;extension base="{http://www.interactive-instruments.de/namespaces/XtraServer}MappingsSequenceType"&amp;gt;
+ *       &amp;lt;attribute name="logging" default="false"&amp;gt;
+ *         &amp;lt;simpleType&amp;gt;
+ *           &amp;lt;union memberTypes=" {http://www.w3.org/2001/XMLSchema}boolean {http://www.interactive-instruments.de/namespaces/XtraServer}loggingExtensionType"&amp;gt;
+ *           &amp;lt;/union&amp;gt;
+ *         &amp;lt;/simpleType&amp;gt;
+ *       &amp;lt;/attribute&amp;gt;
+ *       &amp;lt;attribute name="useTempTable" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&amp;gt;
+ *       &amp;lt;attribute name="tempTableName" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *       &amp;lt;attribute name="FTCode" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *     &amp;lt;/extension&amp;gt;
+ *   &amp;lt;/complexContent&amp;gt;
+ * &amp;lt;/complexType&amp;gt;
+ * &lt;/pre&gt;
  * 
  * 
  */

@@ -1,150 +1,143 @@
-/**
- * Copyright 2020 interactive instruments GmbH
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 package de.interactive_instruments.xtraserver.config.schema;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElements;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlValue;
 
 
 /**
- * <p>Java-Klasse für MappingsSequenceType complex type.
+ * &lt;p&gt;Java-Klasse für MappingsSequenceType complex type.
  * 
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
- * <pre>
- * &lt;complexType name="MappingsSequenceType"&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
- *         &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
- *           &lt;element name="Table"&gt;
- *             &lt;complexType&gt;
- *               &lt;complexContent&gt;
- *                 &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *                   &lt;attribute name="apply_mapping_to_path" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *                   &lt;attribute name="applyMappingToPath" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *                   &lt;attribute name="assign" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="assign1" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="db_codes" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="derivation_pattern" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="disambiguate" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="filter_mapping" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
- *                   &lt;attribute name="for_each_select_id" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="ft_col" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="generator" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="is_reference" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *                   &lt;attribute name="isMappedGeometry" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *                   &lt;attribute name="isReference" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *                   &lt;attribute name="map_targetpath" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *                   &lt;attribute name="mapped_geometry" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *                   &lt;attribute name="mapping_mode" default="value"&gt;
- *                     &lt;simpleType&gt;
- *                       &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
- *                         &lt;enumeration value="value"/&gt;
- *                         &lt;enumeration value="nil"/&gt;
- *                         &lt;enumeration value="nil_attr"/&gt;
- *                         &lt;enumeration value="nilAttr"/&gt;
- *                       &lt;/restriction&gt;
- *                     &lt;/simpleType&gt;
- *                   &lt;/attribute&gt;
- *                   &lt;attribute name="match" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="nil_reason" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="nil_value" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="no_output" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *                   &lt;attribute name="noOutput" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *                   &lt;attribute name="oid_col" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="schema_codes" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="select_id" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="significant_for_emptiness" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *                   &lt;attribute name="significantForEmptiness" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *                   &lt;attribute name="srid" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="srs" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="suppress_xml_entities_encoding" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *                   &lt;attribute name="suppressXMLEntitiesEncoding" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *                   &lt;attribute name="table_name" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
- *                   &lt;attribute name="use_geotypes" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="useGeotypes" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="value_type" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="valueType" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                 &lt;/restriction&gt;
- *               &lt;/complexContent&gt;
- *             &lt;/complexType&gt;
- *           &lt;/element&gt;
- *           &lt;element name="Join"&gt;
- *             &lt;complexType&gt;
- *               &lt;simpleContent&gt;
- *                 &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema&gt;string"&gt;
- *                   &lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
- *                   &lt;attribute name="filter_mapping" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
- *                   &lt;attribute name="join_path" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="axis" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="idref" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="match" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="disambiguate" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                 &lt;/extension&gt;
- *               &lt;/simpleContent&gt;
- *             &lt;/complexType&gt;
- *           &lt;/element&gt;
- *           &lt;element name="AssociationTarget"&gt;
- *             &lt;complexType&gt;
- *               &lt;simpleContent&gt;
- *                 &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema&gt;string"&gt;
- *                   &lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
- *                   &lt;attribute name="object_ref" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                 &lt;/extension&gt;
- *               &lt;/simpleContent&gt;
- *             &lt;/complexType&gt;
- *           &lt;/element&gt;
- *           &lt;element name="Content"&gt;
- *             &lt;complexType&gt;
- *               &lt;simpleContent&gt;
- *                 &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema&gt;string"&gt;
- *                   &lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
- *                   &lt;attribute name="representation" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="implementation" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="mode" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                 &lt;/extension&gt;
- *               &lt;/simpleContent&gt;
- *             &lt;/complexType&gt;
- *           &lt;/element&gt;
- *           &lt;element name="Substitution"&gt;
- *             &lt;complexType&gt;
- *               &lt;complexContent&gt;
- *                 &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *                   &lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                   &lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
- *                   &lt;attribute name="implementation" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                 &lt;/restriction&gt;
- *               &lt;/complexContent&gt;
- *             &lt;/complexType&gt;
- *           &lt;/element&gt;
- *         &lt;/choice&gt;
- *       &lt;/sequence&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
+ * &lt;pre&gt;
+ * &amp;lt;complexType name="MappingsSequenceType"&amp;gt;
+ *   &amp;lt;complexContent&amp;gt;
+ *     &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
+ *       &amp;lt;sequence&amp;gt;
+ *         &amp;lt;choice maxOccurs="unbounded" minOccurs="0"&amp;gt;
+ *           &amp;lt;element name="Table"&amp;gt;
+ *             &amp;lt;complexType&amp;gt;
+ *               &amp;lt;complexContent&amp;gt;
+ *                 &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
+ *                   &amp;lt;attribute name="apply_mapping_to_path" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+ *                   &amp;lt;attribute name="applyMappingToPath" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+ *                   &amp;lt;attribute name="assign" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="assign1" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="db_codes" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="derivation_pattern" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="disambiguate" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="filter_mapping" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&amp;gt;
+ *                   &amp;lt;attribute name="for_each_select_id" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="ft_col" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="generator" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="is_reference" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+ *                   &amp;lt;attribute name="isMappedGeometry" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+ *                   &amp;lt;attribute name="isReference" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+ *                   &amp;lt;attribute name="map_targetpath" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+ *                   &amp;lt;attribute name="mapped_geometry" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+ *                   &amp;lt;attribute name="mapping_mode" default="value"&amp;gt;
+ *                     &amp;lt;simpleType&amp;gt;
+ *                       &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&amp;gt;
+ *                         &amp;lt;enumeration value="value"/&amp;gt;
+ *                         &amp;lt;enumeration value="nil"/&amp;gt;
+ *                         &amp;lt;enumeration value="nil_attr"/&amp;gt;
+ *                         &amp;lt;enumeration value="nilAttr"/&amp;gt;
+ *                       &amp;lt;/restriction&amp;gt;
+ *                     &amp;lt;/simpleType&amp;gt;
+ *                   &amp;lt;/attribute&amp;gt;
+ *                   &amp;lt;attribute name="match" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="nil_reason" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="nil_value" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="no_output" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+ *                   &amp;lt;attribute name="noOutput" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+ *                   &amp;lt;attribute name="oid_col" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="schema_codes" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="select_id" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="significant_for_emptiness" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+ *                   &amp;lt;attribute name="significantForEmptiness" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+ *                   &amp;lt;attribute name="srid" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="srs" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="suppress_xml_entities_encoding" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+ *                   &amp;lt;attribute name="suppressXMLEntitiesEncoding" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+ *                   &amp;lt;attribute name="table_name" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&amp;gt;
+ *                   &amp;lt;attribute name="use_geotypes" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="useGeotypes" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="value_type" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="valueType" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                 &amp;lt;/restriction&amp;gt;
+ *               &amp;lt;/complexContent&amp;gt;
+ *             &amp;lt;/complexType&amp;gt;
+ *           &amp;lt;/element&amp;gt;
+ *           &amp;lt;element name="Join"&amp;gt;
+ *             &amp;lt;complexType&amp;gt;
+ *               &amp;lt;simpleContent&amp;gt;
+ *                 &amp;lt;extension base="&amp;lt;http://www.w3.org/2001/XMLSchema&amp;gt;string"&amp;gt;
+ *                   &amp;lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&amp;gt;
+ *                   &amp;lt;attribute name="filter_mapping" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&amp;gt;
+ *                   &amp;lt;attribute name="join_path" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="axis" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="idref" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="match" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="disambiguate" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                 &amp;lt;/extension&amp;gt;
+ *               &amp;lt;/simpleContent&amp;gt;
+ *             &amp;lt;/complexType&amp;gt;
+ *           &amp;lt;/element&amp;gt;
+ *           &amp;lt;element name="AssociationTarget"&amp;gt;
+ *             &amp;lt;complexType&amp;gt;
+ *               &amp;lt;simpleContent&amp;gt;
+ *                 &amp;lt;extension base="&amp;lt;http://www.w3.org/2001/XMLSchema&amp;gt;string"&amp;gt;
+ *                   &amp;lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&amp;gt;
+ *                   &amp;lt;attribute name="object_ref" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                 &amp;lt;/extension&amp;gt;
+ *               &amp;lt;/simpleContent&amp;gt;
+ *             &amp;lt;/complexType&amp;gt;
+ *           &amp;lt;/element&amp;gt;
+ *           &amp;lt;element name="Content"&amp;gt;
+ *             &amp;lt;complexType&amp;gt;
+ *               &amp;lt;simpleContent&amp;gt;
+ *                 &amp;lt;extension base="&amp;lt;http://www.w3.org/2001/XMLSchema&amp;gt;string"&amp;gt;
+ *                   &amp;lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&amp;gt;
+ *                   &amp;lt;attribute name="representation" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="implementation" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="mode" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                 &amp;lt;/extension&amp;gt;
+ *               &amp;lt;/simpleContent&amp;gt;
+ *             &amp;lt;/complexType&amp;gt;
+ *           &amp;lt;/element&amp;gt;
+ *           &amp;lt;element name="Substitution"&amp;gt;
+ *             &amp;lt;complexType&amp;gt;
+ *               &amp;lt;complexContent&amp;gt;
+ *                 &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
+ *                   &amp;lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                   &amp;lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&amp;gt;
+ *                   &amp;lt;attribute name="implementation" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                 &amp;lt;/restriction&amp;gt;
+ *               &amp;lt;/complexContent&amp;gt;
+ *             &amp;lt;/complexType&amp;gt;
+ *           &amp;lt;/element&amp;gt;
+ *         &amp;lt;/choice&amp;gt;
+ *       &amp;lt;/sequence&amp;gt;
+ *     &amp;lt;/restriction&amp;gt;
+ *   &amp;lt;/complexContent&amp;gt;
+ * &amp;lt;/complexType&amp;gt;
+ * &lt;/pre&gt;
  * 
  * 
  */
@@ -169,20 +162,20 @@ public class MappingsSequenceType {
     /**
      * Gets the value of the tableOrJoinOrAssociationTarget property.
      * 
-     * <p>
+     * &lt;p&gt;
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the tableOrJoinOrAssociationTarget property.
+     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the tableOrJoinOrAssociationTarget property.
      * 
-     * <p>
+     * &lt;p&gt;
      * For example, to add a new item, do as follows:
-     * <pre>
+     * &lt;pre&gt;
      *    getTableOrJoinOrAssociationTarget().add(newItem);
-     * </pre>
+     * &lt;/pre&gt;
      * 
      * 
-     * <p>
+     * &lt;p&gt;
      * Objects of the following type(s) are allowed in the list
      * {@link MappingsSequenceType.Table }
      * {@link MappingsSequenceType.Join }
@@ -201,21 +194,21 @@ public class MappingsSequenceType {
 
 
     /**
-     * <p>Java-Klasse für anonymous complex type.
+     * &lt;p&gt;Java-Klasse für anonymous complex type.
      * 
-     * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+     * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
      * 
-     * <pre>
-     * &lt;complexType&gt;
-     *   &lt;simpleContent&gt;
-     *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema&gt;string"&gt;
-     *       &lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
-     *       &lt;attribute name="object_ref" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *     &lt;/extension&gt;
-     *   &lt;/simpleContent&gt;
-     * &lt;/complexType&gt;
-     * </pre>
+     * &lt;pre&gt;
+     * &amp;lt;complexType&amp;gt;
+     *   &amp;lt;simpleContent&amp;gt;
+     *     &amp;lt;extension base="&amp;lt;http://www.w3.org/2001/XMLSchema&amp;gt;string"&amp;gt;
+     *       &amp;lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&amp;gt;
+     *       &amp;lt;attribute name="object_ref" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *     &amp;lt;/extension&amp;gt;
+     *   &amp;lt;/simpleContent&amp;gt;
+     * &amp;lt;/complexType&amp;gt;
+     * &lt;/pre&gt;
      * 
      * 
      */
@@ -338,23 +331,23 @@ public class MappingsSequenceType {
 
 
     /**
-     * <p>Java-Klasse für anonymous complex type.
+     * &lt;p&gt;Java-Klasse für anonymous complex type.
      * 
-     * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+     * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
      * 
-     * <pre>
-     * &lt;complexType&gt;
-     *   &lt;simpleContent&gt;
-     *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema&gt;string"&gt;
-     *       &lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
-     *       &lt;attribute name="representation" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="implementation" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="mode" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *     &lt;/extension&gt;
-     *   &lt;/simpleContent&gt;
-     * &lt;/complexType&gt;
-     * </pre>
+     * &lt;pre&gt;
+     * &amp;lt;complexType&amp;gt;
+     *   &amp;lt;simpleContent&amp;gt;
+     *     &amp;lt;extension base="&amp;lt;http://www.w3.org/2001/XMLSchema&amp;gt;string"&amp;gt;
+     *       &amp;lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&amp;gt;
+     *       &amp;lt;attribute name="representation" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="implementation" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="mode" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *     &amp;lt;/extension&amp;gt;
+     *   &amp;lt;/simpleContent&amp;gt;
+     * &amp;lt;/complexType&amp;gt;
+     * &lt;/pre&gt;
      * 
      * 
      */
@@ -529,26 +522,26 @@ public class MappingsSequenceType {
 
 
     /**
-     * <p>Java-Klasse für anonymous complex type.
+     * &lt;p&gt;Java-Klasse für anonymous complex type.
      * 
-     * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+     * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
      * 
-     * <pre>
-     * &lt;complexType&gt;
-     *   &lt;simpleContent&gt;
-     *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema&gt;string"&gt;
-     *       &lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
-     *       &lt;attribute name="filter_mapping" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
-     *       &lt;attribute name="join_path" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="axis" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="idref" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="match" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="disambiguate" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *     &lt;/extension&gt;
-     *   &lt;/simpleContent&gt;
-     * &lt;/complexType&gt;
-     * </pre>
+     * &lt;pre&gt;
+     * &amp;lt;complexType&amp;gt;
+     *   &amp;lt;simpleContent&amp;gt;
+     *     &amp;lt;extension base="&amp;lt;http://www.w3.org/2001/XMLSchema&amp;gt;string"&amp;gt;
+     *       &amp;lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&amp;gt;
+     *       &amp;lt;attribute name="filter_mapping" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&amp;gt;
+     *       &amp;lt;attribute name="join_path" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="axis" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="idref" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="match" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="disambiguate" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *     &amp;lt;/extension&amp;gt;
+     *   &amp;lt;/simpleContent&amp;gt;
+     * &amp;lt;/complexType&amp;gt;
+     * &lt;/pre&gt;
      * 
      * 
      */
@@ -805,21 +798,21 @@ public class MappingsSequenceType {
 
 
     /**
-     * <p>Java-Klasse für anonymous complex type.
+     * &lt;p&gt;Java-Klasse für anonymous complex type.
      * 
-     * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+     * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
      * 
-     * <pre>
-     * &lt;complexType&gt;
-     *   &lt;complexContent&gt;
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
-     *       &lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
-     *       &lt;attribute name="implementation" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *     &lt;/restriction&gt;
-     *   &lt;/complexContent&gt;
-     * &lt;/complexType&gt;
-     * </pre>
+     * &lt;pre&gt;
+     * &amp;lt;complexType&amp;gt;
+     *   &amp;lt;complexContent&amp;gt;
+     *     &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
+     *       &amp;lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&amp;gt;
+     *       &amp;lt;attribute name="implementation" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *     &amp;lt;/restriction&amp;gt;
+     *   &amp;lt;/complexContent&amp;gt;
+     * &amp;lt;/complexType&amp;gt;
+     * &lt;/pre&gt;
      * 
      * 
      */
@@ -914,67 +907,67 @@ public class MappingsSequenceType {
 
 
     /**
-     * <p>Java-Klasse für anonymous complex type.
+     * &lt;p&gt;Java-Klasse für anonymous complex type.
      * 
-     * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+     * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
      * 
-     * <pre>
-     * &lt;complexType&gt;
-     *   &lt;complexContent&gt;
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
-     *       &lt;attribute name="apply_mapping_to_path" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
-     *       &lt;attribute name="applyMappingToPath" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
-     *       &lt;attribute name="assign" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="assign1" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="db_codes" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="derivation_pattern" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="disambiguate" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="filter_mapping" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
-     *       &lt;attribute name="for_each_select_id" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="ft_col" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="generator" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="is_reference" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
-     *       &lt;attribute name="isMappedGeometry" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
-     *       &lt;attribute name="isReference" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
-     *       &lt;attribute name="map_targetpath" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
-     *       &lt;attribute name="mapped_geometry" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
-     *       &lt;attribute name="mapping_mode" default="value"&gt;
-     *         &lt;simpleType&gt;
-     *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
-     *             &lt;enumeration value="value"/&gt;
-     *             &lt;enumeration value="nil"/&gt;
-     *             &lt;enumeration value="nil_attr"/&gt;
-     *             &lt;enumeration value="nilAttr"/&gt;
-     *           &lt;/restriction&gt;
-     *         &lt;/simpleType&gt;
-     *       &lt;/attribute&gt;
-     *       &lt;attribute name="match" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="nil_reason" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="nil_value" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="no_output" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
-     *       &lt;attribute name="noOutput" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
-     *       &lt;attribute name="oid_col" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="schema_codes" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="select_id" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="significant_for_emptiness" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
-     *       &lt;attribute name="significantForEmptiness" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
-     *       &lt;attribute name="srid" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="srs" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="suppress_xml_entities_encoding" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
-     *       &lt;attribute name="suppressXMLEntitiesEncoding" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
-     *       &lt;attribute name="table_name" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
-     *       &lt;attribute name="use_geotypes" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="useGeotypes" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="value_type" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *       &lt;attribute name="valueType" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *     &lt;/restriction&gt;
-     *   &lt;/complexContent&gt;
-     * &lt;/complexType&gt;
-     * </pre>
+     * &lt;pre&gt;
+     * &amp;lt;complexType&amp;gt;
+     *   &amp;lt;complexContent&amp;gt;
+     *     &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
+     *       &amp;lt;attribute name="apply_mapping_to_path" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+     *       &amp;lt;attribute name="applyMappingToPath" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+     *       &amp;lt;attribute name="assign" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="assign1" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="db_codes" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="derivation_pattern" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="disambiguate" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="filter_mapping" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&amp;gt;
+     *       &amp;lt;attribute name="for_each_select_id" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="ft_col" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="generator" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="is_reference" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+     *       &amp;lt;attribute name="isMappedGeometry" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+     *       &amp;lt;attribute name="isReference" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+     *       &amp;lt;attribute name="map_targetpath" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+     *       &amp;lt;attribute name="mapped_geometry" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+     *       &amp;lt;attribute name="mapping_mode" default="value"&amp;gt;
+     *         &amp;lt;simpleType&amp;gt;
+     *           &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&amp;gt;
+     *             &amp;lt;enumeration value="value"/&amp;gt;
+     *             &amp;lt;enumeration value="nil"/&amp;gt;
+     *             &amp;lt;enumeration value="nil_attr"/&amp;gt;
+     *             &amp;lt;enumeration value="nilAttr"/&amp;gt;
+     *           &amp;lt;/restriction&amp;gt;
+     *         &amp;lt;/simpleType&amp;gt;
+     *       &amp;lt;/attribute&amp;gt;
+     *       &amp;lt;attribute name="match" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="nil_reason" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="nil_value" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="no_output" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+     *       &amp;lt;attribute name="noOutput" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+     *       &amp;lt;attribute name="oid_col" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="schema_codes" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="select_id" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="significant_for_emptiness" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+     *       &amp;lt;attribute name="significantForEmptiness" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+     *       &amp;lt;attribute name="srid" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="srs" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="suppress_xml_entities_encoding" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+     *       &amp;lt;attribute name="suppressXMLEntitiesEncoding" type="{http://www.w3.org/2001/XMLSchema}boolean" /&amp;gt;
+     *       &amp;lt;attribute name="table_name" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="target" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&amp;gt;
+     *       &amp;lt;attribute name="use_geotypes" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="useGeotypes" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="value_type" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *       &amp;lt;attribute name="valueType" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *     &amp;lt;/restriction&amp;gt;
+     *   &amp;lt;/complexContent&amp;gt;
+     * &amp;lt;/complexType&amp;gt;
+     * &lt;/pre&gt;
      * 
      * 
      */

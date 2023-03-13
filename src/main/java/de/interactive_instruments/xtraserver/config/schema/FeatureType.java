@@ -1,91 +1,77 @@
-/**
- * Copyright 2020 interactive instruments GmbH
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 package de.interactive_instruments.xtraserver.config.schema;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlValue;
 
 
 /**
- * <p>Java-Klasse für anonymous complex type.
+ * &lt;p&gt;Java-Klasse für anonymous complex type.
  * 
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
- * <pre>
- * &lt;complexType&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
- *         &lt;element ref="{http://www.interactive-instruments.de/namespaces/XtraServer}Name" minOccurs="0"/&gt;
- *         &lt;element ref="{http://www.interactive-instruments.de/namespaces/XtraServer}Title" minOccurs="0"/&gt;
- *         &lt;element name="Abstract" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
- *         &lt;element name="Keyword" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element name="OutputFormat" maxOccurs="unbounded" minOccurs="0"&gt;
- *           &lt;complexType&gt;
- *             &lt;simpleContent&gt;
- *               &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema&gt;string"&gt;
- *                 &lt;attribute name="wfsVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *               &lt;/extension&gt;
- *             &lt;/simpleContent&gt;
- *           &lt;/complexType&gt;
- *         &lt;/element&gt;
- *         &lt;element name="SuppressIdentity" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
- *         &lt;element name="PathAliases" minOccurs="0"&gt;
- *           &lt;complexType&gt;
- *             &lt;complexContent&gt;
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *                 &lt;sequence&gt;
- *                   &lt;element name="PathAlias" maxOccurs="unbounded" minOccurs="0"&gt;
- *                     &lt;complexType&gt;
- *                       &lt;complexContent&gt;
- *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *                           &lt;sequence&gt;
- *                             &lt;element name="Pattern" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
- *                             &lt;element name="Replacement" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
- *                           &lt;/sequence&gt;
- *                           &lt;attribute name="externalUse" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
- *                           &lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *                         &lt;/restriction&gt;
- *                       &lt;/complexContent&gt;
- *                     &lt;/complexType&gt;
- *                   &lt;/element&gt;
- *                 &lt;/sequence&gt;
- *               &lt;/restriction&gt;
- *             &lt;/complexContent&gt;
- *           &lt;/complexType&gt;
- *         &lt;/element&gt;
- *         &lt;choice&gt;
- *           &lt;element ref="{http://www.interactive-instruments.de/namespaces/XtraServer}OraSFeatureTypeImpl" minOccurs="0"/&gt;
- *           &lt;element ref="{http://www.interactive-instruments.de/namespaces/XtraServer}PGISFeatureTypeImpl" minOccurs="0"/&gt;
- *           &lt;element ref="{http://www.interactive-instruments.de/namespaces/XtraServer}GDBSQLFeatureTypeImpl" minOccurs="0"/&gt;
- *         &lt;/choice&gt;
- *       &lt;/sequence&gt;
- *       &lt;attribute name="includeDerivations" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
- *       &lt;attribute name="mode" type="{http://www.interactive-instruments.de/namespaces/XtraServer}EnablingType" default="enabled" /&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
+ * &lt;pre&gt;
+ * &amp;lt;complexType&amp;gt;
+ *   &amp;lt;complexContent&amp;gt;
+ *     &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
+ *       &amp;lt;sequence&amp;gt;
+ *         &amp;lt;element ref="{http://www.interactive-instruments.de/namespaces/XtraServer}Name" minOccurs="0"/&amp;gt;
+ *         &amp;lt;element ref="{http://www.interactive-instruments.de/namespaces/XtraServer}Title" minOccurs="0"/&amp;gt;
+ *         &amp;lt;element name="Abstract" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&amp;gt;
+ *         &amp;lt;element name="Keyword" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded" minOccurs="0"/&amp;gt;
+ *         &amp;lt;element name="OutputFormat" maxOccurs="unbounded" minOccurs="0"&amp;gt;
+ *           &amp;lt;complexType&amp;gt;
+ *             &amp;lt;simpleContent&amp;gt;
+ *               &amp;lt;extension base="&amp;lt;http://www.w3.org/2001/XMLSchema&amp;gt;string"&amp;gt;
+ *                 &amp;lt;attribute name="wfsVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *               &amp;lt;/extension&amp;gt;
+ *             &amp;lt;/simpleContent&amp;gt;
+ *           &amp;lt;/complexType&amp;gt;
+ *         &amp;lt;/element&amp;gt;
+ *         &amp;lt;element name="SuppressIdentity" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&amp;gt;
+ *         &amp;lt;element name="PathAliases" minOccurs="0"&amp;gt;
+ *           &amp;lt;complexType&amp;gt;
+ *             &amp;lt;complexContent&amp;gt;
+ *               &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
+ *                 &amp;lt;sequence&amp;gt;
+ *                   &amp;lt;element name="PathAlias" maxOccurs="unbounded" minOccurs="0"&amp;gt;
+ *                     &amp;lt;complexType&amp;gt;
+ *                       &amp;lt;complexContent&amp;gt;
+ *                         &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
+ *                           &amp;lt;sequence&amp;gt;
+ *                             &amp;lt;element name="Pattern" type="{http://www.w3.org/2001/XMLSchema}string"/&amp;gt;
+ *                             &amp;lt;element name="Replacement" type="{http://www.w3.org/2001/XMLSchema}string"/&amp;gt;
+ *                           &amp;lt;/sequence&amp;gt;
+ *                           &amp;lt;attribute name="externalUse" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&amp;gt;
+ *                           &amp;lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *                         &amp;lt;/restriction&amp;gt;
+ *                       &amp;lt;/complexContent&amp;gt;
+ *                     &amp;lt;/complexType&amp;gt;
+ *                   &amp;lt;/element&amp;gt;
+ *                 &amp;lt;/sequence&amp;gt;
+ *               &amp;lt;/restriction&amp;gt;
+ *             &amp;lt;/complexContent&amp;gt;
+ *           &amp;lt;/complexType&amp;gt;
+ *         &amp;lt;/element&amp;gt;
+ *         &amp;lt;choice&amp;gt;
+ *           &amp;lt;element ref="{http://www.interactive-instruments.de/namespaces/XtraServer}OraSFeatureTypeImpl" minOccurs="0"/&amp;gt;
+ *           &amp;lt;element ref="{http://www.interactive-instruments.de/namespaces/XtraServer}PGISFeatureTypeImpl" minOccurs="0"/&amp;gt;
+ *           &amp;lt;element ref="{http://www.interactive-instruments.de/namespaces/XtraServer}GDBSQLFeatureTypeImpl" minOccurs="0"/&amp;gt;
+ *         &amp;lt;/choice&amp;gt;
+ *       &amp;lt;/sequence&amp;gt;
+ *       &amp;lt;attribute name="includeDerivations" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&amp;gt;
+ *       &amp;lt;attribute name="mode" type="{http://www.interactive-instruments.de/namespaces/XtraServer}EnablingType" default="enabled" /&amp;gt;
+ *     &amp;lt;/restriction&amp;gt;
+ *   &amp;lt;/complexContent&amp;gt;
+ * &amp;lt;/complexType&amp;gt;
+ * &lt;/pre&gt;
  * 
  * 
  */
@@ -205,20 +191,20 @@ public class FeatureType {
     /**
      * Gets the value of the keyword property.
      * 
-     * <p>
+     * &lt;p&gt;
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the keyword property.
+     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the keyword property.
      * 
-     * <p>
+     * &lt;p&gt;
      * For example, to add a new item, do as follows:
-     * <pre>
+     * &lt;pre&gt;
      *    getKeyword().add(newItem);
-     * </pre>
+     * &lt;/pre&gt;
      * 
      * 
-     * <p>
+     * &lt;p&gt;
      * Objects of the following type(s) are allowed in the list
      * {@link String }
      * 
@@ -234,20 +220,20 @@ public class FeatureType {
     /**
      * Gets the value of the outputFormat property.
      * 
-     * <p>
+     * &lt;p&gt;
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the outputFormat property.
+     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the outputFormat property.
      * 
-     * <p>
+     * &lt;p&gt;
      * For example, to add a new item, do as follows:
-     * <pre>
+     * &lt;pre&gt;
      *    getOutputFormat().add(newItem);
-     * </pre>
+     * &lt;/pre&gt;
      * 
      * 
-     * <p>
+     * &lt;p&gt;
      * Objects of the following type(s) are allowed in the list
      * {@link FeatureType.OutputFormat }
      * 
@@ -438,19 +424,19 @@ public class FeatureType {
 
 
     /**
-     * <p>Java-Klasse für anonymous complex type.
+     * &lt;p&gt;Java-Klasse für anonymous complex type.
      * 
-     * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+     * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
      * 
-     * <pre>
-     * &lt;complexType&gt;
-     *   &lt;simpleContent&gt;
-     *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema&gt;string"&gt;
-     *       &lt;attribute name="wfsVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *     &lt;/extension&gt;
-     *   &lt;/simpleContent&gt;
-     * &lt;/complexType&gt;
-     * </pre>
+     * &lt;pre&gt;
+     * &amp;lt;complexType&amp;gt;
+     *   &amp;lt;simpleContent&amp;gt;
+     *     &amp;lt;extension base="&amp;lt;http://www.w3.org/2001/XMLSchema&amp;gt;string"&amp;gt;
+     *       &amp;lt;attribute name="wfsVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *     &amp;lt;/extension&amp;gt;
+     *   &amp;lt;/simpleContent&amp;gt;
+     * &amp;lt;/complexType&amp;gt;
+     * &lt;/pre&gt;
      * 
      * 
      */
@@ -517,34 +503,34 @@ public class FeatureType {
 
 
     /**
-     * <p>Java-Klasse für anonymous complex type.
+     * &lt;p&gt;Java-Klasse für anonymous complex type.
      * 
-     * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+     * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
      * 
-     * <pre>
-     * &lt;complexType&gt;
-     *   &lt;complexContent&gt;
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
-     *       &lt;sequence&gt;
-     *         &lt;element name="PathAlias" maxOccurs="unbounded" minOccurs="0"&gt;
-     *           &lt;complexType&gt;
-     *             &lt;complexContent&gt;
-     *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
-     *                 &lt;sequence&gt;
-     *                   &lt;element name="Pattern" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
-     *                   &lt;element name="Replacement" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
-     *                 &lt;/sequence&gt;
-     *                 &lt;attribute name="externalUse" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
-     *                 &lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-     *               &lt;/restriction&gt;
-     *             &lt;/complexContent&gt;
-     *           &lt;/complexType&gt;
-     *         &lt;/element&gt;
-     *       &lt;/sequence&gt;
-     *     &lt;/restriction&gt;
-     *   &lt;/complexContent&gt;
-     * &lt;/complexType&gt;
-     * </pre>
+     * &lt;pre&gt;
+     * &amp;lt;complexType&amp;gt;
+     *   &amp;lt;complexContent&amp;gt;
+     *     &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
+     *       &amp;lt;sequence&amp;gt;
+     *         &amp;lt;element name="PathAlias" maxOccurs="unbounded" minOccurs="0"&amp;gt;
+     *           &amp;lt;complexType&amp;gt;
+     *             &amp;lt;complexContent&amp;gt;
+     *               &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
+     *                 &amp;lt;sequence&amp;gt;
+     *                   &amp;lt;element name="Pattern" type="{http://www.w3.org/2001/XMLSchema}string"/&amp;gt;
+     *                   &amp;lt;element name="Replacement" type="{http://www.w3.org/2001/XMLSchema}string"/&amp;gt;
+     *                 &amp;lt;/sequence&amp;gt;
+     *                 &amp;lt;attribute name="externalUse" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&amp;gt;
+     *                 &amp;lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+     *               &amp;lt;/restriction&amp;gt;
+     *             &amp;lt;/complexContent&amp;gt;
+     *           &amp;lt;/complexType&amp;gt;
+     *         &amp;lt;/element&amp;gt;
+     *       &amp;lt;/sequence&amp;gt;
+     *     &amp;lt;/restriction&amp;gt;
+     *   &amp;lt;/complexContent&amp;gt;
+     * &amp;lt;/complexType&amp;gt;
+     * &lt;/pre&gt;
      * 
      * 
      */
@@ -560,20 +546,20 @@ public class FeatureType {
         /**
          * Gets the value of the pathAlias property.
          * 
-         * <p>
+         * &lt;p&gt;
          * This accessor method returns a reference to the live list,
          * not a snapshot. Therefore any modification you make to the
          * returned list will be present inside the JAXB object.
-         * This is why there is not a <CODE>set</CODE> method for the pathAlias property.
+         * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the pathAlias property.
          * 
-         * <p>
+         * &lt;p&gt;
          * For example, to add a new item, do as follows:
-         * <pre>
+         * &lt;pre&gt;
          *    getPathAlias().add(newItem);
-         * </pre>
+         * &lt;/pre&gt;
          * 
          * 
-         * <p>
+         * &lt;p&gt;
          * Objects of the following type(s) are allowed in the list
          * {@link FeatureType.PathAliases.PathAlias }
          * 
@@ -588,24 +574,24 @@ public class FeatureType {
 
 
         /**
-         * <p>Java-Klasse für anonymous complex type.
+         * &lt;p&gt;Java-Klasse für anonymous complex type.
          * 
-         * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+         * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
          * 
-         * <pre>
-         * &lt;complexType&gt;
-         *   &lt;complexContent&gt;
-         *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
-         *       &lt;sequence&gt;
-         *         &lt;element name="Pattern" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
-         *         &lt;element name="Replacement" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
-         *       &lt;/sequence&gt;
-         *       &lt;attribute name="externalUse" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
-         *       &lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
-         *     &lt;/restriction&gt;
-         *   &lt;/complexContent&gt;
-         * &lt;/complexType&gt;
-         * </pre>
+         * &lt;pre&gt;
+         * &amp;lt;complexType&amp;gt;
+         *   &amp;lt;complexContent&amp;gt;
+         *     &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
+         *       &amp;lt;sequence&amp;gt;
+         *         &amp;lt;element name="Pattern" type="{http://www.w3.org/2001/XMLSchema}string"/&amp;gt;
+         *         &amp;lt;element name="Replacement" type="{http://www.w3.org/2001/XMLSchema}string"/&amp;gt;
+         *       &amp;lt;/sequence&amp;gt;
+         *       &amp;lt;attribute name="externalUse" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&amp;gt;
+         *       &amp;lt;attribute name="gmlVersion" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+         *     &amp;lt;/restriction&amp;gt;
+         *   &amp;lt;/complexContent&amp;gt;
+         * &amp;lt;/complexType&amp;gt;
+         * &lt;/pre&gt;
          * 
          * 
          */

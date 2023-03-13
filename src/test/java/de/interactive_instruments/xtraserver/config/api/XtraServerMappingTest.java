@@ -27,7 +27,7 @@ import org.xml.sax.SAXException;
 import org.xmlunit.builder.Input;
 import org.xmlunit.diff.*;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;

@@ -18,7 +18,7 @@ package de.interactive_instruments.xtraserver.config.io;
 import de.interactive_instruments.xtraserver.config.api.XtraServerMapping;
 import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.InputStream;

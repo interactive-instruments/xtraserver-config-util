@@ -20,7 +20,7 @@ import de.interactive_instruments.xtraserver.config.schema.FeatureTypesWithComme
 import de.interactive_instruments.xtraserver.config.schema.JoinWithComment;
 import de.interactive_instruments.xtraserver.config.schema.TableWithComment;
 
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.util.Date;

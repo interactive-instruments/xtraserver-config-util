@@ -1,52 +1,38 @@
-/**
- * Copyright 2020 interactive instruments GmbH
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 package de.interactive_instruments.xtraserver.config.schema;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElements;
+import jakarta.xml.bind.annotation.XmlIDREF;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für anonymous complex type.
+ * &lt;p&gt;Java-Klasse für anonymous complex type.
  * 
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * &lt;p&gt;Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
- * <pre>
- * &lt;complexType&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
- *         &lt;element ref="{http://www.interactive-instruments.de/namespaces/XtraServer}FeatureType"/&gt;
- *         &lt;element ref="{http://www.interactive-instruments.de/namespaces/XtraServer}AdditionalMappings"/&gt;
- *       &lt;/choice&gt;
- *       &lt;attribute name="defaultDbSchema" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="appSchemaGenerator" type="{http://www.w3.org/2001/XMLSchema}IDREF" /&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
+ * &lt;pre&gt;
+ * &amp;lt;complexType&amp;gt;
+ *   &amp;lt;complexContent&amp;gt;
+ *     &amp;lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&amp;gt;
+ *       &amp;lt;choice maxOccurs="unbounded" minOccurs="0"&amp;gt;
+ *         &amp;lt;element ref="{http://www.interactive-instruments.de/namespaces/XtraServer}FeatureType"/&amp;gt;
+ *         &amp;lt;element ref="{http://www.interactive-instruments.de/namespaces/XtraServer}AdditionalMappings"/&amp;gt;
+ *       &amp;lt;/choice&amp;gt;
+ *       &amp;lt;attribute name="defaultDbSchema" type="{http://www.w3.org/2001/XMLSchema}string" /&amp;gt;
+ *       &amp;lt;attribute name="appSchemaGenerator" type="{http://www.w3.org/2001/XMLSchema}IDREF" /&amp;gt;
+ *     &amp;lt;/restriction&amp;gt;
+ *   &amp;lt;/complexContent&amp;gt;
+ * &amp;lt;/complexType&amp;gt;
+ * &lt;/pre&gt;
  * 
  * 
  */
@@ -72,20 +58,20 @@ public class FeatureTypes {
     /**
      * Gets the value of the featureTypeOrAdditionalMappings property.
      * 
-     * <p>
+     * &lt;p&gt;
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the featureTypeOrAdditionalMappings property.
+     * This is why there is not a &lt;CODE&gt;set&lt;/CODE&gt; method for the featureTypeOrAdditionalMappings property.
      * 
-     * <p>
+     * &lt;p&gt;
      * For example, to add a new item, do as follows:
-     * <pre>
+     * &lt;pre&gt;
      *    getFeatureTypeOrAdditionalMappings().add(newItem);
-     * </pre>
+     * &lt;/pre&gt;
      * 
      * 
-     * <p>
+     * &lt;p&gt;
      * Objects of the following type(s) are allowed in the list
      * {@link FeatureType }
      * {@link AdditionalMappings }

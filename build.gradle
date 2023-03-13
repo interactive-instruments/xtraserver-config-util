@@ -4,13 +4,13 @@ plugins {
     id 'maven-publish'
     id 'groovy'
     id "biz.aQute.bnd.builder" version "5.1.2"
-    id "org.unbroken-dome.xjc" version "1.4.3"
+    id "org.unbroken-dome.xjc" version "2.0.0"
     //TODO: spotless
 }
 
 group = 'de.interactive_instruments'
 
-version = '1.0.13'
+version = '2.0.0'
 
 repositories {
     mavenCentral()
@@ -22,19 +22,15 @@ configurations {
 
 dependencies {
     api 'com.google.guava:guava:27.0-jre'
-    //TODO: is this already in hale, or was it included by us?
-    api 'org.apache.ws.commons.schema:XmlSchema:1.4.7'
-    //TODO: why
-    //compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.0'
-
-    //TODO: is this included in hale?
-    //implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.12'
-    //implementation group: 'com.sun.xml.bind', name: 'jaxb-core', version: '2.2.11'
-    //implementation group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.2.11'
+    implementation 'org.apache.ws.commons.schema:XmlSchema:1.4.7'
+    implementation group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '4.0.0'
+    implementation group: 'com.sun.xml.bind', name: 'jaxb-core', version: '4.0.1'
+    implementation group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '4.0.1'
 
     compileOnly         "org.immutables:value:2.8.4:annotations"
     annotationProcessor "org.immutables:value:2.8.4"
 
+    testImplementation 'com.google.guava:guava:27.0-jre'
     testImplementation "junit:junit:4.12"
     testImplementation "org.xmlunit:xmlunit-core:2.5.1"
     testImplementation "org.xmlunit:xmlunit-matchers:2.5.1"
@@ -80,12 +76,10 @@ test {
 //}
 
 xjc {
-    includeInMainCompilation = false
+    xjcVersion = '3.0'
 }
 
 xjcGenerate {
-    source = fileTree('src/main/resources/XtraServer_Mapping.xsd')
-    bindingFiles = fileTree('src/main/resources/bindings.xjb')
     outputDirectory = file('src/main/java')
     targetPackage = 'de.interactive_instruments.xtraserver.config.schema'
 }

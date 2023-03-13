@@ -15,7 +15,7 @@
  */
 package de.interactive_instruments.xtraserver.config.schema;
 
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 /**
  * @author zahnen

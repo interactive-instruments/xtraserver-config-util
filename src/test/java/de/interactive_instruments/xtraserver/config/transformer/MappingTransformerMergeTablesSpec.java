@@ -27,7 +27,6 @@ import de.interactive_instruments.xtraserver.config.api.MappingValue;
 import de.interactive_instruments.xtraserver.config.api.MappingValueBuilder;
 import de.interactive_instruments.xtraserver.config.api.XtraServerMapping;
 import de.interactive_instruments.xtraserver.config.api.XtraServerMappingBuilder;
-import jdk.nashorn.internal.ir.annotations.Immutable;
 import org.junit.runner.RunWith;
 
 import java.io.ByteArrayOutputStream;

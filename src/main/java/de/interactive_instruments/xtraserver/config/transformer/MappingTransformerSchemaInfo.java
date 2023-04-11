@@ -82,10 +82,10 @@ class MappingTransformerSchemaInfo extends AbstractMappingTransformer implements
         final MappingTable mappingTable = context.mappingTable;
 
         // either targetPath or qualifiedTargetPath is set, derive the other
-        final String targetPath = !mappingTable.getQualifiedTargetPath().isEmpty()
+        final String targetPath = Objects.nonNull(mappingTable.getQualifiedTargetPath()) && !mappingTable.getQualifiedTargetPath().isEmpty()
                 ? namespaces.getPrefixedPath(mappingTable.getQualifiedTargetPath())
                 : mappingTable.getTargetPath();
-        final List<QName> targetPathElements = mappingTable.getQualifiedTargetPath().isEmpty()
+        final List<QName> targetPathElements = Objects.isNull(mappingTable.getQualifiedTargetPath()) || mappingTable.getQualifiedTargetPath().isEmpty()
                 ? namespaces.getQualifiedPathElements(targetPath)
                 : mappingTable.getQualifiedTargetPath();
         final String description = Strings.isNullOrEmpty(mappingTable.getDescription()) ? (!targetPathElements.isEmpty() ? targetPathElements.get(0).getLocalPart() : "") : mappingTable.getDescription();
@@ -105,10 +105,10 @@ class MappingTransformerSchemaInfo extends AbstractMappingTransformer implements
         final MappingValue mappingValue = context.mappingValue;
 
         // either targetPath or qualifiedTargetPath is set, derive the other
-        final String targetPath = !mappingValue.getQualifiedTargetPath().isEmpty()
+        final String targetPath = Objects.nonNull(mappingValue.getQualifiedTargetPath()) && !mappingValue.getQualifiedTargetPath().isEmpty()
                 ? namespaces.getPrefixedPath(mappingValue.getQualifiedTargetPath())
                 : mappingValue.getTargetPath();
-        final List<QName> targetPathElements = mappingValue.getQualifiedTargetPath().isEmpty()
+        final List<QName> targetPathElements = Objects.isNull(mappingValue.getQualifiedTargetPath()) || mappingValue.getQualifiedTargetPath().isEmpty()
                 ? namespaces.getQualifiedPathElements(targetPath)
                 : mappingValue.getQualifiedTargetPath();
         final String description = !targetPathElements.isEmpty() ? targetPathElements.get(0).getLocalPart() : "";

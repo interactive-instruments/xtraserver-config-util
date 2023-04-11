@@ -16,7 +16,6 @@
 package de.interactive_instruments.xtraserver.config.transformer;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import de.interactive_instruments.xtraserver.config.api.*;
 
 import javax.xml.namespace.QName;
@@ -83,8 +82,12 @@ class MappingTransformerSchemaInfo extends AbstractMappingTransformer implements
         final MappingTable mappingTable = context.mappingTable;
 
         // either targetPath or qualifiedTargetPath is set, derive the other
-        final String targetPath = Strings.isNullOrEmpty(mappingTable.getTargetPath()) && !mappingTable.getQualifiedTargetPath().isEmpty() ? namespaces.getPrefixedPath(mappingTable.getQualifiedTargetPath()) : mappingTable.getTargetPath();
-        final List<QName> targetPathElements = !Strings.isNullOrEmpty(mappingTable.getTargetPath()) ? namespaces.getQualifiedPathElements(mappingTable.getTargetPath()) : mappingTable.getQualifiedTargetPath();
+        final String targetPath = !mappingTable.getQualifiedTargetPath().isEmpty()
+                ? namespaces.getPrefixedPath(mappingTable.getQualifiedTargetPath())
+                : mappingTable.getTargetPath();
+        final List<QName> targetPathElements = mappingTable.getQualifiedTargetPath().isEmpty()
+                ? namespaces.getQualifiedPathElements(targetPath)
+                : mappingTable.getQualifiedTargetPath();
         final String description = Strings.isNullOrEmpty(mappingTable.getDescription()) ? (!targetPathElements.isEmpty() ? targetPathElements.get(0).getLocalPart() : "") : mappingTable.getDescription();
 
         return new MappingTableBuilder()
@@ -102,8 +105,12 @@ class MappingTransformerSchemaInfo extends AbstractMappingTransformer implements
         final MappingValue mappingValue = context.mappingValue;
 
         // either targetPath or qualifiedTargetPath is set, derive the other
-        final String targetPath = Strings.isNullOrEmpty(mappingValue.getTargetPath()) ? namespaces.getPrefixedPath(mappingValue.getQualifiedTargetPath()) : mappingValue.getTargetPath();
-        final List<QName> targetPathElements = !Strings.isNullOrEmpty(mappingValue.getTargetPath()) ? namespaces.getQualifiedPathElements(mappingValue.getTargetPath()) : mappingValue.getQualifiedTargetPath();
+        final String targetPath = !mappingValue.getQualifiedTargetPath().isEmpty()
+                ? namespaces.getPrefixedPath(mappingValue.getQualifiedTargetPath())
+                : mappingValue.getTargetPath();
+        final List<QName> targetPathElements = mappingValue.getQualifiedTargetPath().isEmpty()
+                ? namespaces.getQualifiedPathElements(targetPath)
+                : mappingValue.getQualifiedTargetPath();
         final String description = !targetPathElements.isEmpty() ? targetPathElements.get(0).getLocalPart() : "";
 
         if (isGeometry(context, targetPathElements)) {

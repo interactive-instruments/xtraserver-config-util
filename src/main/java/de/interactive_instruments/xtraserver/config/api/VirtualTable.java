@@ -130,7 +130,7 @@ public abstract class VirtualTable {
 
     protected abstract Optional<String> getWhereClause();
 
-    @Value.Derived
+    @Value.Default
     protected String getPrimaryTable() {
         return getJoinPaths().iterator()
             .next()
@@ -141,8 +141,11 @@ public abstract class VirtualTable {
     public String getQuery() {
         String query = null;
 
-        //if (!getJoinPaths().isEmpty()) {
-            final String primaryTable = getPrimaryTable();
+            final String primaryTable = getJoinPaths().isEmpty()
+                    ? getPrimaryTable()
+                    : getJoinPaths().iterator()
+                        .next()
+                        .getSourceTable();
 
             if (getJoinPaths().stream()
                               .anyMatch(mappingJoin -> !mappingJoin.getSourceTable()
@@ -174,7 +177,6 @@ public abstract class VirtualTable {
             if (getWhereClause().isPresent()) {
                 query += "WHERE " + getWhereClause().get();
             }
-        //}
 
         return query;
     }

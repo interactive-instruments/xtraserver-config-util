@@ -15,7 +15,6 @@
  */
 package de.interactive_instruments.xtraserver.config.transformer;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
@@ -24,13 +23,17 @@ import com.google.common.collect.HashBiMap;
 import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
  * @author zahnen
  */
 class Namespaces {
+    private final static Splitter SPLITTER_SLASH = Splitter.on("/");
+    private final static Splitter SPLITTER_SLASH_HTTP = Splitter.on(Pattern.compile("/(?=http)"));
+    private final static Splitter SPLITTER_COLON = Splitter.on(":");
+    private final static Splitter SPLITTER_COLON_HTTP = Splitter.on(Pattern.compile("(?<!http):"));
     private final BiMap<String, String> namespaces;
 
     /**
@@ -55,19 +58,21 @@ class Namespaces {
     }
 
     public QName getQualifiedName(final String prefixedName) {
-        final String[] name = prefixedName.split(":");
+        final List<String> name = (prefixedName.contains("http") ? SPLITTER_COLON_HTTP : SPLITTER_COLON).splitToList(prefixedName);
 
-        String namespacePrefix = name.length == 2 ? name[0] : "";
-        String localName = name.length == 2 ? name[1] : prefixedName;
+        String namespacePrefix = name.size() == 2 ? name.get(0) : "";
+        String localName = name.size() == 2 ? name.get(1) : prefixedName;
 
         if (namespacePrefix.startsWith("@")) {
             namespacePrefix = namespacePrefix.substring(1);
             localName = "@" + localName;
         }
 
-        if (name.length == 2 && namespaces.get(namespacePrefix) != null) {
+        if (name.size() == 2 && namespaces.get(namespacePrefix) != null) {
             return new QName(namespaces.get(namespacePrefix), localName, namespacePrefix);
-        } else if (name.length == 1) {
+        } else if (name.size() == 2 && namespaces.inverse().get(namespacePrefix) != null) {
+            return new QName(namespacePrefix, localName, namespaces.inverse().get(namespacePrefix));
+        } else if (name.size() == 1) {
             return new QName(localName);
         }
 
@@ -94,8 +99,10 @@ class Namespaces {
     }
 
     public List<QName> getQualifiedPathElements(final String prefixedPath) {
-        return Splitter
-                .on('/')
+        if (prefixedPath.isBlank()) {
+            return List.of();
+        }
+        return (prefixedPath.contains("http") ? SPLITTER_SLASH_HTTP : SPLITTER_SLASH)
                 .splitToList(prefixedPath)
                 .stream()
                 .map(this::getQualifiedName)

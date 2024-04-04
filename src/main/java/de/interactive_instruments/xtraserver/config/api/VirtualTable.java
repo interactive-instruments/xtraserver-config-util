@@ -63,7 +63,7 @@ public abstract class VirtualTable {
             if (noTables) {
                 this.noTables = false;
 
-                this.addPrimaryKeyColumns(mappingTable.getName() + "." + mappingTable.getPrimaryKey());
+                this.addPrimaryKeyColumns(mappingValueAliases.getWithAsAlias(mappingTable.getName(), mappingTable.getPrimaryKey(),null));
 
                 if (mappingTable.getPredicate() != null) {
                     this.whereClause(mappingTable.getPredicate()
@@ -102,7 +102,7 @@ public abstract class VirtualTable {
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         //.flatMap(condition -> Stream.of(condition.getSourceTable()  + "." + condition.getSourceField(), condition.getTargetTable()  + "." + condition.getTargetField()))
-                        .map(condition -> condition.getSourceTable()  + "." + condition.getSourceField())
+                        .map(condition -> mappingValueAliases.getWithAsAlias(condition.getSourceTable(), condition.getSourceField(),null))
                         .forEach(this::addColumns);
 
             return this;

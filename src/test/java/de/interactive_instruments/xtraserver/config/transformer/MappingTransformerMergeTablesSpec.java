@@ -82,7 +82,7 @@ public class MappingTransformerMergeTablesSpec {
                         String actual = transformed.getVirtualTables()
                                                    .get(0)
                                                    .getQuery();
-                        String expected = "SELECT gn_boeschungkliff_pto.id,o61001.objid,o02341.position FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid INNER JOIN o02341 ON o02341.id = o02341__p0000103000.rid ";
+                        String expected = "SELECT gn_boeschungkliff_pto.id AS id_2,o61001.objid,o02341.position FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid INNER JOIN o02341 ON o02341.id = o02341__p0000103000.rid ";
 
                         assertThat(actual).isEqualTo(expected);
 
@@ -109,7 +109,7 @@ public class MappingTransformerMergeTablesSpec {
 
                         assertThat(mergedTable.getValues()).anyMatch(actual -> actual.getTargetPath()
                                                                                      .equals(expected.getTargetPath()) && actual.getValue()
-                                                                                                                                .equals(expected.getValue() + "_1") /*&& actual.toString()
+                                                                                                                                .equals(expected.getValue()) /*&& actual.toString()
                                                                                                                                                                       .equals(expected.toString())*/);
 
                     });
@@ -129,7 +129,7 @@ public class MappingTransformerMergeTablesSpec {
                         String actual = transformed.getVirtualTables()
                                                    .get(0)
                                                    .getQuery();
-                        String expected = "SELECT gn_boeschungkliff_pto.id,gn_boeschungkliff_pto.country,o61001.objid,o02341.position FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid INNER JOIN o02341 ON o02341.id = o02341__p0000103000.rid ";
+                        String expected = "SELECT gn_boeschungkliff_pto.id AS id_2,gn_boeschungkliff_pto.country,o61001.objid,o02341.position FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid INNER JOIN o02341 ON o02341.id = o02341__p0000103000.rid ";
 
                         assertThat(actual).isEqualTo(expected);
 
@@ -173,7 +173,7 @@ public class MappingTransformerMergeTablesSpec {
                         String actual = transformed.getVirtualTables()
                                                    .get(0)
                                                    .getQuery();
-                        String expected = "SELECT gn_boeschungkliff_pto.id,o61001.objid,o02341__p0000103000.rid FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid ";
+                        String expected = "SELECT gn_boeschungkliff_pto.id AS id_1,o61001.objid,o02341__p0000103000.rid FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid ";
 
                         assertThat(actual).isEqualTo(expected);
 
@@ -237,7 +237,7 @@ public class MappingTransformerMergeTablesSpec {
                         String actual = transformed.getVirtualTables()
                                                    .get(0)
                                                    .getQuery();
-                        String expected = "SELECT gn_boeschungkliff_pto.id,o61001.objid,o02341.position FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid INNER JOIN o02341 ON o02341.id = o02341__p0000103000.rid WHERE NOT (gn_boeschungkliff_pto.fkt = '8300')";
+                        String expected = "SELECT gn_boeschungkliff_pto.id AS id_2,o61001.objid,o02341.position FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid INNER JOIN o02341 ON o02341.id = o02341__p0000103000.rid WHERE NOT (gn_boeschungkliff_pto.fkt = '8300')";
 
                         assertThat(actual).isEqualTo(expected);
 
@@ -258,7 +258,7 @@ public class MappingTransformerMergeTablesSpec {
                         String actual = transformed.getVirtualTables()
                                                    .get(0)
                                                    .getQuery();
-                        String expected = "SELECT gn_boeschungkliff_pto.id,gn_boeschungkliff_pto.country,o61001.objid,o02341.position FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid INNER JOIN o02341 ON o02341.id = o02341__p0000103000.rid WHERE NOT (gn_boeschungkliff_pto.fkt = '8300')";
+                        String expected = "SELECT gn_boeschungkliff_pto.id AS id_2,gn_boeschungkliff_pto.country,o61001.objid,o02341.position FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid INNER JOIN o02341 ON o02341.id = o02341__p0000103000.rid WHERE NOT (gn_boeschungkliff_pto.fkt = '8300')";
 
                         assertThat(actual).isEqualTo(expected);
 

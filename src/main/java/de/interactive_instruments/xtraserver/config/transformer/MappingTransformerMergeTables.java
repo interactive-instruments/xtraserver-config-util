@@ -17,12 +17,12 @@ package de.interactive_instruments.xtraserver.config.transformer;
 
 import com.google.common.collect.Lists;
 import de.interactive_instruments.xtraserver.config.api.FeatureTypeMapping;
-import de.interactive_instruments.xtraserver.config.api.ImmutableVirtualTable;
 import de.interactive_instruments.xtraserver.config.api.MappingJoin;
 import de.interactive_instruments.xtraserver.config.api.MappingJoinBuilder;
 import de.interactive_instruments.xtraserver.config.api.MappingTable;
 import de.interactive_instruments.xtraserver.config.api.MappingTableBuilder;
 import de.interactive_instruments.xtraserver.config.api.MappingValue;
+import de.interactive_instruments.xtraserver.config.api.MappingValueBuilder;
 import de.interactive_instruments.xtraserver.config.api.VirtualTable;
 import de.interactive_instruments.xtraserver.config.api.XtraServerMapping;
 import de.interactive_instruments.xtraserver.config.api.XtraServerMappingBuilder;
@@ -157,18 +157,15 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
                 }
               }
 
-              mappingTableBuilder.name("$" + currentVirtualName[0] + "$");
+              String newName = "$" + currentVirtualName[0] + "$";
+              mappingTableBuilder.name(newName);
               mappingTableBuilder.predicate(null);
 
-              // add all values from table and nested merged tables (don't we iterate over nested
+                // add all values from table and nested merged tables (don't we iterate over nested
               // merged tables anyhow???)
               mappingTableBuilder.values(
                   mergedTable
                       .getAllValuesStream(MappingTable::isMerged)
-                      .map(
-                          value ->
-                              currentVirtualTable[0].applyAliasIfNecessary(
-                                  mergedTable.getName(), value))
                       .collect(Collectors.toList()));
 
               List<MappingTable> oldJoiningTables =
@@ -252,7 +249,7 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
                       .collect(Collectors.toList()));
 
               this.currentVirtualTables.put(
-                  "$" + currentVirtualName[0] + "$", currentVirtualTable[0]);
+                  newName, currentVirtualTable[0]);
             });
         mappingTableBuilder.joinPaths(transformedMappingJoins.stream()
                                                              .map(jp -> new MappingJoinBuilder().shallowCopyOf(jp)
@@ -270,6 +267,7 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
 
         if (Objects.nonNull(currentVirtualName[0])) {
             return mappingTableBuilder
+                    .primaryKey(currentVirtualTable[0].applyAliasIfNecessary(mappingTable.getName(), new MappingValueBuilder().column().value(mappingTable.getPrimaryKey()).targetPath("FOO").build()).getValue())
                     .joiningTables(transformedMappingTables2
                             .stream()
                             .map(jt -> new MappingTableBuilder().shallowCopyOf(jt)

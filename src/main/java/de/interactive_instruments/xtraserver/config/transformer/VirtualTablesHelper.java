@@ -6,6 +6,7 @@ import de.interactive_instruments.xtraserver.config.api.MappingJoinBuilder;
 import de.interactive_instruments.xtraserver.config.api.MappingTable;
 import de.interactive_instruments.xtraserver.config.api.MappingTableBuilder;
 import de.interactive_instruments.xtraserver.config.api.MappingValue;
+import de.interactive_instruments.xtraserver.config.api.MappingValueBuilder;
 import de.interactive_instruments.xtraserver.config.api.VirtualTable;
 import de.interactive_instruments.xtraserver.config.api.VirtualTable.Builder;
 import java.util.Collection;
@@ -47,6 +48,7 @@ public class VirtualTablesHelper {
 
     currentTable.name(String.format("$%s$", currentVirtualName));
     currentTable.predicate(null);
+    currentTable.primaryKey(currentVirtualTable.applyAliasIfNecessary(currentName, new MappingValueBuilder().column().value(mappingTable.getPrimaryKey()).targetPath("FOO").build()).getValue());
 
     return this.values(mappingTable.getValues())
         .joinPaths(mappingTable.getJoinPaths())

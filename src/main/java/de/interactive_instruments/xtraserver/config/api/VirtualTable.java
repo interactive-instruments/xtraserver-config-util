@@ -57,12 +57,18 @@ public abstract class VirtualTable {
             return mappingValueAliases;
         }
 
+        public final VirtualTable.Builder from2(VirtualTable instance) {
+            this.noTables = false;
+            return from(instance);
+        }
+
         public Builder originalTable(final MappingTable mappingTable) {
             this.addAllJoinPaths(mappingTable.getJoinPaths());
 
             if (noTables) {
                 this.noTables = false;
 
+                this.primaryTable(mappingTable.getName());
                 this.addPrimaryKeyColumns(mappingValueAliases.getWithAsAlias(mappingTable.getName(), mappingTable.getPrimaryKey(),null));
 
                 if (mappingTable.getPredicate() != null) {

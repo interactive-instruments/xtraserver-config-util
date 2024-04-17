@@ -17,6 +17,7 @@ package de.interactive_instruments.xtraserver.config.transformer;
 
 import com.google.common.collect.Lists;
 import de.interactive_instruments.xtraserver.config.api.FeatureTypeMapping;
+import de.interactive_instruments.xtraserver.config.api.Hints;
 import de.interactive_instruments.xtraserver.config.api.MappingJoin;
 import de.interactive_instruments.xtraserver.config.api.MappingJoinBuilder;
 import de.interactive_instruments.xtraserver.config.api.MappingTable;
@@ -48,7 +49,7 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
         this.virtualTables = new ArrayList<>();
         this.currentVirtualTables = new LinkedHashMap<>();
 
-        xtraServerMapping.getVirtualTables().forEach(virtualTable -> currentVirtualTables.put("$" + virtualTable.getName() + "$", new VirtualTable.Builder().from(virtualTable)));
+        xtraServerMapping.getVirtualTables().forEach(virtualTable -> currentVirtualTables.put("$" + virtualTable.getName() + "$", new VirtualTable.Builder().from2(virtualTable)));
     }
 
     @Override

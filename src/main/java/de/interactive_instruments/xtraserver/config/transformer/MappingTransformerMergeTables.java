@@ -198,11 +198,8 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
                                                                           ? new MappingJoinBuilder
                                                                                   .ConditionBuilder()
                                                                               .copyOf(jc)
-                                                                              .sourceTable(
-                                                                                  "$"
-                                                                                      + currentVirtualName[
-                                                                                          0]
-                                                                                      + "$")
+                                                                              .sourceTable(newName)
+                                                                              .sourceField(currentVirtualTable[0].aliases().getWithAlias(jc.getSourceTable(), jc.getSourceField(), ""))
                                                                               .build()
                                                                           : jc)
                                                               .collect(Collectors.toList()))
@@ -236,11 +233,8 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
                                                                           ? new MappingJoinBuilder
                                                                                   .ConditionBuilder()
                                                                               .copyOf(jc)
-                                                                              .sourceTable(
-                                                                                  "$"
-                                                                                      + currentVirtualName[
-                                                                                          0]
-                                                                                      + "$")
+                                                                              .sourceTable(newName)
+                                                                              .sourceField(currentVirtualTable[0].aliases().getWithAlias(jc.getSourceTable(), jc.getSourceField(), ""))
                                                                               .build()
                                                                           : jc)
                                                               .collect(Collectors.toList()))
@@ -283,6 +277,7 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
                                                                                                                                                .equals(mappingTable.getName()) ? new MappingJoinBuilder.ConditionBuilder()
                                                                                                                                           .copyOf(jc)
                                                                                                                                           .sourceTable("$" + currentVirtualName[0] + "$")
+                                                                                                                                          .sourceField(currentVirtualTable[0].aliases().getWithAlias(jc.getSourceTable(), jc.getSourceField(), ""))
                                                                                                                                           .build() : jc)
                                                                                                                                   .collect(Collectors.toList()))
                                                                                                                 .build())

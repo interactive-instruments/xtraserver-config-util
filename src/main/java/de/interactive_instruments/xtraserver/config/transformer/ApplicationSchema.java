@@ -346,7 +346,11 @@ class ApplicationSchema implements SchemaInfo.OptionalProperty, SchemaInfo.Multi
             XmlSchemaElement property = null;
             for (int i = 0; i < path.size(); i++) {
                 property = getProperty(typ, path.get(i));
-                typ = (XmlSchemaComplexType) property.getSchemaType();
+                // Only traverse into the element's type for non-terminal path elements;
+                // leaf elements may have simple types that cannot be cast to XmlSchemaComplexType.
+                if (i < path.size() - 1) {
+                    typ = (XmlSchemaComplexType) property.getSchemaType();
+                }
             }
 
             return property;

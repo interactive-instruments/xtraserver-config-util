@@ -54,6 +54,42 @@ public class MultiJoinSpec {
                                     "bwf",
                                     "bu-base:currentUse/bu-base:CurrentUse/bu-base:currentUse/@xlink:href")))))
                 .build())
+        .useCase(
+            UseCase.builder()
+                .title("sameColumnNonHeadPath (known bug: only head-position path supported)")
+                .description(
+                    "The same column is mapped to paths whose multiple property is at a non-head position; "
+                        + "the transformer incorrectly groups by the first path element only")
+                .given(
+                    "given",
+                    mapping(
+                        table(
+                            "o51001",
+                            hint(
+                                HINT_MULTI_JOIN,
+                                table(
+                                    "o51001_bwf",
+                                    value(
+                                        "bwf",
+                                        "bu-base:parts/bu-base:BuildingPart/bu-base:dateOfConstruction/@xlink:href"),
+                                    value(
+                                        "bwf",
+                                        "bu-base:parts/bu-base:BuildingPart/bu-base:dateOfRenovation/@xlink:href"))))))
+                .expected(
+                    "expected (current wrong output: grouped by first path element only)",
+                    mapping(
+                        table(
+                            "o51001",
+                            table(
+                                "o51001_bwf",
+                                "bu-base:parts",
+                                value(
+                                    "bwf",
+                                    "bu-base:parts/bu-base:BuildingPart/bu-base:dateOfConstruction/@xlink:href"),
+                                value(
+                                    "bwf",
+                                    "bu-base:parts/bu-base:BuildingPart/bu-base:dateOfRenovation/@xlink:href")))))
+                .build())
         .build();
   }
 

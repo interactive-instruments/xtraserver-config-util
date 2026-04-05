@@ -128,7 +128,7 @@ public class MappingTransformerJoinTypeHintSpec {
                       assertThat(table.getPredicate()).isNotBlank();
                       assertThat(table.getPredicate())
                           .isEqualToIgnoringCase(
-                              "(NOT EXISTS (SELECT 1 FROM details_table WHERE details_table.city_id = city_table.id LIMIT 1))");
+                              "(NOT EXISTS (SELECT 1 FROM details_table WHERE details_table.city_id = $T$.id LIMIT 1))");
                     });
               });
         });

@@ -241,7 +241,7 @@ public class MappingTransformerMergeTablesSpec {
                         String actual = transformed.getVirtualTables()
                                                    .get(0)
                                                    .getQuery();
-                        String expected = "SELECT gn_boeschungkliff_pto.id AS id_2,o61001.objid,o02341.position FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid INNER JOIN o02341 ON o02341.id = o02341__p0000103000.rid WHERE NOT (gn_boeschungkliff_pto.fkt = '8300')";
+                        String expected = "SELECT gn_boeschungkliff_pto.id AS id_2,o61001.objid,o02341.position FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid INNER JOIN o02341 ON o02341.id = o02341__p0000103000.rid WHERE (NOT (gn_boeschungkliff_pto.fkt = '8300'))";
 
                         assertThat(actual).isEqualTo(expected);
 
@@ -262,7 +262,7 @@ public class MappingTransformerMergeTablesSpec {
                         String actual = transformed.getVirtualTables()
                                                    .get(0)
                                                    .getQuery();
-                        String expected = "SELECT gn_boeschungkliff_pto.id AS id_2,gn_boeschungkliff_pto.country,o61001.objid,o02341.position FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid INNER JOIN o02341 ON o02341.id = o02341__p0000103000.rid WHERE NOT (gn_boeschungkliff_pto.fkt = '8300')";
+                        String expected = "SELECT gn_boeschungkliff_pto.id AS id_2,gn_boeschungkliff_pto.country,o61001.objid,o02341.position FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid INNER JOIN o02341 ON o02341.id = o02341__p0000103000.rid WHERE (NOT (gn_boeschungkliff_pto.fkt = '8300'))";
 
                         assertThat(actual).isEqualTo(expected);
 

@@ -13,24 +13,24 @@
  */
 package de.interactive_instruments.xtraserver.config.transformer;
 
+import com.google.common.base.Strings;
 import de.interactive_instruments.xtraserver.config.api.FeatureTypeMapping;
 import de.interactive_instruments.xtraserver.config.api.MappingJoin;
 import de.interactive_instruments.xtraserver.config.api.MappingJoinBuilder;
 import de.interactive_instruments.xtraserver.config.api.MappingTable;
 import de.interactive_instruments.xtraserver.config.api.MappingTableBuilder;
 import de.interactive_instruments.xtraserver.config.api.MappingValue;
-import de.interactive_instruments.xtraserver.config.api.MappingValueBuilder;
-import de.interactive_instruments.xtraserver.config.api.VirtualTable;
 import de.interactive_instruments.xtraserver.config.api.XtraServerMapping;
 import de.interactive_instruments.xtraserver.config.api.XtraServerMappingBuilder;
 import de.interactive_instruments.xtraserver.config.transformer.SchemaInfo.OptionalProperty;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 // TODO: Schema stage, Collection of multiple AddHintTransformers
-/** @author zahnen */
+/**
+ * @author zahnen
+ */
 public class MappingTransformerJoinTypeHint extends AbstractMappingTransformer {
 
   public static final String HINT_JOIN_TYPE = "JOIN_TYPE";
@@ -63,6 +63,54 @@ public class MappingTransformerJoinTypeHint extends AbstractMappingTransformer {
         super.transformMappingTable(
             context, transformedMappingTables, transformedMappingJoins, transformedMappingValues);
 
+    List<MappingTable> predicateTables =
+        mappingTable.getJoiningTables().stream()
+            .filter(
+                t ->
+                    t.isMerged()
+                        && t.getValues().isEmpty()
+                        && !Strings.isNullOrEmpty(t.getPredicate()))
+            .collect(Collectors.toList());
+
+    if (!predicateTables.isEmpty()) {
+      mappingTableBuilder
+          .predicate(
+              Optional.ofNullable(Strings.emptyToNull(mappingTable.getPredicate()))
+                      .map(p -> String.format("(%s) AND ", p))
+                      .orElse("")
+                  + predicateTables.stream()
+                      .map(
+                          t -> {
+                            if (t.getPredicate().toLowerCase().endsWith(" is null")) {
+                              return String.format(
+                                  "NOT EXISTS (SELECT 1 FROM %s WHERE %s LIMIT 1)",
+                                  t.getName(),
+                                  t.getJoinPaths().stream()
+                                      .flatMap(
+                                          j ->
+                                              j.getJoinConditions().stream()
+                                                  .map(
+                                                      c ->
+                                                          String.format(
+                                                              "%s.%s = %s.%s",
+                                                              c.getTargetTable(),
+                                                              c.getTargetField(),
+                                                              "$T$" /*c.getSourceTable()*/,
+                                                              c.getSourceField())))
+                                      .distinct()
+                                      .collect(Collectors.joining("AND")));
+                            }
+                            return t.getPredicate();
+                          })
+                      .filter(p -> !Strings.isNullOrEmpty(p))
+                      .collect(Collectors.joining(") AND (", "(", ")")))
+          .clearJoiningTables()
+          .joiningTables(
+              transformedMappingTables.stream()
+                  .filter(t -> !predicateTables.contains(t))
+                  .collect(Collectors.toList()));
+    }
+
     if (mappingTable.isMerged()) {
       boolean allPropertiesOptional =
           mappingTable.getValues().stream()
@@ -79,12 +127,13 @@ public class MappingTransformerJoinTypeHint extends AbstractMappingTransformer {
                 transformedMappingJoins.stream()
                     .map(
                         join ->
-                            new MappingJoinBuilder()
-                                .copyOf(join)
-                                .transformationHint(HINT_JOIN_TYPE, "LEFT")
-                                .build())
+                            join.getTransformationHints().containsKey(HINT_JOIN_TYPE)
+                                ? join
+                                : new MappingJoinBuilder()
+                                    .copyOf(join)
+                                    .transformationHint(HINT_JOIN_TYPE, "LEFT")
+                                    .build())
                     .collect(Collectors.toList()));
-        // mappingTableBuilder.transformationHint(HINT_JOIN_TYPE, "LEFT");
       }
     }
 

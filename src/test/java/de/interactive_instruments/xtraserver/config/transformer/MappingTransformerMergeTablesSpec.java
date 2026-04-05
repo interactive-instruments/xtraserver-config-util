@@ -52,8 +52,9 @@ public class MappingTransformerMergeTablesSpec {
             context("joined table with target path", () -> {
 
                 it("it should do nothing", () -> {
-
-
+                    XtraServerMapping given = createXtraServerMapping(false, false, true);
+                    XtraServerMapping transformed = applyTransformation(given);
+                    assertThat(transformed.getVirtualTables()).hasSize(1);
                 });
 
             });
@@ -61,8 +62,11 @@ public class MappingTransformerMergeTablesSpec {
             context("joined table without target path", () -> {
 
                 it("it should create a virtual table and a merged table mapping", () -> {
-
-
+                    XtraServerMapping given = createXtraServerMapping(false, false, false);
+                    XtraServerMapping transformed = applyTransformation(given);
+                    assertThat(transformed.getVirtualTables()).hasSize(1);
+                    MappingTable mergedTable = transformed.getFeatureTypeMappings().get(0).getPrimaryTables().get(0);
+                    assertThat(mergedTable.getValues()).anyMatch(v -> "ci:location".equals(v.getTargetPath()));
                 });
 
             });
@@ -237,7 +241,7 @@ public class MappingTransformerMergeTablesSpec {
                         String actual = transformed.getVirtualTables()
                                                    .get(0)
                                                    .getQuery();
-                        String expected = "SELECT gn_boeschungkliff_pto.id AS id_2,o61001.objid,o02341.position FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid INNER JOIN o02341 ON o02341.id = o02341__p0000103000.rid WHERE NOT (gn_boeschungkliff_pto.fkt = '8300')";
+                        String expected = "SELECT gn_boeschungkliff_pto.id AS id_2,o61001.objid,o02341.position FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid INNER JOIN o02341 ON o02341.id = o02341__p0000103000.rid WHERE (NOT (gn_boeschungkliff_pto.fkt = '8300'))";
 
                         assertThat(actual).isEqualTo(expected);
 
@@ -258,7 +262,7 @@ public class MappingTransformerMergeTablesSpec {
                         String actual = transformed.getVirtualTables()
                                                    .get(0)
                                                    .getQuery();
-                        String expected = "SELECT gn_boeschungkliff_pto.id AS id_2,gn_boeschungkliff_pto.country,o61001.objid,o02341.position FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid INNER JOIN o02341 ON o02341.id = o02341__p0000103000.rid WHERE NOT (gn_boeschungkliff_pto.fkt = '8300')";
+                        String expected = "SELECT gn_boeschungkliff_pto.id AS id_2,gn_boeschungkliff_pto.country,o61001.objid,o02341.position FROM gn_boeschungkliff_pto INNER JOIN o61001 ON o61001.id = gn_boeschungkliff_pto.id INNER JOIN o02341__p0000103000 ON o02341__p0000103000.p0000103000 = o61001.objid INNER JOIN o02341 ON o02341.id = o02341__p0000103000.rid WHERE (NOT (gn_boeschungkliff_pto.fkt = '8300'))";
 
                         assertThat(actual).isEqualTo(expected);
 
@@ -269,8 +273,10 @@ public class MappingTransformerMergeTablesSpec {
                 context("has nested join with target path", () -> {
 
                     it("it should write nothing", () -> {
-
-
+                        XtraServerMapping given = createXtraServerMapping(false, true, true);
+                        XtraServerMapping transformed = applyTransformation(given);
+                        assertThat(transformed.getVirtualTables()).hasSize(1);
+                        assertThat(transformed.getVirtualTables().get(0).getQuery()).contains("WHERE");
                     });
 
                 });
@@ -278,8 +284,10 @@ public class MappingTransformerMergeTablesSpec {
                 context("does not have any nested join with target path", () -> {
 
                     it("it should write nothing", () -> {
-
-
+                        XtraServerMapping given = createXtraServerMapping(false, true, false);
+                        XtraServerMapping transformed = applyTransformation(given);
+                        assertThat(transformed.getVirtualTables()).hasSize(1);
+                        assertThat(transformed.getVirtualTables().get(0).getQuery()).contains("WHERE");
                     });
 
                 });

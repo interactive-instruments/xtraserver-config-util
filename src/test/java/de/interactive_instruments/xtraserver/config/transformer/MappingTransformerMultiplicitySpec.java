@@ -232,6 +232,76 @@ public class MappingTransformerMultiplicitySpec {
 
             });
 
+            context("three value mappings where two paths share the same lastMultiplePropertyPath " +
+                    "(ignoreSelectIds prevents double for_each_select_id tables)", () -> {
+
+                // given — six values: two pairs under geographicalName, one pair under watercourseName
+                final List<MappingValue> values = ImmutableList.of(
+                        new MappingValueBuilder().constant()
+                                .value("http://inspire.ec.europa.eu/codelist/NameStatusValue/official")
+                                .targetPath("hy-n:geographicalName/gn:GeographicalName/gn:nameStatus/@xlink:href")
+                                .qualifiedTargetPath(toQualified("hy-n:geographicalName/gn:GeographicalName/gn:nameStatus/@xlink:href"))
+                                .build(),
+                        new MappingValueBuilder().constant()
+                                .value("http://inspire.ec.europa.eu/codelist/NameStatusValue/other")
+                                .targetPath("hy-n:geographicalName/gn:GeographicalName/gn:nameStatus/@xlink:href")
+                                .qualifiedTargetPath(toQualified("hy-n:geographicalName/gn:GeographicalName/gn:nameStatus/@xlink:href"))
+                                .build(),
+                        new MappingValueBuilder().column()
+                                .value("nam")
+                                .targetPath("hy-n:geographicalName/gn:GeographicalName/gn:spelling/gn:SpellingOfName/gn:text")
+                                .qualifiedTargetPath(toQualified("hy-n:geographicalName/gn:GeographicalName/gn:spelling/gn:SpellingOfName/gn:text"))
+                                .build(),
+                        new MappingValueBuilder().column()
+                                .value("znm")
+                                .targetPath("hy-n:geographicalName/gn:GeographicalName/gn:spelling/gn:SpellingOfName/gn:text")
+                                .qualifiedTargetPath(toQualified("hy-n:geographicalName/gn:GeographicalName/gn:spelling/gn:SpellingOfName/gn:text"))
+                                .build(),
+                        new MappingValueBuilder().constant()
+                                .value("http://inspire.ec.europa.eu/codelist/NameStatusValue/official")
+                                .targetPath("hy-n:watercourseName/gn:GeographicalName/gn:nameStatus/@xlink:href")
+                                .qualifiedTargetPath(toQualified("hy-n:watercourseName/gn:GeographicalName/gn:nameStatus/@xlink:href"))
+                                .build(),
+                        new MappingValueBuilder().constant()
+                                .value("http://inspire.ec.europa.eu/codelist/NameStatusValue/other")
+                                .targetPath("hy-n:watercourseName/gn:GeographicalName/gn:nameStatus/@xlink:href")
+                                .qualifiedTargetPath(toQualified("hy-n:watercourseName/gn:GeographicalName/gn:nameStatus/@xlink:href"))
+                                .build()
+                );
+
+                final MappingTable primaryTable = new MappingTableBuilder()
+                        .name("$vrt_mixed$").primaryKey("id").values(values).build();
+                final FeatureTypeMapping ftm = new FeatureTypeMappingBuilder()
+                        .name("hy-n:WatercourseLink").qualifiedName(new QName("hy-n", "WatercourseLink"))
+                        .primaryTable(primaryTable).build();
+                final XtraServerMapping given = new XtraServerMappingBuilder().featureTypeMapping(ftm).build();
+
+                // mock: two geographicalName-prefix paths both resolve to the same lastMultiplePropertyPath
+                final List<QName> geoNamePath = toQualified("hy-n:geographicalName");
+                final List<QName> spellingPath = toQualified("hy-n:geographicalName/gn:GeographicalName/gn:spelling");
+                final List<QName> wNamePath = toQualified("hy-n:watercourseName");
+
+                final Map<List<QName>, List<QName>> paths = ImmutableMap.of(
+                        toQualified("hy-n:geographicalName/gn:GeographicalName/gn:nameStatus/@xlink:href"), geoNamePath,
+                        toQualified("hy-n:geographicalName/gn:GeographicalName/gn:spelling/gn:SpellingOfName/gn:text"), spellingPath,
+                        toQualified("hy-n:watercourseName/gn:GeographicalName/gn:nameStatus/@xlink:href"), wNamePath
+                );
+                final ApplicationSchema applicationSchema = createApplicationSchema(paths);
+
+                it("it should append exactly two for_each_select_id tables, merging the spelling sub-path into the geographicalName path", () -> {
+
+                    final XtraServerMapping actual = new MappingTransformerMultiplicity(given, applicationSchema).transform();
+                    final MappingTable actualPrimaryTable = actual.getFeatureTypeMappings().get(0).getPrimaryTables().get(0);
+                    final ImmutableList<MappingTable> joiningTables =
+                            actualPrimaryTable.getJoiningTables().asList();
+
+                    assertThat(joiningTables).hasSize(2);
+                    assertThat(joiningTables).anyMatch(t -> t.getQualifiedTargetPath().equals(geoNamePath));
+                    assertThat(joiningTables).anyMatch(t -> t.getQualifiedTargetPath().equals(wNamePath));
+                });
+
+            });
+
         });
 
     }

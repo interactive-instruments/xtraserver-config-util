@@ -83,6 +83,27 @@ public class Dsl {
         .build();
   }
 
+  public static MappingTable predicate(String predicate, MappingTable table) {
+    return new MappingTableBuilder().copyOf(table).predicate(predicate).build();
+  }
+
+  public static FeatureTypeMapping createFeatureTypeMapping(
+      String name, List<MappingTable> primaryTables) {
+    return new FeatureTypeMappingBuilder()
+        .name(name)
+        .qualifiedName(toQualifiedName(name))
+        .primaryTables(primaryTables)
+        .build();
+  }
+
+  /**
+   * A mapping whose single feature type has several primary tables. Named differently from {@link
+   * #mapping(MappingTable)} on purpose - a varargs overload of that name would be a resolution trap.
+   */
+  public static XtraServerMapping mappingOf(MappingTable... primaryTables) {
+    return mapping(createFeatureTypeMapping("test:FeatureType", Arrays.asList(primaryTables)));
+  }
+
   public static FeatureTypeMapping createFeatureTypeMapping(
       String name, MappingTable primaryTable) {
     return new FeatureTypeMappingBuilder()

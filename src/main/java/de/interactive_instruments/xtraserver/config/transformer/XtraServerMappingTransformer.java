@@ -106,6 +106,13 @@ public class XtraServerMappingTransformer {
             transformedXtraServerMapping = new MappingTransformerSchemaInfo(transformedXtraServerMapping, applicationSchema).transform();
             description += "    - flattenInheritance\n";
         }
+        // must run after flattenInheritance, which merges super type tables into sub type tables by
+        // name, and before fanOutInheritance / ensureRelationNavigability, which both key on the
+        // primary table names
+        if (virtualTables) {
+            transformedXtraServerMapping = new MappingTransformerPredicateVariants(transformedXtraServerMapping).transform();
+            description += "    - predicateVariants\n";
+        }
         if (fanOutInheritance) {
             transformedXtraServerMapping = new MappingTransformerFanOutInheritance(transformedXtraServerMapping, applicationSchema).transform();
             transformedXtraServerMapping = new MappingTransformerSchemaInfo(transformedXtraServerMapping, applicationSchema).transform();
@@ -191,6 +198,10 @@ public class XtraServerMappingTransformer {
          * This transformer adds support for merged tables. XtraServer supports joins only to represent multiplicity.
          * This transformer enables cases where a simple property should be mapped from a table different than the
          * feature instance table. If such cases are detected then according VirtualTables will be created.
+         *
+         * <p>This flag also enables a second, later stage that detects feature types with several primary tables
+         * sharing a physical table name and differing only in their predicate - which XtraServer does not support -
+         * and turns each of them into a VirtualTable, so that they appear as distinct tables in the mapping file.
          *
          * @return the transformer builder
          */

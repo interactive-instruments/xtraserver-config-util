@@ -7,7 +7,7 @@ import java.util.List;
 public class TransformerSpecs {
 
   public static List<Spec> get() {
-    return ImmutableList.of(MultiJoinSpec.get(), MergeLeftJoinSpec.get());
+    return ImmutableList.of(MultiJoinSpec.get(), MergeLeftJoinSpec.get(), PredicateVariantsSpec.get());
   }
 
 }

@@ -36,7 +36,16 @@ public class VirtualTablesHelper {
   }
 
   public VirtualTablesHelper from(MappingTable mappingTable) {
-    this.currentVirtualName = String.format("vrt_%s", mappingTable.getName());
+    return from(mappingTable, String.format("vrt_%s", mappingTable.getName()));
+  }
+
+  /**
+   * Same as {@link #from(MappingTable)}, but with an explicit virtual table name. Needed when
+   * several tables share a base name and would otherwise all become {@code vrt_<name>} - the
+   * name-keyed maps here and in {@code XtraServerMappingBuilder} would silently drop all but one.
+   */
+  public VirtualTablesHelper from(MappingTable mappingTable, String virtualTableName) {
+    this.currentVirtualName = virtualTableName;
     this.currentVirtualTable = VirtualTable.builder();
     this.currentName = mappingTable.getName();
     this.currentTable = new MappingTableBuilder().shallowCopyOf(mappingTable);
@@ -99,6 +108,13 @@ public class VirtualTablesHelper {
                 jt ->
                     new MappingTableBuilder()
                         .shallowCopyOf(jt)
+                        // a child without join paths (predicate / for_each_select_id table) that
+                        // shares the parent's name would otherwise be written out under the base
+                        // name again, re-introducing the row we just replaced
+                        .name(
+                            jt.getName().equals(currentName)
+                                ? String.format("$%s$", currentVirtualName)
+                                : jt.getName())
                         .joiningTables(jt.getJoiningTables())
                         .values(jt.getValues())
                         .joinPaths(

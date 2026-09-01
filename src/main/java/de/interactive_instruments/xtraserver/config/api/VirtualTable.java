@@ -21,6 +21,7 @@ import de.interactive_instruments.xtraserver.config.transformer.MappingValueAlia
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import org.immutables.value.Value;
 
@@ -69,8 +70,12 @@ public abstract class VirtualTable {
       }
 
       if (mappingTable.getPredicate() != null) {
+        // quoteReplacement: a table name may contain $ (virtual table references look like
+        // $vrt_x$), which would otherwise be read as a regex group reference
         this.addWhereClause(
-            mappingTable.getPredicate().replaceAll("\\$T\\$", mappingTable.getName()));
+            mappingTable
+                .getPredicate()
+                .replaceAll("\\$T\\$", Matcher.quoteReplacement(mappingTable.getName())));
         // whereClause = mappingTable.getName() + "." + mappingTable.getPredicate().replaceAll("(
         // or | and )", "$1" + mappingTable.getName() + ".");
       }

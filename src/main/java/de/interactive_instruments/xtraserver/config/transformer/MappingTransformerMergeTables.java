@@ -30,10 +30,12 @@ import de.interactive_instruments.xtraserver.config.api.XtraServerMappingBuilder
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -43,13 +45,20 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
 
     private final List<VirtualTable> virtualTables;
     private final Map<String, VirtualTable.Builder> currentVirtualTables;
+    // every name ever handed out, so a name stays taken even after its builder was removed from
+    // currentVirtualTables - two feature types over the same physical table derive the same name
+    private final Set<String> usedVirtualNames;
 
     MappingTransformerMergeTables(XtraServerMapping xtraServerMapping) {
         super(xtraServerMapping);
         this.virtualTables = new ArrayList<>();
         this.currentVirtualTables = new LinkedHashMap<>();
+        this.usedVirtualNames = new LinkedHashSet<>();
 
-        xtraServerMapping.getVirtualTables().forEach(virtualTable -> currentVirtualTables.put("$" + virtualTable.getName() + "$", new VirtualTable.Builder().from2(virtualTable)));
+        xtraServerMapping.getVirtualTables().forEach(virtualTable -> {
+            currentVirtualTables.put("$" + virtualTable.getName() + "$", new VirtualTable.Builder().from2(virtualTable));
+            usedVirtualNames.add(virtualTable.getName());
+        });
     }
 
     @Override
@@ -103,10 +112,11 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
                 currentVirtualTable[0].from(mergedVirtualTable.get().build());
 
                 currentVirtualName[0] =
-                    mergedTable
-                        .getName()
-                        .replaceAll("\\$", "")
-                        .replace("vrt_", "vrt_" + mappingTable.getName() + "_");
+                    uniqueVirtualName(
+                        mergedTable
+                            .getName()
+                            .replaceAll("\\$", "")
+                            .replace("vrt_", "vrt_" + mappingTable.getName() + "_"));
                 currentVirtualTable[0].name(currentVirtualName[0]);
 
               } else {
@@ -124,14 +134,8 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
                 if (!currentVirtualName[0].contains(mergedTable.getName())
                     || currentVirtualName[0].contains(mergedTable.getName() + "__")) {
                   lastVirtualName[0] = "$" + currentVirtualName[0] + "$";
-                  currentVirtualName[0] += "_" + mergedTable.getName();
-                  if (virtualTableExists(currentVirtualName[0])) {
-                    int i = 2;
-                    while (virtualTableExists(currentVirtualName[0] + "_" + i)) {
-                      i++;
-                    }
-                    currentVirtualName[0] = currentVirtualName[0] + "_" + i;
-                  }
+                  currentVirtualName[0] =
+                      uniqueVirtualName(currentVirtualName[0] + "_" + mergedTable.getName());
                 }
 
                 currentVirtualTable[0].name(currentVirtualName[0]);
@@ -291,11 +295,21 @@ public class MappingTransformerMergeTables extends AbstractMappingTransformer {
 
     }
 
-    private boolean virtualTableExists(String name) {
-        return currentVirtualTables.values()
-                                   .stream()
-                                   .map(VirtualTable.Builder::build)
-                                   .anyMatch(virtualTable -> virtualTable.getName()
-                                                                         .equals(name));
+    /**
+     * Reserves a virtual table name, suffixing it until it is free. Without this both branches above
+     * can derive the same name for two feature types over the same physical table, and the later
+     * one silently replaces the definition the earlier one still references.
+     */
+    private String uniqueVirtualName(String candidate) {
+        if (usedVirtualNames.add(candidate)) {
+            return candidate;
+        }
+
+        int i = 2;
+        while (!usedVirtualNames.add(candidate + "_" + i)) {
+            i++;
+        }
+
+        return candidate + "_" + i;
     }
 }

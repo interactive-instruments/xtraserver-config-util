@@ -23,19 +23,28 @@ import de.interactive_instruments.xtraserver.config.api.MappingValueBuilder;
 import de.interactive_instruments.xtraserver.config.api.VirtualTable;
 import de.interactive_instruments.xtraserver.config.api.XtraServerMapping;
 import de.interactive_instruments.xtraserver.config.api.XtraServerMappingBuilder;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /** @author zahnen */
 public class MappingTransformerCloneColumns extends AbstractMappingTransformer {
 
   private final VirtualTablesHelper virtualTables;
+  // seeded from the input, then grown per wrapped table: without this two feature types that clone
+  // columns on the same physical table both get vrt_<table> and the later one replaces the earlier
+  private final Set<String> usedVirtualNames;
 
   MappingTransformerCloneColumns(XtraServerMapping xtraServerMapping) {
     super(xtraServerMapping);
     virtualTables = new VirtualTablesHelper();
+    usedVirtualNames =
+        xtraServerMapping.getVirtualTables().stream()
+            .map(VirtualTable::getName)
+            .collect(Collectors.toCollection(LinkedHashSet::new));
   }
 
   @Override
@@ -74,10 +83,29 @@ public class MappingTransformerCloneColumns extends AbstractMappingTransformer {
             .anyMatch(mappingValue -> mappingValue.getTransformationHints().containsKey(Hints.CLONE));
 
     if (hasClone) {
-      return virtualTables.from(mappingTableBuilder.build()).getCurrentTable();
+      final MappingTable tableWithClones = mappingTableBuilder.build();
+
+      return virtualTables
+          .from(
+              tableWithClones,
+              uniqueVirtualName(String.format("vrt_%s", tableWithClones.getName())))
+          .getCurrentTable();
     }
 
     return mappingTableBuilder;
+  }
+
+  private String uniqueVirtualName(String candidate) {
+    if (usedVirtualNames.add(candidate)) {
+      return candidate;
+    }
+
+    int i = 2;
+    while (!usedVirtualNames.add(candidate + "_" + i)) {
+      i++;
+    }
+
+    return candidate + "_" + i;
   }
 
   private class CloneCollector extends AbstractMappingValueCollector {

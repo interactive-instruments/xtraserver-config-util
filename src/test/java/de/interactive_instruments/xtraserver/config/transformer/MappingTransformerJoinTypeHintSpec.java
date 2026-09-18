@@ -131,7 +131,99 @@ public class MappingTransformerJoinTypeHintSpec {
                               "(NOT EXISTS (SELECT 1 FROM details_table WHERE details_table.city_id = $T$.id LIMIT 1))");
                     });
               });
+
+          context(
+              "merged table without any values but with a predicate that is not an IS NULL check",
+              () -> {
+                XtraServerMapping given = createCityMapping(List.of(), "$T$.foo = '1115'");
+
+                XtraServerMapping transformed = applyTransformation(given);
+
+                it(
+                    "should remove the join and add the predicate to the main table as an EXISTS"
+                        + " subquery, with $T$ resolved against the joined table",
+                    () -> {
+                      MappingTable table =
+                          transformed.getFeatureTypeMappings().get(0).getPrimaryTables().get(0);
+
+                      assertThat(table.getJoiningTables()).isNullOrEmpty();
+                      assertThat(table.getPredicate())
+                          .isEqualToIgnoringCase(
+                              "(EXISTS (SELECT 1 FROM details_table WHERE details_table.city_id ="
+                                  + " $T$.id AND (details_table.foo = '1115') LIMIT 1))");
+                    });
+
+                it(
+                    "should not leave a column of the joined table qualified with the main table,"
+                        + " which is what produced \"Spalte o51006.spo existiert nicht\"",
+                    () -> {
+                      MappingTable table =
+                          transformed.getFeatureTypeMappings().get(0).getPrimaryTables().get(0);
+
+                      assertThat(table.getPredicate()).doesNotContain("$T$.foo");
+                    });
+              });
+
+          context(
+              "merged predicate table reached over a join path with more than one condition",
+              () -> {
+                XtraServerMapping given = createCityMappingWithJoinChain("$T$.foo = '1115'");
+
+                XtraServerMapping transformed = applyTransformation(given);
+
+                it(
+                    "should separate the conditions of the generated subquery with a padded AND",
+                    () -> {
+                      MappingTable table =
+                          transformed.getFeatureTypeMappings().get(0).getPrimaryTables().get(0);
+
+                      assertThat(table.getPredicate()).doesNotContain("idAND").contains(" AND ");
+                    });
+              });
         });
+  }
+
+  /**
+   * Same shape as {@link #createCityMapping(List, String)}, but the predicate table is reached over
+   * a two step join path - it pins the separator between the conditions of the generated subquery.
+   */
+  private XtraServerMapping createCityMappingWithJoinChain(String predicate) {
+    MappingTable mergedTable =
+        new MappingTableBuilder()
+            .name("details_table")
+            .primaryKey("id")
+            .predicate(predicate)
+            .joinPath(
+                new MappingJoinBuilder()
+                    .joinCondition(
+                        new MappingJoinBuilder.ConditionBuilder()
+                            .sourceTable("city_table")
+                            .sourceField("id")
+                            .targetTable("middle_table")
+                            .targetField("city_id")
+                            .build())
+                    .joinCondition(
+                        new MappingJoinBuilder.ConditionBuilder()
+                            .sourceTable("middle_table")
+                            .sourceField("id")
+                            .targetTable("details_table")
+                            .targetField("middle_id")
+                            .build())
+                    .targetPath("TODO")
+                    .build())
+            .build();
+
+    MappingTable primaryTable =
+        new MappingTableBuilder()
+            .name("city_table")
+            .primaryKey("id")
+            .joiningTable(mergedTable)
+            .build();
+
+    return new XtraServerMappingBuilder()
+        .featureTypeMapping(
+            new FeatureTypeMappingBuilder().name("ci:City").primaryTable(primaryTable).build())
+        .build();
   }
 
   private XtraServerMapping applyTransformation(XtraServerMapping mapping)
@@ -146,7 +238,7 @@ public class MappingTransformerJoinTypeHintSpec {
 
   /**
    * Builds a ci:City mapping with one primary table and one merged joining table. The merged table
-   * contains no targetPath (null) and one joinPath — satisfying isMerged().
+   * contains no targetPath (null) and one joinPath - satisfying isMerged().
    */
   private XtraServerMapping createCityMapping(
       List<MappingValue> mergedTableValue, String predicate) {

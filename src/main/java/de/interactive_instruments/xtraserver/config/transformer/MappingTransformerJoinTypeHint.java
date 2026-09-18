@@ -25,6 +25,7 @@ import de.interactive_instruments.xtraserver.config.api.XtraServerMappingBuilder
 import de.interactive_instruments.xtraserver.config.transformer.SchemaInfo.OptionalProperty;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 // TODO: Schema stage, Collection of multiple AddHintTransformers
@@ -79,29 +80,7 @@ public class MappingTransformerJoinTypeHint extends AbstractMappingTransformer {
                       .map(p -> String.format("(%s) AND ", p))
                       .orElse("")
                   + predicateTables.stream()
-                      .map(
-                          t -> {
-                            if (t.getPredicate().toLowerCase().endsWith(" is null")) {
-                              return String.format(
-                                  "NOT EXISTS (SELECT 1 FROM %s WHERE %s LIMIT 1)",
-                                  t.getName(),
-                                  t.getJoinPaths().stream()
-                                      .flatMap(
-                                          j ->
-                                              j.getJoinConditions().stream()
-                                                  .map(
-                                                      c ->
-                                                          String.format(
-                                                              "%s.%s = %s.%s",
-                                                              c.getTargetTable(),
-                                                              c.getTargetField(),
-                                                              "$T$" /*c.getSourceTable()*/,
-                                                              c.getSourceField())))
-                                      .distinct()
-                                      .collect(Collectors.joining("AND")));
-                            }
-                            return t.getPredicate();
-                          })
+                      .map(MappingTransformerJoinTypeHint::asExistenceCheck)
                       .filter(p -> !Strings.isNullOrEmpty(p))
                       .collect(Collectors.joining(") AND (", "(", ")")))
           .clearJoiningTables()
@@ -138,5 +117,42 @@ public class MappingTransformerJoinTypeHint extends AbstractMappingTransformer {
     }
 
     return mappingTableBuilder;
+  }
+
+  /**
+   * A predicate table carries no values, so its only contribution is whether a matching row exists.
+   * Folding its predicate into the main table verbatim would leave the columns qualified with the
+   * main table - {@code $T$} is resolved against whichever table the predicate ends up on - and
+   * would drop the join along with the table. A correlated subquery keeps both the qualification
+   * and the relation, and unlike a join it cannot multiply feature rows.
+   */
+  private static String asExistenceCheck(final MappingTable predicateTable) {
+    final String correlation =
+        predicateTable.getJoinPaths().stream()
+            .flatMap(
+                join ->
+                    join.getJoinConditions().stream()
+                        .map(
+                            condition ->
+                                String.format(
+                                    "%s.%s = $T$.%s",
+                                    condition.getTargetTable(),
+                                    condition.getTargetField(),
+                                    condition.getSourceField())))
+            .distinct()
+            .collect(Collectors.joining(" AND "));
+
+    if (predicateTable.getPredicate().toLowerCase().endsWith(" is null")) {
+      return String.format(
+          "NOT EXISTS (SELECT 1 FROM %s WHERE %s LIMIT 1)", predicateTable.getName(), correlation);
+    }
+
+    return String.format(
+        "EXISTS (SELECT 1 FROM %s WHERE %s AND (%s) LIMIT 1)",
+        predicateTable.getName(),
+        correlation,
+        predicateTable
+            .getPredicate()
+            .replaceAll("\\$T\\$", Matcher.quoteReplacement(predicateTable.getName())));
   }
 }

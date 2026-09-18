@@ -25,6 +25,7 @@ import de.interactive_instruments.xtraserver.config.api.MappingTable;
 import de.interactive_instruments.xtraserver.config.api.MappingTableBuilder;
 import de.interactive_instruments.xtraserver.config.api.MappingValue;
 import de.interactive_instruments.xtraserver.config.api.MappingValueBuilder;
+import de.interactive_instruments.xtraserver.config.api.VirtualTable;
 import de.interactive_instruments.xtraserver.config.api.XtraServerMapping;
 import de.interactive_instruments.xtraserver.config.api.XtraServerMappingBuilder;
 import org.junit.runner.RunWith;
@@ -34,6 +35,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.greghaskins.spectrum.dsl.specification.Specification.*;
 
@@ -294,8 +296,127 @@ public class MappingTransformerMergeTablesSpec {
 
             });
 
+            context("two feature types merging the same child of the same physical table", () -> {
+
+                // Reproduces the customer's LN_Freizeitanlage / LN_Sportanlage case: both feature
+                // types merge o51006__spo into o51006, but only one of them maps the same column
+                // twice, so MappingTransformerCloneColumns wraps that child into a virtual table
+                // first. The two MergeTables branches then derive the same name for both.
+                XtraServerMapping given = createTwoFeatureTypesSharingATable();
+
+                it("should give each feature type its own virtual table", () -> {
+                    XtraServerMapping transformed = applyTransformationWithClones(given);
+
+                    assertThat(transformed.getFeatureTypeMappings()
+                                          .stream()
+                                          .map(ft -> ft.getPrimaryTables()
+                                                       .get(0)
+                                                       .getName())
+                                          .collect(Collectors.toList())).doesNotHaveDuplicates();
+                });
+
+                it("should not overwrite a virtual table that another feature type still references", () -> {
+                    XtraServerMapping transformed = applyTransformationWithClones(given);
+
+                    List<String> referenced = transformed.getFeatureTypeMappings()
+                                                         .stream()
+                                                         .map(ft -> ft.getPrimaryTables()
+                                                                      .get(0)
+                                                                      .getName()
+                                                                      .replaceAll("\\$", ""))
+                                                         .collect(Collectors.toList());
+
+                    assertThat(transformed.getVirtualTables()
+                                          .stream()
+                                          .map(VirtualTable::getName)
+                                          .collect(Collectors.toList())).containsAll(referenced);
+                });
+
+                it("should keep each feature type's own predicate", () -> {
+                    XtraServerMapping transformed = applyTransformationWithClones(given);
+
+                    assertThat(transformed.getVirtualTables()
+                                          .stream()
+                                          .map(VirtualTable::getQuery)
+                                          .filter(query -> query.contains("spo"))
+                                          .collect(Collectors.toList()))
+                            .anySatisfy(query -> assertThat(query).contains("'1120'"))
+                            .anySatisfy(query -> assertThat(query).contains("'1070'"));
+                });
+
+            });
+
         });
 
+    }
+
+    private XtraServerMapping applyTransformationWithClones(XtraServerMapping xtraServerMapping) throws URISyntaxException {
+        URI uri = Resources.getResource("flatten/Cities.xsd")
+                           .toURI();
+
+        return XtraServerMappingTransformer.forMapping(xtraServerMapping)
+                                           .applySchemaInfo(uri)
+                                           .cloneColumns()
+                                           .virtualTables()
+                                           .transform();
+    }
+
+    /**
+     * Two feature types over o51006, each merging o51006__spo with its own predicate. ci:City maps
+     * the spo column once, ci:River maps it twice onto the same target path, which is what makes
+     * MappingTransformerCloneColumns wrap its child into a virtual table beforehand.
+     */
+    private XtraServerMapping createTwoFeatureTypesSharingATable() {
+        return new XtraServerMappingBuilder().featureTypeMapping(featureTypeSharingATable("ci:City", "'1120'", false))
+                                             .featureTypeMapping(featureTypeSharingATable("ci:River", "'1070'", true))
+                                             .build();
+    }
+
+    private FeatureTypeMapping featureTypeSharingATable(String name, String code, boolean mapsTheColumnTwice) {
+        // two classifications over the same column and target path: same shape as the customer's
+        // two ln:sportart mappings on spo, which is what makes MappingTransformerCloneColumns alias
+        // the column and wrap the table into a virtual table of its own
+        List<MappingValue> values = mapsTheColumnTwice
+                ? ImmutableList.of(new MappingValueBuilder().classification()
+                                                            .keyValue("1070", "1080")
+                                                            .value("spo")
+                                                            .targetPath("ci:name")
+                                                            .build(),
+                                   new MappingValueBuilder().classification()
+                                                            .keyValue("1070", "1070")
+                                                            .value("spo")
+                                                            .targetPath("ci:name")
+                                                            .build())
+                : ImmutableList.of(new MappingValueBuilder().column()
+                                                            .value("spo")
+                                                            .targetPath("ci:name")
+                                                            .build());
+
+        MappingTable mergedChild = new MappingTableBuilder().name("o51006__spo")
+                                                            .primaryKey("id")
+                                                            .predicate("$T$.spo = " + code)
+                                                            .values(values)
+                                                            .joinPath(new MappingJoinBuilder().joinCondition(new MappingJoinBuilder.ConditionBuilder().sourceTable("o51006")
+                                                                                                                                                      .sourceField("id")
+                                                                                                                                                      .targetTable("o51006__spo")
+                                                                                                                                                      .targetField("rid")
+                                                                                                                                                      .build())
+                                                                                              .targetPath("TODO")
+                                                                                              .build())
+                                                            .build();
+
+        MappingTable primaryTable = new MappingTableBuilder().name("o51006")
+                                                             .primaryKey("id")
+                                                             .value(new MappingValueBuilder().column()
+                                                                                             .value("objid")
+                                                                                             .targetPath("@gml:id")
+                                                                                             .build())
+                                                             .joiningTable(mergedChild)
+                                                             .build();
+
+        return new FeatureTypeMappingBuilder().name(name)
+                                              .primaryTable(primaryTable)
+                                              .build();
     }
 
     private XtraServerMapping applyTransformation(XtraServerMapping xtraServerMapping) throws URISyntaxException {

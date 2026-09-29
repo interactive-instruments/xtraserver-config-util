@@ -177,6 +177,85 @@ public class MappingTransformerRelationNavigabilitySpec {
 
             });
 
+            context("referenced feature type whose primary table was moved behind a virtual table " +
+                    "by MappingTransformerPredicateVariants", () -> {
+
+                // plot_tbl carries a filter, so PredicateVariants renames it to $vrt_plot_tbl_1$.
+                // The join in test:Building was written against the physical plot_tbl and is not
+                // rewritten, since it crosses feature types.
+                MappingTable plotTable = new MappingTableBuilder()
+                        .name("plot_tbl")
+                        .primaryKey("id")
+                        .predicate("plot_tbl.fkt = '1000'")
+                        .value(new MappingValueBuilder().column().value("gml_id").targetPath("@gml:id").build())
+                        .build();
+                FeatureTypeMapping plot = new FeatureTypeMappingBuilder()
+                        .name("test:Plot")
+                        .qualifiedName(new QName("test", "Plot"))
+                        .primaryTable(plotTable)
+                        .build();
+
+                MappingValue refValue = new MappingValueBuilder()
+                        .reference()
+                        .referencedFeatureType("test:Plot")
+                        .value("fk_col")
+                        .targetPath("test:relatedPlot/@xlink:href")
+                        .build();
+
+                MappingTable existingPlotJoin = new MappingTableBuilder()
+                        .name("plot_tbl")
+                        .primaryKey("id")
+                        .targetPath("test:relatedPlot")
+                        .value(refValue)
+                        .joinPath(new MappingJoinBuilder()
+                                .targetPath("test:relatedPlot")
+                                .joinCondition(new MappingJoinBuilder.ConditionBuilder()
+                                        .sourceTable("building_tbl")
+                                        .sourceField("fk_col")
+                                        .targetTable("plot_tbl")
+                                        .targetField("gml_id")
+                                        .build())
+                                .build())
+                        .build();
+
+                MappingTable buildingTable = new MappingTableBuilder()
+                        .name("building_tbl")
+                        .primaryKey("id")
+                        .joiningTable(existingPlotJoin)
+                        .build();
+                FeatureTypeMapping building = new FeatureTypeMappingBuilder()
+                        .name("test:Building")
+                        .qualifiedName(new QName("test", "Building"))
+                        .primaryTable(buildingTable)
+                        .build();
+
+                XtraServerMapping given = new XtraServerMappingBuilder()
+                        .featureTypeMapping(building)
+                        .featureTypeMapping(plot)
+                        .build();
+
+                // the order the transformer chain uses
+                XtraServerMapping virtualised = new MappingTransformerPredicateVariants(given).transform();
+                XtraServerMapping result = new MappingTransformerRelationNavigability(virtualised).transform();
+
+                it("should have moved the referenced primary table behind a virtual table", () -> {
+                    assertThat(result.getFeatureTypeMapping("test:Plot").get().getPrimaryTableNames())
+                            .containsExactly("$vrt_plot_tbl_1$");
+                });
+
+                it("should still recognise the existing join as connected, rather than adding a " +
+                        "second relation navigability join beside it", () -> {
+                    List<MappingTable> joiningTables = result
+                            .getFeatureTypeMapping("test:Building").get()
+                            .getPrimaryTables().get(0)
+                            .getJoiningTables().asList().get(0)
+                            .getJoiningTables().asList();
+
+                    assertThat(joiningTables).isEmpty();
+                });
+
+            });
+
         });
     }
 }

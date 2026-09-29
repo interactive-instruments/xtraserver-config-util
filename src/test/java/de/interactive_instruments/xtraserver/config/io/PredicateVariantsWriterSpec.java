@@ -128,6 +128,20 @@ public class PredicateVariantsWriterSpec {
                         "SELECT city_table.id,city_table.gml_id,city_table.city_name FROM"
                             + " city_table WHERE (city_table.fkt = '2000')");
               });
+
+          it(
+              "should leave no main table carrying a predicate, which is the invariant the whole"
+                  + " transformer exists for",
+              () -> {
+                assertThat(mapping.get().getFeatureTypeMappings())
+                    .isNotEmpty()
+                    .allSatisfy(
+                        featureTypeMapping ->
+                            assertThat(featureTypeMapping.getPrimaryTables())
+                                .allSatisfy(
+                                    table ->
+                                        assertThat(table.getPredicate()).isNullOrEmpty()));
+              });
         });
   }
 

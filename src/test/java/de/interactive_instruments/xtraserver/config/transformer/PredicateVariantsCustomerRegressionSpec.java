@@ -130,6 +130,19 @@ public class PredicateVariantsCustomerRegressionSpec {
                                                                           .contains(
                                                                               value.getValue())))));
                     });
+                it(
+                    "should leave no main table carrying a predicate, so no filter can reach"
+                        + " another query over the same table through the table name",
+                    () -> {
+                      assertThat(transformed.getFeatureTypeMappings())
+                          .isNotEmpty()
+                          .allSatisfy(
+                              featureTypeMapping ->
+                                  assertThat(featureTypeMapping.getPrimaryTables())
+                                      .allSatisfy(
+                                          table ->
+                                              assertThat(table.getPredicate()).isNullOrEmpty()));
+                    });
               });
         });
   }

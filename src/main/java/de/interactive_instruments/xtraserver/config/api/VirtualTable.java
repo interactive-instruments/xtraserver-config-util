@@ -21,6 +21,7 @@ import de.interactive_instruments.xtraserver.config.transformer.MappingValueAlia
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import org.immutables.value.Value;
@@ -58,6 +59,21 @@ public abstract class VirtualTable {
     }
 
     public Builder originalTable(final MappingTable mappingTable) {
+      return addTable(mappingTable, MappingTable::isJoined);
+    }
+
+    /**
+     * Same as {@link #originalTable(MappingTable)} for a table whose children all stay outside the
+     * virtual table and join against it from there. A merged child then needs the column it joins
+     * on exposed just like a joined one does, while for {@code originalTable} the merged children
+     * are folded into this same query and their join columns are already in scope.
+     */
+    public Builder wrappedTable(final MappingTable mappingTable) {
+      return addTable(mappingTable, child -> child.isJoined() || child.isMerged());
+    }
+
+    private Builder addTable(
+        final MappingTable mappingTable, final Predicate<MappingTable> joinsFromOutside) {
       this.addAllJoinPaths(mappingTable.getJoinPaths());
 
       if (noTables) {
@@ -117,8 +133,8 @@ public abstract class VirtualTable {
       .forEach(this::addColumns);*/
 
       mappingTable.getJoiningTables().stream()
-          .filter(MappingTable::isJoined)
-          .flatMap(mappingTable1 -> mappingTable1.getJoinPaths().stream())
+          .filter(joinsFromOutside)
+          .flatMap(joiningTable -> joiningTable.getJoinPaths().stream())
           .map(mappingJoin -> mappingJoin.getJoinConditions().stream().findFirst())
           .filter(Optional::isPresent)
           .map(Optional::get)
@@ -160,14 +176,30 @@ public abstract class VirtualTable {
     return getJoinPaths().iterator().next().getSourceTable();
   }
 
+  /**
+   * Resolves the {@code $T$} placeholder of a predicate that is about to be appended to this
+   * query. The query is flat, so a predicate evaluated inside it addresses the table the SELECT
+   * reads from - never the reference under which other mappings know this virtual table.
+   */
+  public String resolvePredicate(final String predicate) {
+    return predicate.replaceAll("\\$T\\$", Matcher.quoteReplacement(getQueryTable()));
+  }
+
+  /**
+   * The table this query reads from. A mapping that was written against the physical table before
+   * it became virtual still names this one, so name comparisons have to resolve to it.
+   */
+  public String getQueryTable() {
+    return getJoinPaths().isEmpty()
+        ? getPrimaryTable()
+        : getJoinPaths().iterator().next().getSourceTable();
+  }
+
   @Value.Derived
   public String getQuery() {
     String query = null;
 
-    final String primaryTable =
-        getJoinPaths().isEmpty()
-            ? getPrimaryTable()
-            : getJoinPaths().iterator().next().getSourceTable();
+    final String primaryTable = getQueryTable();
 
     if (getJoinPaths().stream()
         .anyMatch(mappingJoin -> !mappingJoin.getSourceTable().equals(primaryTable))) {

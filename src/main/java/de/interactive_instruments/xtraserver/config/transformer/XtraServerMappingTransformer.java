@@ -199,9 +199,10 @@ public class XtraServerMappingTransformer {
          * This transformer enables cases where a simple property should be mapped from a table different than the
          * feature instance table. If such cases are detected then according VirtualTables will be created.
          *
-         * <p>This flag also enables a second, later stage that detects feature types with several primary tables
-         * sharing a physical table name and differing only in their predicate - which XtraServer does not support -
-         * and turns each of them into a VirtualTable, so that they appear as distinct tables in the mapping file.
+         * <p>This flag also enables a second, later stage that turns every main table carrying a predicate into a
+         * VirtualTable. XtraServer resolves tables by name when it builds the joins for a feature type, so a main
+         * table written as t[predicate] is ambiguous with every other use of t, and one filter can reach another
+         * query over the same table.
          *
          * @return the transformer builder
          */

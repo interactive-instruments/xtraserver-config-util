@@ -17,9 +17,10 @@ public class PredicateVariantsSpec {
     return Spec.builder()
         .title("PredicateVariants")
         .description(
-            "XtraServer does not support a feature type with several primary tables that share a"
-                + " table name and differ only in their predicate. Each of them becomes its own"
-                + " virtual table, so they appear as distinct tables in the mapping file.")
+            "XtraServer resolves tables by name when it builds the joins for a feature type, so a"
+                + " main table written as t[predicate] is ambiguous with every other use of t."
+                + " Every main table that carries a predicate therefore becomes its own virtual"
+                + " table, and tables sharing its name follow.")
         .transform(mapping -> new MappingTransformerPredicateVariants(mapping).transform())
         .useCase(
             UseCase.builder()
@@ -35,6 +36,21 @@ public class PredicateVariantsSpec {
                 .virtualTables()
                 .given("given", given())
                 .expected("expected", expected())
+                .build())
+        .useCase(
+            UseCase.builder()
+                .title("singleMainTableWithPredicate")
+                .description("")
+                .given("given", givenSingle())
+                .expected("expected", expectedSingle())
+                .build())
+        .useCase(
+            UseCase.builder()
+                .title("singleMainTableWithPredicateVirtualTables")
+                .description("")
+                .virtualTables()
+                .given("given", givenSingle())
+                .expected("expected", expectedSingle())
                 .build())
         .build();
   }
@@ -53,6 +69,18 @@ public class PredicateVariantsSpec {
                 table("$vrt_o61001_2$", value("objid", "ft:objid"))))
         .virtualTable(virtualTable("vrt_o61001_1", "o61001.fkt = '1000'"))
         .virtualTable(virtualTable("vrt_o61001_2", "o61001.fkt = '2000'"))
+        .build();
+  }
+
+  private static XtraServerMapping givenSingle() {
+    return mappingOf(
+        predicate("$T$.fkt = '1000'", table("o61001", value("objid", "ft:objid"))));
+  }
+
+  private static XtraServerMapping expectedSingle() {
+    return new XtraServerMappingBuilder()
+        .copyOf(mappingOf(table("$vrt_o61001_1$", value("objid", "ft:objid"))))
+        .virtualTable(virtualTable("vrt_o61001_1", "o61001.fkt = '1000'"))
         .build();
   }
 

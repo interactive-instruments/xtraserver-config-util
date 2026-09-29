@@ -122,10 +122,30 @@ class MappingTransformerRelationNavigability implements MappingTransformer {
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     // join is not connected to FeatureType
-                    .filter(refMapping -> !refJoin.isPresent() || !refMapping.getPrimaryTableNames().contains(refJoin.get().getTargetTable()))
+                    .filter(refMapping -> !refJoin.isPresent() || !tableNamesReachableAs(refMapping).contains(refJoin.get().getTargetTable()))
                     .flatMap(refMapping -> createMissingRelNav(mappingTable.getName(), refValue, refMapping, !refJoin.isPresent()).stream())
                     .collect(Collectors.toList());
         };
+    }
+
+    /**
+     * The names under which the feature type's instance tables can be addressed. A join into this
+     * feature type was written against the physical table, and MappingTransformerPredicateVariants
+     * may since have moved that table behind a virtual table, so both names have to count as a
+     * connection - otherwise a second, redundant relation navigability join is added on top of the
+     * one that is already there.
+     */
+    private Set<String> tableNamesReachableAs(final FeatureTypeMapping featureTypeMapping) {
+        final Map<String, VirtualTable> virtualTablesByName = xtraServerMapping.getVirtualTables()
+                                                                               .stream()
+                                                                               .collect(Collectors.toMap(VirtualTable::getName, Function.identity(), (a, b) -> b));
+
+        return featureTypeMapping.getPrimaryTableNames()
+                                 .stream()
+                                 .flatMap(name -> Stream.concat(Stream.of(name), Stream.of(virtualTablesByName.get(name.replaceAll("\\$", "")))
+                                                                                       .filter(Objects::nonNull)
+                                                                                       .map(VirtualTable::getQueryTable)))
+                                 .collect(Collectors.toSet());
     }
 
     private List<MappingTable> createMissingRelNav(final String sourceTable, final MappingValueReference refValue, final FeatureTypeMapping refMapping, final boolean isOneToOneRel) {

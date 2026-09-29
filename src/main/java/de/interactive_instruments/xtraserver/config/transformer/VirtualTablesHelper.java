@@ -50,7 +50,7 @@ public class VirtualTablesHelper {
     this.currentName = mappingTable.getName();
     this.currentTable = new MappingTableBuilder().shallowCopyOf(mappingTable);
 
-    currentVirtualTable.originalTable(mappingTable);
+    currentVirtualTable.wrappedTable(mappingTable);
     currentVirtualTable.name(currentVirtualName);
     currentVirtualTable.primaryTable(currentName);
     virtualTables.put(currentVirtualName, currentVirtualTable);
@@ -61,6 +61,32 @@ public class VirtualTablesHelper {
 
     return this.values(mappingTable.getValues())
         .joinPaths(mappingTable.getJoinPaths())
+        .joiningTables(mappingTable.getJoiningTables());
+  }
+
+  /**
+   * Same as {@link #from(MappingTable, String)} for a table that already references a virtual
+   * table. Building a new definition around the reference would nest the query
+   * ({@code SELECT ... FROM $vrt_x$}), and appending the predicate to the referenced definition
+   * would change it for every other mapping using it, so the definition is copied first.
+   */
+  public VirtualTablesHelper cloneOf(
+      MappingTable mappingTable, VirtualTable referenced, String virtualTableName) {
+    this.currentVirtualName = virtualTableName;
+    this.currentVirtualTable = VirtualTable.builder().from2(referenced).name(virtualTableName);
+    this.currentName = mappingTable.getName();
+    this.currentTable = new MappingTableBuilder().shallowCopyOf(mappingTable);
+
+    currentVirtualTable.addWhereClause(referenced.resolvePredicate(mappingTable.getPredicate()));
+    virtualTables.put(currentVirtualName, currentVirtualTable);
+
+    currentTable.name(String.format("$%s$", currentVirtualName));
+    currentTable.predicate(null);
+    // the values already address the columns of the copied definition, so the alias pass of
+    // from(..) would suffix an already suffixed column a second time
+    currentTable.values(mappingTable.getValues());
+
+    return this.joinPaths(mappingTable.getJoinPaths())
         .joiningTables(mappingTable.getJoiningTables());
   }
 

@@ -20,26 +20,27 @@ import de.interactive_instruments.xtraserver.config.api.MappingTable;
 import de.interactive_instruments.xtraserver.config.api.VirtualTable;
 import de.interactive_instruments.xtraserver.config.api.XtraServerMapping;
 import de.interactive_instruments.xtraserver.config.api.XtraServerMappingBuilder;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * XtraServer does not support a feature type having several primary tables that share a physical
- * table name and differ only in their predicate. {@code JaxbWriter} writes a predicated primary
- * table as {@code <Table table_name="t[predicate]"/>}, so such a group emits several rows whose
- * base table name is identical.
+ * XtraServer resolves tables by name when it builds the joins for a feature type, so a main table
+ * that {@code JaxbWriter} writes as {@code <Table table_name="t[predicate]"/>} is ambiguous with
+ * every other use of {@code t} - a second variant of {@code t} in the mapping is not needed for one
+ * filter to leak into another query.
  *
- * <p>This transformer detects those groups and turns every member into its own {@link VirtualTable},
- * so the main mapping file references distinct names ({@code $vrt_t_1$}, {@code $vrt_t_2$}) and each
- * predicate moves into that virtual table's SQL WHERE clause.
+ * <p>This transformer therefore gives every main table that carries a predicate a name of its own,
+ * by turning it into a {@link VirtualTable} whose SQL WHERE clause holds the predicate. Tables that
+ * share a name with such a table follow, even when they carry no predicate themselves: leaving one
+ * of them under the bare name would put that name back beside the filtered variants.
  *
- * <p>Besides the writer, this also removes the input for three name-keyed lookups that silently
- * collapse the variants today: {@code MappingTransformerFanOutInheritance} drops all but the first
+ * <p>Moving the predicates out also removes the input for three name-keyed lookups that silently
+ * collapse same-named variants: {@code MappingTransformerFanOutInheritance} drops all but the first
  * same-named table, {@code FeatureTypeMapping.getTable(String)} resolves by name only, and the
  * generated {@code _xsv_tmp_} name repeats the table name.
  *
@@ -48,17 +49,20 @@ import java.util.stream.Collectors;
 public class MappingTransformerPredicateVariants extends AbstractMappingTransformer {
 
   private final VirtualTablesHelper virtualTables;
+  private final Map<String, VirtualTable> virtualTablesByName;
   private final Set<String> reservedNames;
 
   MappingTransformerPredicateVariants(final XtraServerMapping xtraServerMapping) {
     super(xtraServerMapping);
     this.virtualTables = new VirtualTablesHelper();
+    this.virtualTablesByName =
+        xtraServerMapping.getVirtualTables().stream()
+            .collect(
+                Collectors.toMap(
+                    VirtualTable::getName, Function.identity(), (a, b) -> b, LinkedHashMap::new));
     // seeded from the input so we never collide with a virtual table that already exists, e.g. one
     // MappingTransformerMergeTables or MappingTransformerCloneColumns just created
-    this.reservedNames =
-        xtraServerMapping.getVirtualTables().stream()
-            .map(VirtualTable::getName)
-            .collect(Collectors.toCollection(LinkedHashSet::new));
+    this.reservedNames = new LinkedHashSet<>(virtualTablesByName.keySet());
   }
 
   @Override
@@ -90,74 +94,86 @@ public class MappingTransformerPredicateVariants extends AbstractMappingTransfor
                 Collectors.groupingBy(
                     MappingTable::getName, LinkedHashMap::new, Collectors.toList()));
 
-    // no name occurs twice, nothing to do
-    if (byName.size() == primaryTables.size()) {
-      return primaryTables;
-    }
+    final Set<String> filteredNames =
+        byName.entrySet().stream()
+            .filter(entry -> needsVirtualTables(context, entry.getKey(), entry.getValue()))
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toCollection(LinkedHashSet::new));
 
-    // iterate the original list so the order of the emitted <Table> rows is preserved
-    final List<MappingTable> transformedPrimaryTables = new ArrayList<>(primaryTables.size());
-
-    for (final MappingTable primaryTable : primaryTables) {
-      if (needsSplit(context, byName.get(primaryTable.getName()))) {
-        transformedPrimaryTables.add(
-            virtualTables
-                .from(primaryTable, nextVirtualName(primaryTable.getName()))
-                .getCurrentTable()
-                .build());
-      } else {
-        transformedPrimaryTables.add(primaryTable);
-      }
-    }
-
-    return transformedPrimaryTables;
+    // map the original list so the order of the emitted <Table> rows is preserved
+    return primaryTables.stream()
+        .map(
+            primaryTable ->
+                filteredNames.contains(primaryTable.getName())
+                    ? asVirtualTable(context, primaryTable)
+                    : primaryTable)
+        .collect(Collectors.toList());
   }
 
-  private boolean needsSplit(final Context context, final List<MappingTable> group) {
-    if (group.size() < 2) {
+  private boolean needsVirtualTables(
+      final Context context, final String name, final List<MappingTable> group) {
+    if (group.stream().noneMatch(MappingTransformerPredicateVariants::hasPredicate)) {
       return false;
     }
 
-    final String name = group.get(0).getName();
-
-    // nothing is ambiguous without a predicate
-    if (group.stream().noneMatch(table -> !Strings.isNullOrEmpty(table.getPredicate()))) {
-      return false;
-    }
-
-    // already a virtual table reference, so already distinct by construction
-    if (isVirtualTableReference(name)) {
-      return false;
-    }
-
+    // a root with a target path is bound to the feature instance table by name alone, so renaming
+    // the instance tables of the group would leave it addressing a table that no longer exists
     if (!group.stream().allMatch(MappingTable::isPrimary)) {
       warn(context, name, "the group is not made up of primary tables only");
-      return false;
-    }
-
-    // VirtualTable.Builder.originalTable only harvests join key columns from joined children, so a
-    // merged child would end up joining against a column that is not in the SELECT
-    if (group.stream().anyMatch(MappingTransformerPredicateVariants::hasMergedJoiningTable)) {
-      warn(context, name, "a member still has a merged joining table");
       return false;
     }
 
     return true;
   }
 
+  private MappingTable asVirtualTable(final Context context, final MappingTable primaryTable) {
+    if (isVirtualTableReference(primaryTable.getName())) {
+      // the definition behind the reference already has a name of its own, so only a predicate
+      // still sitting on the reference has to be moved
+      return hasPredicate(primaryTable)
+          ? withClonedVirtualTable(context, primaryTable)
+          : primaryTable;
+    }
+
+    return virtualTables
+        .from(primaryTable, nextVirtualName(primaryTable.getName()))
+        .getCurrentTable()
+        .build();
+  }
+
+  private MappingTable withClonedVirtualTable(
+      final Context context, final MappingTable primaryTable) {
+    final String referencedName = primaryTable.getName().replaceAll("\\$", "");
+    final VirtualTable referenced = virtualTablesByName.get(referencedName);
+
+    if (referenced == null) {
+      warn(context, primaryTable.getName(), "there is no virtual table named " + referencedName);
+      return primaryTable;
+    }
+
+    return virtualTables
+        .cloneOf(primaryTable, referenced, nextVariantName(referencedName))
+        .getCurrentTable()
+        .build();
+  }
+
   private String nextVirtualName(final String tableName) {
+    return nextVariantName(String.format("vrt_%s", tableName));
+  }
+
+  private String nextVariantName(final String baseName) {
     int i = 1;
     String virtualName;
 
     do {
-      virtualName = String.format("vrt_%s_%d", tableName, i++);
+      virtualName = String.format("%s_%d", baseName, i++);
     } while (!reservedNames.add(virtualName));
 
     return virtualName;
   }
 
-  private static boolean hasMergedJoiningTable(final MappingTable mappingTable) {
-    return mappingTable.getJoiningTables().stream().anyMatch(MappingTable::isMerged);
+  private static boolean hasPredicate(final MappingTable mappingTable) {
+    return !Strings.isNullOrEmpty(mappingTable.getPredicate());
   }
 
   private static boolean isVirtualTableReference(final String tableName) {
@@ -168,11 +184,11 @@ public class MappingTransformerPredicateVariants extends AbstractMappingTransfor
     System.out.println(
         "WARNING: feature type "
             + context.featureTypeMapping.getName()
-            + " has several primary tables named "
+            + " has a filtered main table "
             + tableName
-            + " that differ only in their predicate, but they were not split into virtual tables "
-            + "because "
+            + " that was not turned into a virtual table because "
             + reason
-            + ". The generated mapping will contain duplicate table names.");
+            + ". Its filter stays in the table name, where XtraServer may apply it to another"
+            + " query over the same table.");
   }
 }

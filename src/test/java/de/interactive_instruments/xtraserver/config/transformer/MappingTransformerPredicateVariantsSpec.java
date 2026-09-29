@@ -264,7 +264,39 @@ public class MappingTransformerPredicateVariantsSpec {
                     new MappingTransformerPredicateVariants(given).transform();
 
                 it(
-                    "should leave it untouched",
+                    "should virtualise it, since XtraServer resolves o61001[fkt = '1000'] by its"
+                        + " base name and would apply the filter to every other query over o61001",
+                    () -> {
+                      assertThat(primaryTableNames(transformed))
+                          .containsExactly("$vrt_o61001_1$");
+                    });
+
+                it(
+                    "should move the predicate into the virtual table query",
+                    () -> {
+                      assertThat(virtualTableQueries(transformed))
+                          .containsExactly(
+                              "SELECT o61001.id,o61001.objid FROM o61001 WHERE (fkt = '1000')");
+                    });
+
+                it(
+                    "should clear the predicate on the primary table",
+                    () -> {
+                      assertThat(primaryTables(transformed))
+                          .allSatisfy(table -> assertThat(table.getPredicate()).isNull());
+                    });
+              });
+
+          context(
+              "a single primary table without a predicate",
+              () -> {
+                XtraServerMapping given = mapping(primaryTable("o61001", null));
+
+                XtraServerMapping transformed =
+                    new MappingTransformerPredicateVariants(given).transform();
+
+                it(
+                    "should leave it untouched, since an unfiltered table name is unambiguous",
                     () -> {
                       assertThat(transformed).isEqualTo(given);
                       assertThat(transformed.getVirtualTables()).isEmpty();
@@ -272,7 +304,7 @@ public class MappingTransformerPredicateVariantsSpec {
               });
 
           context(
-              "two primary tables with different names",
+              "two primary tables with different names, both with a predicate",
               () -> {
                 XtraServerMapping given =
                     mapping(
@@ -282,10 +314,10 @@ public class MappingTransformerPredicateVariantsSpec {
                     new MappingTransformerPredicateVariants(given).transform();
 
                 it(
-                    "should leave them untouched",
+                    "should virtualise both, since each carries a filter of its own",
                     () -> {
-                      assertThat(transformed).isEqualTo(given);
-                      assertThat(transformed.getVirtualTables()).isEmpty();
+                      assertThat(primaryTableNames(transformed))
+                          .containsExactly("$vrt_city_1$", "$vrt_river_1$");
                     });
               });
 
@@ -317,7 +349,7 @@ public class MappingTransformerPredicateVariantsSpec {
               });
 
           context(
-              "a colliding primary table that still has a merged joining table",
+              "a filtered primary table that still has a merged joining table",
               () -> {
                 MappingJoin join =
                     new MappingJoinBuilder()
@@ -325,9 +357,9 @@ public class MappingTransformerPredicateVariantsSpec {
                         .joinCondition(
                             new MappingJoinBuilder.ConditionBuilder()
                                 .sourceTable("o61001")
-                                .sourceField("id")
+                                .sourceField("fid")
                                 .targetTable("o02341")
-                                .targetField("id")
+                                .targetField("rid")
                                 .build())
                         .build();
 
@@ -352,8 +384,129 @@ public class MappingTransformerPredicateVariantsSpec {
                     new MappingTransformerPredicateVariants(given).transform();
 
                 it(
-                    "should be left untouched, because the merged child's join column would not be"
-                        + " selected",
+                    "should virtualise it, since the merged child stays outside the virtual table",
+                    () -> {
+                      assertThat(primaryTableNames(transformed))
+                          .containsExactly("$vrt_o61001_1$", "$vrt_o61001_2$");
+                    });
+
+                it(
+                    "should select the merged child's join column, which it joins against from"
+                        + " outside",
+                    () -> {
+                      assertThat(virtualTableQueries(transformed).get(0))
+                          .contains("o61001.fid");
+                    });
+
+                it(
+                    "should retarget the merged child's join to the virtual table",
+                    () -> {
+                      MappingTable transformedChild =
+                          primaryTables(transformed).get(0).getJoiningTables().asList().get(0);
+
+                      assertThat(transformedChild.getJoinPaths().asList().get(0).getSourceTable())
+                          .isEqualTo("$vrt_o61001_1$");
+                    });
+              });
+
+          context(
+              "filtered primary tables that are already virtual table references",
+              () -> {
+                XtraServerMapping given =
+                    withVirtualTable(
+                        mapping(
+                            primaryTable("$vrt_o61001$", "$T$.fkt = '1000'"),
+                            primaryTable("$vrt_o61001$", "$T$.fkt = '2000'")),
+                        sharedVirtualTable());
+
+                XtraServerMapping transformed =
+                    new MappingTransformerPredicateVariants(given).transform();
+
+                it(
+                    "should give each variant a copy of the shared definition",
+                    () -> {
+                      assertThat(primaryTableNames(transformed))
+                          .containsExactly("$vrt_o61001_1$", "$vrt_o61001_2$");
+                    });
+
+                it(
+                    "should append the variant predicate to the copied WHERE clause, with $T$"
+                        + " resolved against the table the query reads from",
+                    () -> {
+                      assertThat(queryOf(transformed, "vrt_o61001_1"))
+                          .isEqualTo(
+                              "SELECT o61001.id,o61001.objid FROM o61001 "
+                                  + "WHERE (o61001.deleted IS NULL) AND (o61001.fkt = '1000')");
+                      assertThat(queryOf(transformed, "vrt_o61001_2"))
+                          .isEqualTo(
+                              "SELECT o61001.id,o61001.objid FROM o61001 "
+                                  + "WHERE (o61001.deleted IS NULL) AND (o61001.fkt = '2000')");
+                    });
+
+                it(
+                    "should keep the query flat rather than selecting from the reference",
+                    () -> {
+                      assertThat(virtualTableQueries(transformed))
+                          .allSatisfy(query -> assertThat(query).doesNotContain("FROM $vrt"));
+                    });
+
+                it(
+                    "should leave the shared definition exactly as it was, since other mappings"
+                        + " still reference it",
+                    () -> {
+                      assertThat(transformed.getVirtualTables())
+                          .filteredOn(virtualTable -> "vrt_o61001".equals(virtualTable.getName()))
+                          .containsExactly(sharedVirtualTable());
+                    });
+
+                it(
+                    "should clear the predicates it moved",
+                    () -> {
+                      assertThat(primaryTables(transformed))
+                          .allSatisfy(table -> assertThat(table.getPredicate()).isNull());
+                    });
+
+                it(
+                    "should be idempotent, rather than cloning the clones",
+                    () -> {
+                      assertThat(new MappingTransformerPredicateVariants(transformed).transform())
+                          .isEqualTo(transformed);
+                    });
+              });
+
+          context(
+              "a virtual table reference group where only one member is filtered",
+              () -> {
+                XtraServerMapping given =
+                    withVirtualTable(
+                        mapping(
+                            primaryTable("$vrt_o61001$", null),
+                            primaryTable("$vrt_o61001$", "$T$.fkt = '2000'")),
+                        sharedVirtualTable());
+
+                XtraServerMapping transformed =
+                    new MappingTransformerPredicateVariants(given).transform();
+
+                it(
+                    "should clone only for the filtered member and leave the other on the shared"
+                        + " definition, which is already a name of its own",
+                    () -> {
+                      assertThat(primaryTableNames(transformed))
+                          .containsExactly("$vrt_o61001$", "$vrt_o61001_1$");
+                    });
+              });
+
+          context(
+              "a filtered virtual table reference whose definition is missing",
+              () -> {
+                XtraServerMapping given =
+                    mapping(primaryTable("$vrt_o61001$", "$T$.fkt = '1000'"));
+
+                XtraServerMapping transformed =
+                    new MappingTransformerPredicateVariants(given).transform();
+
+                it(
+                    "should be left untouched, since there is nothing to copy",
                     () -> {
                       assertThat(transformed).isEqualTo(given);
                       assertThat(transformed.getVirtualTables()).isEmpty();
@@ -361,18 +514,25 @@ public class MappingTransformerPredicateVariantsSpec {
               });
 
           context(
-              "primary tables that are already virtual table references",
+              "a filtered name group that also contains a root with a target path",
               () -> {
                 XtraServerMapping given =
                     mapping(
-                        primaryTable("$vrt_o61001$", "fkt = '1000'"),
-                        primaryTable("$vrt_o61001$", "fkt = '2000'"));
+                        primaryTable("o61001", "fkt = '1000'"),
+                        new MappingTableBuilder()
+                            .name("o61001")
+                            .primaryKey("id")
+                            .targetPath("ft:reference")
+                            .predicate("(objid) IS NOT NULL")
+                            .value(value("objid", "ft:reference/ft:objid"))
+                            .build());
 
                 XtraServerMapping transformed =
                     new MappingTransformerPredicateVariants(given).transform();
 
                 it(
-                    "should be left untouched rather than wrapped again",
+                    "should be left untouched, since that root is bound to the instance table by"
+                        + " name alone and renaming the group would orphan it",
                     () -> {
                       assertThat(transformed).isEqualTo(given);
                       assertThat(transformed.getVirtualTables()).isEmpty();
@@ -419,6 +579,32 @@ public class MappingTransformerPredicateVariantsSpec {
       builder.primaryTable(primaryTable);
     }
     return builder.build();
+  }
+
+  private static VirtualTable sharedVirtualTable() {
+    return VirtualTable.builder()
+        .name("vrt_o61001")
+        .primaryTable("o61001")
+        .addPrimaryKeyColumns("o61001.id")
+        .addColumns("o61001.objid")
+        .addWhereClause("o61001.deleted IS NULL")
+        .build();
+  }
+
+  private static XtraServerMapping withVirtualTable(
+      final XtraServerMapping xtraServerMapping, final VirtualTable virtualTable) {
+    return new XtraServerMappingBuilder()
+        .copyOf(xtraServerMapping)
+        .virtualTable(virtualTable)
+        .build();
+  }
+
+  private static String queryOf(final XtraServerMapping xtraServerMapping, final String name) {
+    return xtraServerMapping.getVirtualTables().stream()
+        .filter(virtualTable -> name.equals(virtualTable.getName()))
+        .map(VirtualTable::getQuery)
+        .findFirst()
+        .orElseThrow(() -> new AssertionError("no virtual table named " + name));
   }
 
   private static XtraServerMapping mapping(final MappingTable... primaryTables) {

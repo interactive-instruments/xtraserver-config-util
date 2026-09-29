@@ -52,6 +52,21 @@ public class PredicateVariantsSpec {
                 .given("given", givenSingle())
                 .expected("expected", expectedSingle())
                 .build())
+        .useCase(
+            UseCase.builder()
+                .title("joinedTableWithPredicate")
+                .description("")
+                .given("given", givenJoined())
+                .expected("expected", expectedJoined())
+                .build())
+        .useCase(
+            UseCase.builder()
+                .title("joinedTableWithPredicateVirtualTables")
+                .description("")
+                .virtualTables()
+                .given("given", givenJoined())
+                .expected("expected", expectedJoined())
+                .build())
         .build();
   }
 
@@ -81,6 +96,37 @@ public class PredicateVariantsSpec {
     return new XtraServerMappingBuilder()
         .copyOf(mappingOf(table("$vrt_o61001_1$", value("objid", "ft:objid"))))
         .virtualTable(virtualTable("vrt_o61001_1", "o61001.fkt = '1000'"))
+        .build();
+  }
+
+  private static XtraServerMapping givenJoined() {
+    return mappingOf(
+        table(
+            "o61001",
+            predicate(
+                "$T$.zus IS NULL",
+                table("o02341", "ft:child", value("position", "ft:child/ft:position")))));
+  }
+
+  private static XtraServerMapping expectedJoined() {
+    return new XtraServerMappingBuilder()
+        .copyOf(
+            mappingOf(
+                table(
+                    "o61001",
+                    table(
+                        "$vrt_o02341_1$",
+                        "ft:child",
+                        value("position", "ft:child/ft:position")))))
+        .virtualTable(
+            VirtualTable.builder()
+                .name("vrt_o02341_1")
+                .primaryTable("o02341")
+                .addPrimaryKeyColumns("o02341.id")
+                .addColumns("o02341.id")
+                .addColumns("o02341.position")
+                .addWhereClause("o02341.zus IS NULL")
+                .build())
         .build();
   }
 

@@ -59,6 +59,8 @@ public abstract class VirtualTable {
     }
 
     public Builder originalTable(final MappingTable mappingTable) {
+      this.addAllJoinPaths(mappingTable.getJoinPaths());
+
       return addTable(mappingTable, MappingTable::isJoined);
     }
 
@@ -69,12 +71,32 @@ public abstract class VirtualTable {
      * are folded into this same query and their join columns are already in scope.
      */
     public Builder wrappedTable(final MappingTable mappingTable) {
+      this.addAllJoinPaths(mappingTable.getJoinPaths());
+
+      return addTable(mappingTable, child -> child.isJoined() || child.isMerged());
+    }
+
+    /**
+     * Same as {@link #wrappedTable(MappingTable)} for a table that is itself reached through a join.
+     * That join stays outside: pulling it in would put the table it comes from into this query and
+     * then join it a second time from the outside. The column it binds against is selected instead,
+     * so the outer join still finds it.
+     */
+    public Builder wrappedJoinedTable(final MappingTable mappingTable) {
+      mappingTable.getJoinPaths().stream()
+          .map(MappingJoin::getJoinConditions)
+          .map(conditions -> conditions.get(conditions.size() - 1))
+          .map(
+              condition ->
+                  mappingValueAliases.getWithAsAlias(
+                      condition.getTargetTable(), condition.getTargetField(), null))
+          .forEach(this::addColumns);
+
       return addTable(mappingTable, child -> child.isJoined() || child.isMerged());
     }
 
     private Builder addTable(
         final MappingTable mappingTable, final Predicate<MappingTable> joinsFromOutside) {
-      this.addAllJoinPaths(mappingTable.getJoinPaths());
 
       if (noTables) {
         this.noTables = false;
@@ -124,13 +146,6 @@ public abstract class VirtualTable {
                                   column,
                                   mappingValue.getTransformationHints().get(Hints.CLONE))))
           .forEach(this::addColumns);
-
-      /*mappingTable.getJoinPaths().stream()
-      .map(mappingJoin -> mappingJoin.getJoinConditions().stream().findFirst())
-      .filter(Optional::isPresent)
-      .map(Optional::get)
-      .map(condition -> condition.getTargetTable()  + "." + condition.getTargetField())
-      .forEach(this::addColumns);*/
 
       mappingTable.getJoiningTables().stream()
           .filter(joinsFromOutside)

@@ -16,7 +16,10 @@ package de.interactive_instruments.xtraserver.config.transformer;
 import com.google.common.base.Strings;
 import de.interactive_instruments.xtraserver.config.api.FeatureTypeMapping;
 import de.interactive_instruments.xtraserver.config.api.FeatureTypeMappingBuilder;
+import de.interactive_instruments.xtraserver.config.api.MappingJoin;
 import de.interactive_instruments.xtraserver.config.api.MappingTable;
+import de.interactive_instruments.xtraserver.config.api.MappingTableBuilder;
+import de.interactive_instruments.xtraserver.config.api.MappingValue;
 import de.interactive_instruments.xtraserver.config.api.VirtualTable;
 import de.interactive_instruments.xtraserver.config.api.XtraServerMapping;
 import de.interactive_instruments.xtraserver.config.api.XtraServerMappingBuilder;
@@ -26,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -38,6 +43,11 @@ import java.util.stream.Collectors;
  * by turning it into a {@link VirtualTable} whose SQL WHERE clause holds the predicate. Tables that
  * share a name with such a table follow, even when they carry no predicate themselves: leaving one
  * of them under the bare name would put that name back beside the filtered variants.
+ *
+ * <p>Joined tables get the same treatment, for a sharper reason: {@code JaxbWriter} writes the
+ * predicate into the {@code <Table>} row but never into the {@code <Join>} row's join path, so the
+ * two rows describing one joined table disagree on its name and XtraServer resolves the join by the
+ * bare one.
  *
  * <p>Moving the predicates out also removes the input for three name-keyed lookups that silently
  * collapse same-named variants: {@code MappingTransformerFanOutInheritance} drops all but the first
@@ -84,6 +94,94 @@ public class MappingTransformerPredicateVariants extends AbstractMappingTransfor
     return new FeatureTypeMappingBuilder()
         .shallowCopyOf(context.featureTypeMapping)
         .primaryTables(splitPredicateVariants(context, transformedMappingTables));
+  }
+
+  @Override
+  protected MappingTableBuilder transformMappingTable(
+      final Context context,
+      final List<MappingTable> transformedMappingTables,
+      final List<MappingJoin> transformedMappingJoins,
+      final List<MappingValue> transformedMappingValues) {
+    final MappingTableBuilder rebuilt =
+        super.transformMappingTable(
+            context, transformedMappingTables, transformedMappingJoins, transformedMappingValues);
+
+    warnAmbiguousPredicateRows(context, transformedMappingTables);
+
+    if (!needsVirtualTable(context, context.mappingTable)) {
+      return rebuilt;
+    }
+
+    // the traversal rewrote the children on the way up, so the virtual table has to be built from
+    // the rebuilt node rather than from the one the context still points at
+    final MappingTable joinedTable = rebuilt.build();
+
+    return isVirtualTableReference(joinedTable.getName())
+        ? clonedVirtualTable(context, joinedTable)
+        : virtualTables
+            .fromJoined(joinedTable, nextVirtualName(joinedTable.getName()))
+            .getCurrentTable();
+  }
+
+  private boolean needsVirtualTable(final Context context, final MappingTable mappingTable) {
+    if (!mappingTable.isJoined() || !hasPredicate(mappingTable)) {
+      return false;
+    }
+
+    if (isConstantPredicate(mappingTable.getPredicate())) {
+      return false;
+    }
+
+    // only the end of a join path moves onto the virtual table, so a path that reaches a table of
+    // the same name earlier on cannot be retargeted without breaking the chain
+    if (mappingTable.getJoinPaths().stream().anyMatch(passesThrough(mappingTable.getName()))) {
+      warnJoined(
+          context,
+          mappingTable.getName(),
+          "its join path reaches a table of the same name more than once");
+      return false;
+    }
+
+    return true;
+  }
+
+  private static Predicate<MappingJoin> passesThrough(final String tableName) {
+    return join ->
+        join.getJoinConditions().subList(0, join.getJoinConditions().size() - 1).stream()
+            .anyMatch(
+                condition ->
+                    tableName.equals(condition.getSourceTable())
+                        || tableName.equals(condition.getTargetTable()));
+  }
+
+  /**
+   * Two filters on the same table under the same target path are the one shape XtraServer cannot
+   * tell apart. Different target paths scope each filter to their own property, so those are left
+   * alone - see the predicate row discussion in the change that introduced this warning.
+   */
+  private static void warnAmbiguousPredicateRows(
+      final Context context, final List<MappingTable> children) {
+    children.stream()
+        .filter(child -> child.isPredicate() && child.getJoinPaths().isEmpty())
+        .collect(
+            Collectors.groupingBy(
+                child -> child.getName() + " " + child.getTargetPath(),
+                LinkedHashMap::new,
+                Collectors.mapping(MappingTable::getPredicate, Collectors.toSet())))
+        .forEach(
+            (nameAndTarget, predicates) -> {
+              if (predicates.size() > 1) {
+                System.out.println(
+                    "WARNING: feature type "
+                        + context.featureTypeMapping.getName()
+                        + " filters "
+                        + nameAndTarget
+                        + " "
+                        + predicates.size()
+                        + " different ways under one target path, which XtraServer cannot tell"
+                        + " apart.");
+              }
+            });
   }
 
   private List<MappingTable> splitPredicateVariants(
@@ -143,18 +241,22 @@ public class MappingTransformerPredicateVariants extends AbstractMappingTransfor
 
   private MappingTable withClonedVirtualTable(
       final Context context, final MappingTable primaryTable) {
-    final String referencedName = primaryTable.getName().replaceAll("\\$", "");
+    return clonedVirtualTable(context, primaryTable).build();
+  }
+
+  private MappingTableBuilder clonedVirtualTable(
+      final Context context, final MappingTable mappingTable) {
+    final String referencedName = mappingTable.getName().replaceAll("\\$", "");
     final VirtualTable referenced = virtualTablesByName.get(referencedName);
 
     if (referenced == null) {
-      warn(context, primaryTable.getName(), "there is no virtual table named " + referencedName);
-      return primaryTable;
+      warn(context, mappingTable.getName(), "there is no virtual table named " + referencedName);
+      return new MappingTableBuilder().copyOf(mappingTable);
     }
 
     return virtualTables
-        .cloneOf(primaryTable, referenced, nextVariantName(referencedName))
-        .getCurrentTable()
-        .build();
+        .cloneOf(mappingTable, referenced, nextVariantName(referencedName))
+        .getCurrentTable();
   }
 
   private String nextVirtualName(final String tableName) {
@@ -172,12 +274,40 @@ public class MappingTransformerPredicateVariants extends AbstractMappingTransfor
     return virtualName;
   }
 
+  /**
+   * {@code MappingTransformerRelationNavigability} wraps the value a reference is mapped from in
+   * "(..) IS NOT NULL", and that value is a constant whenever the reference is. Such a predicate
+   * filters nothing, so a virtual table for it would only add a query. Matching that one generator's
+   * shape rather than testing for a column reference keeps hand written filters like
+   * {@code zus IS NULL}, which name their column bare, out of it.
+   */
+  private static final Pattern CONSTANT_PREDICATE =
+      Pattern.compile(
+          "\\(\\s*(?:'[^']*'|\\{\\$[^}]*\\}|[+-]?[0-9]+(?:\\.[0-9]+)?)\\s*\\)\\s+IS\\s+(?:NOT\\s+)?NULL",
+          Pattern.CASE_INSENSITIVE);
+
+  private static boolean isConstantPredicate(final String predicate) {
+    return CONSTANT_PREDICATE.matcher(predicate.trim()).matches();
+  }
+
   private static boolean hasPredicate(final MappingTable mappingTable) {
     return !Strings.isNullOrEmpty(mappingTable.getPredicate());
   }
 
   private static boolean isVirtualTableReference(final String tableName) {
     return tableName.startsWith("$") && tableName.endsWith("$");
+  }
+
+  private static void warnJoined(
+      final Context context, final String tableName, final String reason) {
+    System.out.println(
+        "WARNING: feature type "
+            + context.featureTypeMapping.getName()
+            + " has a filtered joined table "
+            + tableName
+            + " that was not turned into a virtual table because "
+            + reason
+            + ". Its filter stays in the table name, where the join path cannot see it.");
   }
 
   private static void warn(final Context context, final String tableName, final String reason) {

@@ -9,8 +9,10 @@ import de.interactive_instruments.xtraserver.config.api.MappingValue;
 import de.interactive_instruments.xtraserver.config.api.MappingValueBuilder;
 import de.interactive_instruments.xtraserver.config.api.VirtualTable;
 import de.interactive_instruments.xtraserver.config.api.VirtualTable.Builder;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -62,6 +64,72 @@ public class VirtualTablesHelper {
     return this.values(mappingTable.getValues())
         .joinPaths(mappingTable.getJoinPaths())
         .joiningTables(mappingTable.getJoiningTables());
+  }
+
+  /**
+   * Same as {@link #from(MappingTable, String)} for a joined table. Its join path reaches it from
+   * the outside and stays there; only the far end of that join moves onto the virtual table, under
+   * the column name the query exposes.
+   */
+  public VirtualTablesHelper fromJoined(MappingTable mappingTable, String virtualTableName) {
+    this.currentVirtualName = virtualTableName;
+    this.currentVirtualTable = VirtualTable.builder();
+    this.currentName = mappingTable.getName();
+    this.currentTable = new MappingTableBuilder().shallowCopyOf(mappingTable);
+
+    // registers the join key in the alias map, which incomingJoinPaths reads back below
+    currentVirtualTable.wrappedJoinedTable(mappingTable);
+    currentVirtualTable.name(currentVirtualName);
+    currentVirtualTable.primaryTable(currentName);
+    virtualTables.put(currentVirtualName, currentVirtualTable);
+
+    currentTable.name(String.format("$%s$", currentVirtualName));
+    currentTable.predicate(null);
+    currentTable.primaryKey(currentVirtualTable.applyAliasIfNecessary(currentName, new MappingValueBuilder().column().value(mappingTable.getPrimaryKey()).targetPath("FOO").build()).getValue());
+
+    return this.values(mappingTable.getValues())
+        .incomingJoinPaths(mappingTable.getJoinPaths())
+        .joiningTables(mappingTable.getJoiningTables());
+  }
+
+  /**
+   * The join now ends on the virtual table, so besides the table its last condition also has to
+   * name the column under which that table exposes the join key. Only the last condition is
+   * retargeted - the hops before it never touch the wrapped table.
+   */
+  private VirtualTablesHelper incomingJoinPaths(ImmutableSet<MappingJoin> joinPaths) {
+
+    currentTable.joinPaths(
+        joinPaths.stream()
+            .map(
+                jp ->
+                    new MappingJoinBuilder()
+                        .shallowCopyOf(jp)
+                        .joinConditions(retargetedToVirtualTable(jp.getJoinConditions()))
+                        .build())
+            .collect(Collectors.toList()));
+
+    return this;
+  }
+
+  private List<MappingJoin.Condition> retargetedToVirtualTable(
+      final List<MappingJoin.Condition> joinConditions) {
+    final List<MappingJoin.Condition> retargeted = new ArrayList<>(joinConditions);
+    final int last = retargeted.size() - 1;
+    final MappingJoin.Condition end = retargeted.get(last);
+
+    retargeted.set(
+        last,
+        new MappingJoinBuilder.ConditionBuilder()
+            .copyOf(end)
+            .targetTable(String.format("$%s$", currentVirtualName))
+            .targetField(
+                currentVirtualTable
+                    .aliases()
+                    .getWithAlias(end.getTargetTable(), end.getTargetField(), null))
+            .build());
+
+    return retargeted;
   }
 
   /**

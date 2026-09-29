@@ -24,6 +24,7 @@ import com.greghaskins.spectrum.Spectrum;
 import de.interactive_instruments.xtraserver.config.api.FeatureTypeMapping;
 import de.interactive_instruments.xtraserver.config.api.FeatureTypeMappingBuilder;
 import de.interactive_instruments.xtraserver.config.api.MappingJoin;
+import de.interactive_instruments.xtraserver.config.api.MappingJoin;
 import de.interactive_instruments.xtraserver.config.api.MappingJoinBuilder;
 import de.interactive_instruments.xtraserver.config.api.MappingTable;
 import de.interactive_instruments.xtraserver.config.api.MappingTableBuilder;
@@ -540,6 +541,151 @@ public class MappingTransformerPredicateVariantsSpec {
               });
 
           context(
+              "a joined child that carries a predicate",
+              () -> {
+                XtraServerMapping given = mapping(rootWithJoinedChild("$T$.zus IS NULL"));
+
+                XtraServerMapping transformed =
+                    new MappingTransformerPredicateVariants(given).transform();
+
+                it(
+                    "should give the child a name of its own, so the <Table> row and the <Join>"
+                        + " row stop disagreeing",
+                    () -> {
+                      assertThat(joinedChild(transformed).getName())
+                          .isEqualTo("$vrt_o02341_1$");
+                    });
+
+                it(
+                    "should keep the query flat, rather than pulling the parent in and joining it"
+                        + " a second time from the outside",
+                    () -> {
+                      assertThat(virtualTableQueries(transformed))
+                          .containsExactly(
+                              "SELECT o02341.id,o02341.rid,o02341.position FROM o02341 "
+                                  + "WHERE (o02341.zus IS NULL)");
+                    });
+
+                it(
+                    "should retarget the join to the virtual table and select the column it binds"
+                        + " against",
+                    () -> {
+                      MappingJoin.Condition condition =
+                          joinedChild(transformed)
+                              .getJoinPaths()
+                              .asList()
+                              .get(0)
+                              .getJoinConditions()
+                              .get(0);
+
+                      assertThat(condition.getTargetTable()).isEqualTo("$vrt_o02341_1$");
+                      assertThat(virtualTableQueries(transformed).get(0))
+                          .contains("o02341." + condition.getTargetField());
+                    });
+
+                it(
+                    "should clear the predicate and keep the child joined",
+                    () -> {
+                      assertThat(joinedChild(transformed).getPredicate()).isNull();
+                      assertThat(joinedChild(transformed).isJoined()).isTrue();
+                    });
+
+                it(
+                    "should be idempotent",
+                    () -> {
+                      assertThat(new MappingTransformerPredicateVariants(transformed).transform())
+                          .isEqualTo(transformed);
+                    });
+              });
+
+          context(
+              "a joined child with a predicate under a root that is virtualised too",
+              () -> {
+                MappingTable root = rootWithJoinedChild("$T$.zus IS NULL");
+
+                XtraServerMapping given =
+                    mapping(
+                        new MappingTableBuilder()
+                            .shallowCopyOf(root)
+                            .predicate("fkt = '1000'")
+                            .values(root.getValues())
+                            .joiningTables(root.getJoiningTables())
+                            .build());
+
+                XtraServerMapping transformed =
+                    new MappingTransformerPredicateVariants(given).transform();
+
+                it(
+                    "should rewrite both ends of the join, each pass owning its own end",
+                    () -> {
+                      MappingJoin.Condition condition =
+                          primaryTables(transformed)
+                              .get(0)
+                              .getJoiningTables()
+                              .asList()
+                              .get(0)
+                              .getJoinPaths()
+                              .asList()
+                              .get(0)
+                              .getJoinConditions()
+                              .get(0);
+
+                      assertThat(condition.getSourceTable()).isEqualTo("$vrt_o61001_1$");
+                      assertThat(condition.getTargetTable()).isEqualTo("$vrt_o02341_1$");
+                    });
+              });
+
+          context(
+              "a joined child whose predicate is a constant",
+              () -> {
+                XtraServerMapping given =
+                    mapping(rootWithJoinedChild("('WaterTransportNetwork') IS NOT NULL"));
+
+                XtraServerMapping transformed =
+                    new MappingTransformerPredicateVariants(given).transform();
+
+                it(
+                    "should be left alone, since such a predicate filters nothing",
+                    () -> {
+                      assertThat(transformed).isEqualTo(given);
+                      assertThat(transformed.getVirtualTables()).isEmpty();
+                    });
+              });
+
+          context(
+              "a joined child whose predicate only looks constant",
+              () -> {
+                XtraServerMapping given =
+                    mapping(rootWithJoinedChild("($T$.lower_sch) IS NOT NULL"));
+
+                XtraServerMapping transformed =
+                    new MappingTransformerPredicateVariants(given).transform();
+
+                it(
+                    "should be virtualised, since it does name a column",
+                    () -> {
+                      assertThat(joinedChild(transformed).getName())
+                          .isEqualTo("$vrt_o02341_1$");
+                    });
+              });
+
+          context(
+              "a joined child without a predicate",
+              () -> {
+                XtraServerMapping given = mapping(rootWithJoinedChild(null));
+
+                XtraServerMapping transformed =
+                    new MappingTransformerPredicateVariants(given).transform();
+
+                it(
+                    "should be left alone",
+                    () -> {
+                      assertThat(transformed).isEqualTo(given);
+                      assertThat(transformed.getVirtualTables()).isEmpty();
+                    });
+              });
+
+          context(
               "applying the transformer twice",
               () -> {
                 XtraServerMapping given =
@@ -579,6 +725,41 @@ public class MappingTransformerPredicateVariantsSpec {
       builder.primaryTable(primaryTable);
     }
     return builder.build();
+  }
+
+  private static MappingTable rootWithJoinedChild(final String childPredicate) {
+    MappingJoin join =
+        new MappingJoinBuilder()
+            .targetPath("ft:child")
+            .joinCondition(
+                new MappingJoinBuilder.ConditionBuilder()
+                    .sourceTable("o61001")
+                    .sourceField("id")
+                    .targetTable("o02341")
+                    .targetField("rid")
+                    .build())
+            .build();
+
+    MappingTable child =
+        new MappingTableBuilder()
+            .name("o02341")
+            .primaryKey("id")
+            .targetPath("ft:child")
+            .predicate(childPredicate)
+            .joinPath(join)
+            .value(value("position", "ft:child/ft:position"))
+            .build();
+
+    return new MappingTableBuilder()
+        .name("o61001")
+        .primaryKey("id")
+        .value(value("objid", "ft:objid"))
+        .joiningTable(child)
+        .build();
+  }
+
+  private static MappingTable joinedChild(final XtraServerMapping xtraServerMapping) {
+    return primaryTables(xtraServerMapping).get(0).getJoiningTables().asList().get(0);
   }
 
   private static VirtualTable sharedVirtualTable() {

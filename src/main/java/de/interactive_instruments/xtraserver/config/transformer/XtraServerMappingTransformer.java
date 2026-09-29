@@ -126,6 +126,13 @@ public class XtraServerMappingTransformer {
         if (ensureRelationNavigability) {
             transformedXtraServerMapping = new MappingTransformerRelationNavigability(transformedXtraServerMapping).transform();
             description += "    - ensureRelationNavigability\n";
+
+            // ensureRelationNavigability copies referenced tables, predicate included, so it can
+            // add filtered tables after the earlier pass has already run
+            if (virtualTables) {
+                transformedXtraServerMapping = new MappingTransformerPredicateVariants(transformedXtraServerMapping).transform();
+                description += "    - predicateVariants (relation navigability)\n";
+            }
         }
         if (applyChoicePredicates) {
             transformedXtraServerMapping = new MappingTransformerChoice(transformedXtraServerMapping, applicationSchema).transform();
